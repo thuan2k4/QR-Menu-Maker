@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { db } from '../firebase';
-import { collection, query, where, getDocs, onSnapshot, orderBy } from 'firebase/firestore';
+import { collection, query, where, getDocs, onSnapshot } from 'firebase/firestore';
 import { Restaurant, Category, Product } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 import { Smartphone, Info, MapPin, Phone, ShoppingBag, X } from 'lucide-react';
@@ -25,17 +25,23 @@ export default function PublicMenu() {
           setRestaurant(resData);
 
           // Fetch categories and products
-          const catQuery = query(collection(db, 'categories'), where('restaurantId', '==', resData.id), orderBy('order', 'asc'));
+          const catQuery = query(collection(db, 'categories'), where('restaurantId', '==', resData.id));
           const prodQuery = query(collection(db, 'products'), where('restaurantId', '==', resData.id));
 
           onSnapshot(catQuery, (catSnap) => {
-            const cats = catSnap.docs.map(d => ({ id: d.id, ...d.data() } as Category));
+            const cats = catSnap.docs
+              .map(d => ({ id: d.id, ...d.data() } as Category))
+              .sort((a, b) => a.order - b.order);
             setCategories(cats);
             if (cats.length > 0) setActiveCategory(cats[0].id);
+          }, (error) => {
+            console.error('Failed to subscribe public categories snapshot:', error);
           });
 
           onSnapshot(prodQuery, (prodSnap) => {
             setProducts(prodSnap.docs.map(d => ({ id: d.id, ...d.data() } as Product)));
+          }, (error) => {
+            console.error('Failed to subscribe public products snapshot:', error);
           });
         }
         setLoading(false);
@@ -64,7 +70,7 @@ export default function PublicMenu() {
 
   const themeColor = restaurant.themeColor || '#f97316';
 
-  const filteredProducts = activeCategory 
+  const filteredProducts = activeCategory
     ? products.filter(p => p.categoryId === activeCategory)
     : [];
 
@@ -122,12 +128,11 @@ export default function PublicMenu() {
             <button
               key={cat.id}
               onClick={() => setActiveCategory(cat.id)}
-              className={`whitespace-nowrap px-6 py-2.5 rounded-full text-sm font-bold transition-all ${
-                activeCategory === cat.id
+              className={`whitespace-nowrap px-6 py-2.5 rounded-full text-sm font-bold transition-all ${activeCategory === cat.id
                   ? 'text-white shadow-lg'
                   : 'bg-white text-gray-500 border border-gray-100'
-              }`}
-              style={{ 
+                }`}
+              style={{
                 backgroundColor: activeCategory === cat.id ? themeColor : undefined,
                 boxShadow: activeCategory === cat.id ? `0 10px 15px -3px ${themeColor}40` : undefined
               }}
@@ -150,8 +155,8 @@ export default function PublicMenu() {
             className="space-y-4"
           >
             {filteredProducts.map(prod => (
-              <div 
-                key={prod.id} 
+              <div
+                key={prod.id}
                 onClick={() => setSelectedProduct(prod)}
                 className="bg-white p-4 rounded-2xl flex gap-4 border border-gray-100 shadow-sm transition-all hover:shadow-md cursor-pointer active:scale-[0.98]"
               >
@@ -192,14 +197,14 @@ export default function PublicMenu() {
       <AnimatePresence>
         {selectedProduct && (
           <>
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setSelectedProduct(null)}
               className="fixed inset-0 bg-black/60 z-[60] backdrop-blur-sm"
             />
-            <motion.div 
+            <motion.div
               initial={{ y: '100%' }}
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
@@ -214,7 +219,7 @@ export default function PublicMenu() {
                     <Smartphone size={64} />
                   </div>
                 )}
-                <button 
+                <button
                   onClick={() => setSelectedProduct(null)}
                   className="absolute top-6 right-6 bg-white/80 backdrop-blur-md p-2 rounded-full text-gray-900 shadow-lg"
                 >
@@ -235,10 +240,10 @@ export default function PublicMenu() {
                     {selectedProduct.description || 'Không có mô tả cho sản phẩm này.'}
                   </p>
                 </div>
-                <button 
+                <button
                   onClick={() => setSelectedProduct(null)}
                   className="w-full mt-10 py-4 rounded-2xl text-white font-bold text-lg shadow-lg"
-                  style={{ 
+                  style={{
                     backgroundColor: themeColor,
                     boxShadow: `0 10px 20px -5px ${themeColor}40`
                   }}

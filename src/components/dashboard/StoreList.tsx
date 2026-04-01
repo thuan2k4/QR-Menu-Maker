@@ -71,7 +71,7 @@ export default function StoreList({ user }: StoreListProps) {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-bold text-gray-900">Cửa hàng của tôi</h2>
-        <button 
+        <button
           onClick={() => setShowAddModal(true)}
           className="flex items-center gap-2 bg-orange-500 text-white px-6 py-3 rounded-2xl font-bold hover:bg-orange-600 transition-all shadow-lg shadow-orange-200"
         >
@@ -81,7 +81,7 @@ export default function StoreList({ user }: StoreListProps) {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {restaurants.map(res => (
-          <div 
+          <div
             key={res.id}
             onClick={() => navigate(`/dashboard/store/${res.id}`)}
             className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all cursor-pointer group relative"
@@ -90,7 +90,7 @@ export default function StoreList({ user }: StoreListProps) {
               <div className="bg-orange-50 p-3 rounded-2xl text-orange-500">
                 <Store size={24} />
               </div>
-              <button 
+              <button
                 onClick={(e) => handleDeleteStore(e, res.id)}
                 className="p-2 text-gray-300 hover:text-red-500 transition-colors"
               >
@@ -99,7 +99,7 @@ export default function StoreList({ user }: StoreListProps) {
             </div>
             <h3 className="text-xl font-bold text-gray-900 mb-1">{res.name}</h3>
             <p className="text-sm text-gray-400 mb-6 truncate">/m/{res.slug}</p>
-            
+
             <div className="flex items-center justify-between pt-4 border-t border-gray-50">
               <div className="flex items-center gap-2 text-xs font-bold text-gray-400">
                 <QrCode size={14} /> Quản lý QR & Menu
@@ -129,8 +129,8 @@ export default function StoreList({ user }: StoreListProps) {
             <form onSubmit={handleAddStore} className="p-6 space-y-6">
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-2">Tên cửa hàng</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   required
                   autoFocus
                   value={newStoreName}
@@ -139,8 +139,8 @@ export default function StoreList({ user }: StoreListProps) {
                   className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all"
                 />
               </div>
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 disabled={isCreating || !newStoreName.trim()}
                 className="w-full bg-orange-500 text-white py-4 rounded-2xl font-bold hover:bg-orange-600 transition-all disabled:opacity-50"
               >

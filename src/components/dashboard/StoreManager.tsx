@@ -4,10 +4,10 @@ import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { Restaurant } from '../../types';
 import { User } from 'firebase/auth';
-import { 
-  Info, 
-  QrCode, 
-  Menu as MenuIcon, 
+import {
+  Info,
+  QrCode,
+  Menu as MenuIcon,
   ChevronLeft,
   ExternalLink
 } from 'lucide-react';
@@ -58,8 +58,8 @@ export default function StoreManager({ user }: StoreManagerProps) {
     { id: 'settings', label: 'Thông tin cửa hàng', icon: <Info size={18} />, path: `/dashboard/store/${id}/settings` },
   ];
 
-  const activeTab = location.pathname.endsWith('/settings') ? 'settings' : 
-                   location.pathname.endsWith('/menu') ? 'menu' : 'overview';
+  const activeTab = location.pathname.endsWith('/settings') ? 'settings' :
+    location.pathname.endsWith('/menu') ? 'menu' : 'overview';
 
   return (
     <div className="space-y-6">
@@ -87,11 +87,10 @@ export default function StoreManager({ user }: StoreManagerProps) {
           <Link
             key={tab.id}
             to={tab.path}
-            className={`flex items-center gap-2 px-6 py-4 text-sm font-bold border-b-2 transition-all whitespace-nowrap ${
-              activeTab === tab.id 
-                ? 'border-orange-500 text-orange-500' 
+            className={`flex items-center gap-2 px-6 py-4 text-sm font-bold border-b-2 transition-all whitespace-nowrap ${activeTab === tab.id
+                ? 'border-orange-500 text-orange-500'
                 : 'border-transparent text-gray-400 hover:text-gray-600'
-            }`}
+              }`}
           >
             {tab.icon}
             {tab.label}

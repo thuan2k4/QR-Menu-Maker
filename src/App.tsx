@@ -15,19 +15,46 @@ export default function App() {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [authWarning, setAuthWarning] = useState<string | null>(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setUser(user);
-      if (user) {
-        const userDoc = await getDoc(doc(db, 'users', user.uid));
-        if (userDoc.exists()) {
-          setProfile(userDoc.data() as UserProfile);
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      void (async () => {
+        setUser(currentUser);
+
+        if (!currentUser) {
+          setProfile(null);
+          setAuthWarning(null);
+          setLoading(false);
+          return;
         }
-      } else {
-        setProfile(null);
-      }
-      setLoading(false);
+
+        try {
+          const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+          if (userDoc.exists()) {
+            setProfile(userDoc.data() as UserProfile);
+          } else {
+            setProfile({
+              uid: currentUser.uid,
+              email: currentUser.email || '',
+              displayName: currentUser.displayName || 'User',
+              role: 'user',
+            });
+          }
+          setAuthWarning(null);
+        } catch (error) {
+          console.error('Failed to read user profile from Firestore:', error);
+          setProfile({
+            uid: currentUser.uid,
+            email: currentUser.email || '',
+            displayName: currentUser.displayName || 'User',
+            role: 'user',
+          });
+          setAuthWarning('Khong doc duoc profile Firestore (thieu quyen). Vui long kiem tra Firestore Rules cho collection users.');
+        } finally {
+          setLoading(false);
+        }
+      })();
     });
 
     return () => unsubscribe();
@@ -43,6 +70,11 @@ export default function App() {
 
   return (
     <Router>
+      {authWarning && user && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] px-4 py-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-sm shadow-sm">
+          {authWarning}
+        </div>
+      )}
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <Login />} />

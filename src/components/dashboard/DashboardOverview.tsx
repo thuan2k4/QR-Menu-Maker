@@ -32,10 +32,10 @@ export default function DashboardOverview({ user }: DashboardOverviewProps) {
           // Firestore 'in' query has a limit of 10, but for MVP this is fine
           // For more stores, we'd need multiple queries or a different approach
           const limitedStoreIds = storeIds.slice(0, 10);
-          
+
           const catQuery = query(collection(db, 'categories'), where('restaurantId', 'in', limitedStoreIds));
           const prodQuery = query(collection(db, 'products'), where('restaurantId', 'in', limitedStoreIds));
-          
+
           const [catSnap, prodSnap] = await Promise.all([
             getDocs(catQuery),
             getDocs(prodQuery)
@@ -75,8 +75,8 @@ export default function DashboardOverview({ user }: DashboardOverviewProps) {
           <h1 className="text-3xl font-bold text-gray-900">Tổng quan Dashboard</h1>
           <p className="text-gray-500 mt-1">Chào mừng quay trở lại, {user.displayName || 'User'}!</p>
         </div>
-        <Link 
-          to="/dashboard/stores" 
+        <Link
+          to="/dashboard/stores"
           className="inline-flex items-center gap-2 bg-orange-500 text-white px-6 py-3 rounded-2xl font-bold hover:bg-orange-600 transition-all shadow-lg shadow-orange-200"
         >
           <Plus size={20} />
@@ -86,22 +86,22 @@ export default function DashboardOverview({ user }: DashboardOverviewProps) {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <StatCard 
-          icon={<Store className="text-orange-500" />} 
-          label="Tổng cửa hàng" 
-          value={stats.stores} 
+        <StatCard
+          icon={<Store className="text-orange-500" />}
+          label="Tổng cửa hàng"
+          value={stats.stores}
           color="bg-orange-50"
         />
-        <StatCard 
-          icon={<LayoutList className="text-blue-500" />} 
-          label="Tổng danh mục" 
-          value={stats.categories} 
+        <StatCard
+          icon={<LayoutList className="text-blue-500" />}
+          label="Tổng danh mục"
+          value={stats.categories}
           color="bg-blue-50"
         />
-        <StatCard 
-          icon={<Utensils className="text-green-500" />} 
-          label="Tổng sản phẩm" 
-          value={stats.products} 
+        <StatCard
+          icon={<Utensils className="text-green-500" />}
+          label="Tổng sản phẩm"
+          value={stats.products}
           color="bg-green-50"
         />
       </div>
@@ -111,7 +111,7 @@ export default function DashboardOverview({ user }: DashboardOverviewProps) {
 
 function StatCard({ icon, label, value, color }: { icon: React.ReactNode, label: string, value: number, color: string }) {
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm flex items-center gap-4"
@@ -127,8 +127,8 @@ function StatCard({ icon, label, value, color }: { icon: React.ReactNode, label:
 
 function QuickActionLink({ to, title, description }: { to: string, title: string, description: string }) {
   return (
-    <Link 
-      to={to} 
+    <Link
+      to={to}
       className="group p-4 rounded-2xl border border-gray-100 hover:border-orange-200 hover:bg-orange-50/30 transition-all"
     >
       <div className="flex items-center justify-between mb-2">

@@ -29,6 +29,20 @@ service cloud.firestore {
          (request.auth.token.email == "qthuan1234@gmail.com" && request.auth.token.email_verified == true));
     }
 
+    function isRestaurantOwnerOrAdmin(restaurantId) {
+      return isAuthenticated() &&
+        exists(/databases/$(database)/documents/restaurants/$(restaurantId)) &&
+        (
+          get(/databases/$(database)/documents/restaurants/$(restaurantId)).data.ownerId == request.auth.uid ||
+          isAdmin()
+        );
+    }
+
+    function categoryBelongsToRestaurant(categoryId, restaurantId) {
+      return exists(/databases/$(database)/documents/categories/$(categoryId)) &&
+        get(/databases/$(database)/documents/categories/$(categoryId)).data.restaurantId == restaurantId;
+    }
+
     function isValidRestaurant(data) {
       return data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
              data.slug is string && data.slug.size() > 0 && data.slug.size() < 50 &&
@@ -56,16 +70,30 @@ service cloud.firestore {
 
     match /categories/{categoryId} {
       allow read: if true;
-      allow create: if isAuthenticated() && isValidCategory(request.resource.data);
-      allow update: if isAuthenticated() && isValidCategory(request.resource.data);
-      allow delete: if isAuthenticated();
+      allow create: if isAuthenticated() &&
+        isValidCategory(request.resource.data) &&
+        isRestaurantOwnerOrAdmin(request.resource.data.restaurantId);
+      allow update: if isAuthenticated() &&
+        isValidCategory(request.resource.data) &&
+        request.resource.data.restaurantId == resource.data.restaurantId &&
+        isRestaurantOwnerOrAdmin(resource.data.restaurantId);
+      allow delete: if isAuthenticated() &&
+        isRestaurantOwnerOrAdmin(resource.data.restaurantId);
     }
 
     match /products/{productId} {
       allow read: if true;
-      allow create: if isAuthenticated() && isValidProduct(request.resource.data);
-      allow update: if isAuthenticated() && isValidProduct(request.resource.data);
-      allow delete: if isAuthenticated();
+      allow create: if isAuthenticated() &&
+        isValidProduct(request.resource.data) &&
+        isRestaurantOwnerOrAdmin(request.resource.data.restaurantId) &&
+        categoryBelongsToRestaurant(request.resource.data.categoryId, request.resource.data.restaurantId);
+      allow update: if isAuthenticated() &&
+        isValidProduct(request.resource.data) &&
+        request.resource.data.restaurantId == resource.data.restaurantId &&
+        isRestaurantOwnerOrAdmin(resource.data.restaurantId) &&
+        categoryBelongsToRestaurant(request.resource.data.categoryId, request.resource.data.restaurantId);
+      allow delete: if isAuthenticated() &&
+        isRestaurantOwnerOrAdmin(resource.data.restaurantId);
     }
 
     match /users/{userId} {

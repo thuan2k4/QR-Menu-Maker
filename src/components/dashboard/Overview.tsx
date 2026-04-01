@@ -78,11 +78,11 @@ export default function Overview({ user, restaurant }: OverviewProps) {
         <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm flex flex-col items-center text-center">
           <h3 className="text-xl font-bold mb-6">Mã QR Menu của bạn</h3>
           <div className="p-6 bg-gray-50 rounded-3xl border border-gray-100 mb-6">
-            <QRCodeSVG 
+            <QRCodeSVG
               id="qr-code-svg"
-              value={menuUrl} 
-              size={200} 
-              level="H" 
+              value={menuUrl}
+              size={200}
+              level="H"
               includeMargin={true}
               imageSettings={{
                 src: restaurant.logoUrl || "https://picsum.photos/seed/restaurant/200/200",
@@ -96,15 +96,15 @@ export default function Overview({ user, restaurant }: OverviewProps) {
           </div>
           <p className="text-sm text-gray-400 mb-8 break-all max-w-xs">{menuUrl}</p>
           <div className="flex gap-4 w-full">
-            <button 
+            <button
               onClick={downloadQR}
               className="flex-1 flex items-center justify-center gap-2 bg-gray-900 text-white px-6 py-4 rounded-2xl font-bold hover:bg-black transition-all"
             >
               <Download size={18} /> Tải mã QR
             </button>
-            <a 
-              href={menuUrl} 
-              target="_blank" 
+            <a
+              href={menuUrl}
+              target="_blank"
               rel="noopener noreferrer"
               className="flex-1 flex items-center justify-center gap-2 border border-gray-200 text-gray-700 px-6 py-4 rounded-2xl font-bold hover:bg-gray-50 transition-all"
             >

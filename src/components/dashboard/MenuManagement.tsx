@@ -1,31 +1,30 @@
 import React, { useState, useEffect, FormEvent, useRef, ChangeEvent } from 'react';
 import { User } from 'firebase/auth';
 import { Restaurant, Category, Product } from '../../types';
-import { db, storage } from '../../firebase';
-import { 
-  collection, 
-  query, 
-  where, 
-  onSnapshot, 
-  addDoc, 
-  updateDoc, 
-  deleteDoc, 
-  doc, 
-  orderBy 
+import { db } from '../../firebase';
+import {
+  collection,
+  query,
+  where,
+  onSnapshot,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc
 } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { 
-  Plus, 
-  Edit2, 
-  Trash2, 
-  FolderPlus, 
-  ChevronRight, 
+import {
+  Plus,
+  Edit2,
+  Trash2,
+  FolderPlus,
+  ChevronRight,
   Image as ImageIcon,
   Check,
   X,
   Upload,
   Loader2
 } from 'lucide-react';
+import { getStorageSetupHint, uploadImageWithBucketFallback } from '../../utils/storageUpload';
 
 interface MenuManagementProps {
   user: User;
@@ -43,17 +42,27 @@ export default function MenuManagement({ user, restaurant }: MenuManagementProps
 
   useEffect(() => {
     if (restaurant) {
-      const catQuery = query(collection(db, 'categories'), where('restaurantId', '==', restaurant.id), orderBy('order', 'asc'));
+      const catQuery = query(collection(db, 'categories'), where('restaurantId', '==', restaurant.id));
       const prodQuery = query(collection(db, 'products'), where('restaurantId', '==', restaurant.id));
 
       const unsubCats = onSnapshot(catQuery, (snap) => {
-        const cats = snap.docs.map(d => ({ id: d.id, ...d.data() } as Category));
+        const cats = snap.docs
+          .map(d => ({ id: d.id, ...d.data() } as Category))
+          .sort((a, b) => a.order - b.order);
         setCategories(cats);
-        if (cats.length > 0 && !activeCategory) setActiveCategory(cats[0].id);
+        setActiveCategory((prev) => {
+          if (cats.length === 0) return null;
+          if (prev && cats.some((cat) => cat.id === prev)) return prev;
+          return cats[0].id;
+        });
+      }, (error) => {
+        console.error('Failed to subscribe categories snapshot:', error);
       });
 
       const unsubProds = onSnapshot(prodQuery, (snap) => {
         setProducts(snap.docs.map(d => ({ id: d.id, ...d.data() } as Product)));
+      }, (error) => {
+        console.error('Failed to subscribe products snapshot:', error);
       });
 
       return () => {
@@ -71,7 +80,7 @@ export default function MenuManagement({ user, restaurant }: MenuManagementProps
     );
   }
 
-  const filteredProducts = activeCategory 
+  const filteredProducts = activeCategory
     ? products.filter(p => p.categoryId === activeCategory)
     : [];
 
@@ -94,7 +103,7 @@ export default function MenuManagement({ user, restaurant }: MenuManagementProps
       <div className="w-full md:w-72 space-y-4">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-bold">Danh mục</h3>
-          <button 
+          <button
             onClick={() => { setEditingCategory(null); setShowCategoryModal(true); }}
             className="p-2 bg-orange-50 text-orange-500 rounded-xl hover:bg-orange-100 transition-all"
           >
@@ -104,14 +113,13 @@ export default function MenuManagement({ user, restaurant }: MenuManagementProps
 
         <div className="space-y-2">
           {categories.map(cat => (
-            <div 
+            <div
               key={cat.id}
               onClick={() => setActiveCategory(cat.id)}
-              className={`group flex items-center justify-between p-4 rounded-2xl cursor-pointer transition-all ${
-                activeCategory === cat.id 
-                  ? 'bg-orange-500 text-white shadow-lg shadow-orange-200' 
-                  : 'bg-white border border-gray-100 text-gray-700 hover:bg-gray-50'
-              }`}
+              className={`group flex items-center justify-between p-4 rounded-2xl cursor-pointer transition-all ${activeCategory === cat.id
+                ? 'bg-orange-500 text-white shadow-lg shadow-orange-200'
+                : 'bg-white border border-gray-100 text-gray-700 hover:bg-gray-50'
+                }`}
             >
               <span className="font-bold truncate pr-2">{cat.name}</span>
               <div className={`flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity ${activeCategory === cat.id ? 'text-white' : 'text-gray-400'}`}>
@@ -136,7 +144,7 @@ export default function MenuManagement({ user, restaurant }: MenuManagementProps
           <h3 className="text-xl font-bold">
             {categories.find(c => c.id === activeCategory)?.name || 'Sản phẩm'}
           </h3>
-          <button 
+          <button
             disabled={!activeCategory}
             onClick={() => { setEditingProduct(null); setShowProductModal(true); }}
             className="flex items-center gap-2 bg-orange-500 text-white px-6 py-3 rounded-2xl font-bold hover:bg-orange-600 transition-all disabled:opacity-50 shadow-lg shadow-orange-200"
@@ -189,14 +197,14 @@ export default function MenuManagement({ user, restaurant }: MenuManagementProps
 
       {/* Modals */}
       {showCategoryModal && (
-        <CategoryModal 
+        <CategoryModal
           restaurantId={restaurant.id}
           editing={editingCategory}
           onClose={() => setShowCategoryModal(false)}
         />
       )}
       {showProductModal && (
-        <ProductModal 
+        <ProductModal
           user={user}
           restaurantId={restaurant.id}
           categoryId={activeCategory!}
@@ -245,8 +253,8 @@ function CategoryModal({ restaurantId, editing, onClose }: { restaurantId: strin
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           <div>
             <label className="block text-sm font-bold text-gray-700 mb-2">Tên danh mục <span className="text-red-500">*</span></label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -254,8 +262,8 @@ function CategoryModal({ restaurantId, editing, onClose }: { restaurantId: strin
               className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all"
             />
           </div>
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={loading}
             className="w-full bg-orange-500 text-white py-4 rounded-2xl font-bold hover:bg-orange-600 transition-all disabled:opacity-50"
           >
@@ -268,15 +276,34 @@ function CategoryModal({ restaurantId, editing, onClose }: { restaurantId: strin
 }
 
 function ProductModal({ user, restaurantId, categoryId, editing, onClose }: { user: User, restaurantId: string, categoryId: string, editing: Product | null, onClose: () => void }) {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    name: string;
+    description: string;
+    price: number | null;
+    imageUrl: string;
+  }>({
     name: editing?.name || '',
     description: editing?.description || '',
-    price: editing?.price || 0,
+    price: editing?.price ?? null,
     imageUrl: editing?.imageUrl || ''
   });
+  const [priceInput, setPriceInput] = useState(editing?.price != null ? String(editing.price) : '');
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handlePriceChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const digitsOnly = e.target.value.replace(/\D/g, '');
+    setPriceInput(digitsOnly);
+    setFormData(prev => ({ ...prev, price: digitsOnly === '' ? null : Number(digitsOnly) }));
+  };
+
+  const handlePriceBlur = () => {
+    if (!priceInput) return;
+    const normalized = String(Number(priceInput));
+    setPriceInput(normalized);
+    setFormData(prev => ({ ...prev, price: Number(normalized) }));
+  };
 
   const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -284,13 +311,12 @@ function ProductModal({ user, restaurantId, categoryId, editing, onClose }: { us
 
     setUploading(true);
     try {
-      const storageRef = ref(storage, `products/${user.uid}/${Date.now()}_${file.name}`);
-      await uploadBytes(storageRef, file);
-      const url = await getDownloadURL(storageRef);
+      const uploadPath = `products/${user.uid}/${Date.now()}_${file.name}`;
+      const url = await uploadImageWithBucketFallback(uploadPath, file);
       setFormData(prev => ({ ...prev, imageUrl: url }));
     } catch (err) {
-      console.error(err);
-      alert('Lỗi khi tải ảnh lên.');
+      console.error('Product image upload failed:', err);
+      alert(`Không thể tải ảnh lên. Vui lòng vào Firebase Console > Build > Storage > Get started để tạo bucket. ${getStorageSetupHint()}`);
     } finally {
       setUploading(false);
     }
@@ -299,10 +325,17 @@ function ProductModal({ user, restaurantId, categoryId, editing, onClose }: { us
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!formData.name.trim()) return;
+
+    if (formData.price == null || Number.isNaN(formData.price) || formData.price < 0) {
+      alert('Vui lòng nhập giá hợp lệ (số nguyên >= 0).');
+      return;
+    }
+
     setLoading(true);
     try {
       const data = {
         ...formData,
+        price: formData.price,
         categoryId,
         restaurantId,
         updatedAt: new Date().toISOString()
@@ -336,8 +369,8 @@ function ProductModal({ user, restaurantId, categoryId, editing, onClose }: { us
             <div className="space-y-6">
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-2">Tên món ăn/sản phẩm <span className="text-red-500">*</span></label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   required
                   value={formData.name}
                   onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
@@ -347,17 +380,24 @@ function ProductModal({ user, restaurantId, categoryId, editing, onClose }: { us
               </div>
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-2">Giá bán (VNĐ) <span className="text-red-500">*</span></label>
-                <input 
-                  type="number" 
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   required
-                  value={formData.price}
-                  onChange={(e) => setFormData(prev => ({ ...prev, price: Number(e.target.value) }))}
+                  value={priceInput}
+                  onChange={handlePriceChange}
+                  onBlur={handlePriceBlur}
+                  placeholder="Nhập giá, ví dụ 45000"
                   className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all"
                 />
+                <p className="text-xs text-gray-400 mt-2">
+                  {priceInput ? `Giá hiển thị: ${Number(priceInput).toLocaleString('vi-VN')}đ` : 'Bạn có thể để trống rồi nhập giá sau.'}
+                </p>
               </div>
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-2">Mô tả</label>
-                <textarea 
+                <textarea
                   rows={3}
                   value={formData.description}
                   onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
@@ -382,14 +422,14 @@ function ProductModal({ user, restaurantId, categoryId, editing, onClose }: { us
                       </div>
                     )}
                   </div>
-                  <input 
-                    type="file" 
+                  <input
+                    type="file"
                     ref={fileInputRef}
                     onChange={handleFileUpload}
                     accept="image/*"
                     className="hidden"
                   />
-                  <button 
+                  <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
                     className="w-full flex items-center justify-center gap-2 bg-gray-50 border border-gray-100 text-gray-600 px-4 py-3 rounded-2xl text-sm font-bold hover:bg-gray-100 transition-all"
@@ -400,8 +440,8 @@ function ProductModal({ user, restaurantId, categoryId, editing, onClose }: { us
               </div>
             </div>
           </div>
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={loading || uploading}
             className="w-full bg-orange-500 text-white py-4 rounded-2xl font-bold hover:bg-orange-600 transition-all disabled:opacity-50"
           >

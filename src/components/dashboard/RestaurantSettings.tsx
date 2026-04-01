@@ -1,10 +1,10 @@
 import React, { useState, useEffect, FormEvent, ChangeEvent, useRef } from 'react';
 import { User } from 'firebase/auth';
 import { Restaurant } from '../../types';
-import { db, storage } from '../../firebase';
+import { db } from '../../firebase';
 import { doc, setDoc, updateDoc, collection, query, where, getDocs } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { Save, Image as ImageIcon, CheckCircle, AlertCircle, Upload, Loader2 } from 'lucide-react';
+import { getStorageSetupHint, uploadImageWithBucketFallback } from '../../utils/storageUpload';
 
 interface RestaurantSettingsProps {
   user: User;
@@ -26,7 +26,7 @@ export default function RestaurantSettings({ user, restaurant, onCreated }: Rest
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState<'logo' | 'cover' | null>(null);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
-  
+
   const logoInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
 
@@ -62,13 +62,12 @@ export default function RestaurantSettings({ user, restaurant, onCreated }: Rest
 
     setUploading(type);
     try {
-      const storageRef = ref(storage, `restaurants/${user.uid}/${type}_${Date.now()}`);
-      await uploadBytes(storageRef, file);
-      const url = await getDownloadURL(storageRef);
+      const uploadPath = `restaurants/${user.uid}/${type}_${Date.now()}`;
+      const url = await uploadImageWithBucketFallback(uploadPath, file);
       setFormData(prev => ({ ...prev, [type === 'logo' ? 'logoUrl' : 'coverUrl']: url }));
     } catch (err) {
-      console.error(err);
-      setMessage({ type: 'error', text: 'Lỗi khi tải ảnh lên.' });
+      console.error('Restaurant image upload failed:', err);
+      setMessage({ type: 'error', text: `Không thể tải ảnh lên. Vào Firebase Console > Build > Storage > Get started để tạo bucket. ${getStorageSetupHint()}` });
     } finally {
       setUploading(null);
     }
@@ -134,8 +133,8 @@ export default function RestaurantSettings({ user, restaurant, onCreated }: Rest
             <h2 className="text-2xl font-bold">Thông tin cửa hàng</h2>
             <p className="text-gray-400 text-sm mt-1">Quản lý thông tin hiển thị và giao diện menu</p>
           </div>
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             form="settings-form"
             disabled={loading}
             className="flex items-center gap-2 bg-orange-500 text-white px-6 py-3 rounded-2xl font-bold hover:bg-orange-600 transition-all disabled:opacity-50 shadow-lg shadow-orange-200"
@@ -145,9 +144,8 @@ export default function RestaurantSettings({ user, restaurant, onCreated }: Rest
         </div>
 
         {message && (
-          <div className={`mx-8 mt-6 p-4 rounded-2xl flex items-center gap-3 text-sm font-medium ${
-            message.type === 'success' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'
-          }`}>
+          <div className={`mx-8 mt-6 p-4 rounded-2xl flex items-center gap-3 text-sm font-medium ${message.type === 'success' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'
+            }`}>
             {message.type === 'success' ? <CheckCircle size={18} /> : <AlertCircle size={18} />}
             {message.text}
           </div>
@@ -158,8 +156,8 @@ export default function RestaurantSettings({ user, restaurant, onCreated }: Rest
             <div className="space-y-6">
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-2">Tên nhà hàng <span className="text-red-500">*</span></label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   required
                   value={formData.name}
                   onChange={handleNameChange}
@@ -172,8 +170,8 @@ export default function RestaurantSettings({ user, restaurant, onCreated }: Rest
                 <label className="block text-sm font-bold text-gray-700 mb-2">Đường dẫn Menu (Slug) <span className="text-red-500">*</span></label>
                 <div className="flex items-center gap-2 px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl">
                   <span className="text-gray-400 text-sm">/m/</span>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     required
                     value={formData.slug}
                     onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value.toLowerCase().replace(/ /g, '-') }))}
@@ -184,8 +182,8 @@ export default function RestaurantSettings({ user, restaurant, onCreated }: Rest
 
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-2">Địa chỉ</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={formData.address}
                   onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
                   placeholder="Ví dụ: 123 Đường ABC, Quận 1, TP.HCM"
@@ -195,8 +193,8 @@ export default function RestaurantSettings({ user, restaurant, onCreated }: Rest
 
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-2">Số điện thoại</label>
-                <input 
-                  type="tel" 
+                <input
+                  type="tel"
                   value={formData.phone}
                   onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
                   placeholder="090..."
@@ -207,14 +205,14 @@ export default function RestaurantSettings({ user, restaurant, onCreated }: Rest
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-2">Màu chủ đạo (Theme Color)</label>
                 <div className="flex items-center gap-4">
-                  <input 
-                    type="color" 
+                  <input
+                    type="color"
                     value={formData.themeColor}
                     onChange={(e) => setFormData(prev => ({ ...prev, themeColor: e.target.value }))}
                     className="w-12 h-12 rounded-xl border-none cursor-pointer"
                   />
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     value={formData.themeColor}
                     onChange={(e) => setFormData(prev => ({ ...prev, themeColor: e.target.value }))}
                     className="flex-1 px-5 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none text-sm font-mono"
@@ -224,7 +222,7 @@ export default function RestaurantSettings({ user, restaurant, onCreated }: Rest
 
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-2">Giới thiệu ngắn</label>
-                <textarea 
+                <textarea
                   rows={4}
                   value={formData.bio}
                   onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
@@ -250,14 +248,14 @@ export default function RestaurantSettings({ user, restaurant, onCreated }: Rest
                       </div>
                     )}
                   </div>
-                  <input 
-                    type="file" 
+                  <input
+                    type="file"
                     ref={logoInputRef}
                     onChange={(e) => handleFileUpload(e, 'logo')}
                     accept="image/*"
                     className="hidden"
                   />
-                  <button 
+                  <button
                     type="button"
                     onClick={() => logoInputRef.current?.click()}
                     className="flex items-center justify-center gap-2 bg-gray-50 border border-gray-100 text-gray-600 px-4 py-3 rounded-2xl text-sm font-bold hover:bg-gray-100 transition-all"
@@ -282,14 +280,14 @@ export default function RestaurantSettings({ user, restaurant, onCreated }: Rest
                       </div>
                     )}
                   </div>
-                  <input 
-                    type="file" 
+                  <input
+                    type="file"
                     ref={coverInputRef}
                     onChange={(e) => handleFileUpload(e, 'cover')}
                     accept="image/*"
                     className="hidden"
                   />
-                  <button 
+                  <button
                     type="button"
                     onClick={() => coverInputRef.current?.click()}
                     className="w-full flex items-center justify-center gap-2 bg-gray-50 border border-gray-100 text-gray-600 px-4 py-3 rounded-2xl text-sm font-bold hover:bg-gray-100 transition-all"

@@ -4,12 +4,12 @@ import { User } from 'firebase/auth';
 import { auth, db } from '../firebase';
 import { collection, query, where, onSnapshot, doc, getDoc } from 'firebase/firestore';
 import { Restaurant, UserProfile } from '../types';
-import { 
-  LayoutDashboard, 
-  Settings, 
-  Menu as MenuIcon, 
-  LogOut, 
-  QrCode, 
+import {
+  LayoutDashboard,
+  Settings,
+  Menu as MenuIcon,
+  LogOut,
+  QrCode,
   ExternalLink,
   ChevronRight,
   X
@@ -64,7 +64,7 @@ export default function Dashboard({ user, profile }: DashboardProps) {
         </nav>
 
         <div className="p-4 border-t border-gray-50">
-          <button 
+          <button
             onClick={handleLogout}
             className="flex items-center gap-3 w-full px-4 py-3 text-sm font-medium text-gray-500 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
           >
@@ -88,14 +88,14 @@ export default function Dashboard({ user, profile }: DashboardProps) {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <>
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsMobileMenuOpen(false)}
               className="fixed inset-0 bg-black/50 z-[60] md:hidden"
             />
-            <motion.aside 
+            <motion.aside
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
@@ -120,7 +120,7 @@ export default function Dashboard({ user, profile }: DashboardProps) {
               </nav>
 
               <div className="p-4 border-t border-gray-50">
-                <button 
+                <button
                   onClick={handleLogout}
                   className="flex items-center gap-3 w-full px-4 py-3 text-sm font-medium text-gray-500 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
                 >
@@ -137,7 +137,7 @@ export default function Dashboard({ user, profile }: DashboardProps) {
       <main className="flex-1 flex flex-col min-w-0">
         <header className="bg-white border-b border-gray-100 px-4 md:px-6 py-4 flex items-center justify-between sticky top-0 z-10">
           <div className="flex items-center gap-3 flex-1 min-w-0">
-            <button 
+            <button
               onClick={() => setIsMobileMenuOpen(true)}
               className="p-2 -ml-2 hover:bg-gray-100 rounded-full text-gray-400 md:hidden"
             >
@@ -166,13 +166,12 @@ export default function Dashboard({ user, profile }: DashboardProps) {
 
 function SidebarLink({ to, icon, label, active }: { to: string, icon: ReactNode, label: string, active: boolean }) {
   return (
-    <Link 
-      to={to} 
-      className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-        active 
-          ? 'bg-orange-500 text-white shadow-lg shadow-orange-200' 
+    <Link
+      to={to}
+      className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${active
+          ? 'bg-orange-500 text-white shadow-lg shadow-orange-200'
           : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'
-      }`}
+        }`}
     >
       {icon}
       {label}
@@ -182,11 +181,10 @@ function SidebarLink({ to, icon, label, active }: { to: string, icon: ReactNode,
 
 function MobileNavLink({ to, icon, label, active }: { to: string, icon: ReactNode, label: string, active: boolean }) {
   return (
-    <Link 
-      to={to} 
-      className={`flex flex-col items-center gap-1 p-2 transition-all ${
-        active ? 'text-orange-500' : 'text-gray-400'
-      }`}
+    <Link
+      to={to}
+      className={`flex flex-col items-center gap-1 p-2 transition-all ${active ? 'text-orange-500' : 'text-gray-400'
+        }`}
     >
       {icon}
       <span className="text-[10px] font-bold">{label}</span>
