@@ -1,0 +1,8 @@
+{
+  "name": "QR Menu Maker",
+  "description": "Nền tảng tạo menu kỹ thuật số và mã QR chuyên nghiệp cho nhà hàng, spa và các dịch vụ khác.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}

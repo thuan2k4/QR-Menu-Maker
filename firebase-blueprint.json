@@ -1,0 +1,58 @@
+{
+  "entities": {
+    "Restaurant": {
+      "title": "Restaurant",
+      "description": "Thông tin cơ bản của nhà hàng/cửa hàng",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Tên nhà hàng" },
+        "bio": { "type": "string", "description": "Giới thiệu ngắn" },
+        "logoUrl": { "type": "string", "description": "URL ảnh đại diện" },
+        "coverUrl": { "type": "string", "description": "URL ảnh bìa" },
+        "slug": { "type": "string", "description": "Đường dẫn duy nhất cho menu" },
+        "ownerId": { "type": "string", "description": "UID của chủ sở hữu" }
+      },
+      "required": ["name", "slug", "ownerId"]
+    },
+    "Category": {
+      "title": "Category",
+      "description": "Danh mục sản phẩm",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Tên danh mục" },
+        "order": { "type": "integer", "description": "Thứ tự hiển thị" },
+        "restaurantId": { "type": "string", "description": "ID nhà hàng sở hữu" }
+      },
+      "required": ["name", "restaurantId"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Sản phẩm/Món ăn trong menu",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Tên sản phẩm" },
+        "description": { "type": "string", "description": "Mô tả chi tiết" },
+        "price": { "type": "number", "description": "Giá bán" },
+        "imageUrl": { "type": "string", "description": "URL ảnh sản phẩm" },
+        "isAvailable": { "type": "boolean", "description": "Trạng thái còn hàng" },
+        "categoryId": { "type": "string", "description": "ID danh mục" },
+        "restaurantId": { "type": "string", "description": "ID nhà hàng" }
+      },
+      "required": ["name", "price", "categoryId", "restaurantId"]
+    }
+  },
+  "firestore": {
+    "/restaurants/{restaurantId}": {
+      "schema": "Restaurant",
+      "description": "Dữ liệu nhà hàng"
+    },
+    "/categories/{categoryId}": {
+      "schema": "Category",
+      "description": "Dữ liệu danh mục"
+    },
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Dữ liệu sản phẩm"
+    }
+  }
+}
