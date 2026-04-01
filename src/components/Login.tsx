@@ -1,8 +1,30 @@
 import { useState } from 'react';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { FirebaseError } from 'firebase/app';
 import { auth, db } from '../firebase';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { QrCode } from 'lucide-react';
+
+function getLoginErrorMessage(error: unknown): string {
+  if (!(error instanceof FirebaseError)) {
+    return 'Dang nhap that bai. Vui long thu lai.';
+  }
+
+  switch (error.code) {
+    case 'auth/unauthorized-domain':
+      return 'Domain hien tai chua duoc add trong Firebase Auth > Authorized domains.';
+    case 'auth/operation-not-supported-in-this-environment':
+      return 'Google login can HTTPS (hoac localhost). Domain HTTP cong khai se bi chan.';
+    case 'auth/popup-blocked':
+      return 'Popup dang nhap bi chan. Vui long cho phep popup trong trinh duyet.';
+    case 'auth/popup-closed-by-user':
+      return 'Ban da dong popup dang nhap truoc khi hoan tat.';
+    case 'auth/network-request-failed':
+      return 'Loi mang khi ket noi Firebase Auth. Vui long kiem tra internet/domain.';
+    default:
+      return `Dang nhap that bai (${error.code}).`;
+  }
+}
 
 export default function Login() {
   const [loading, setLoading] = useState(false);
@@ -27,9 +49,9 @@ export default function Login() {
           createdAt: new Date().toISOString()
         });
       }
-    } catch (err: any) {
-      console.error(err);
-      setError('Đăng nhập thất bại. Vui lòng thử lại.');
+    } catch (err) {
+      console.error('Google login failed:', err);
+      setError(getLoginErrorMessage(err));
     } finally {
       setLoading(false);
     }
