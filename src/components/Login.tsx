@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { useEffect, useState } from 'react';
+import { signInWithPopup, signInWithRedirect, getRedirectResult, GoogleAuthProvider, User } from 'firebase/auth';
 import { FirebaseError } from 'firebase/app';
 import { auth, db } from '../firebase';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
@@ -30,28 +30,71 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const ensureUserProfile = async (user: User) => {
+    const userDoc = await getDoc(doc(db, 'users', user.uid));
+    if (!userDoc.exists()) {
+      await setDoc(doc(db, 'users', user.uid), {
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName,
+        role: 'user',
+        createdAt: new Date().toISOString()
+      });
+    }
+  };
+
+  useEffect(() => {
+    void (async () => {
+      try {
+        const result = await getRedirectResult(auth);
+        if (result?.user) {
+          await ensureUserProfile(result.user);
+        }
+      } catch (err) {
+        console.error('Google redirect login failed:', err);
+        setError(getLoginErrorMessage(err));
+      }
+    })();
+  }, []);
+
   const handleGoogleLogin = async () => {
     setLoading(true);
     setError('');
     const provider = new GoogleAuthProvider();
+
+    const ua = navigator.userAgent.toLowerCase();
+    const isIOS = /iphone|ipad|ipod/.test(ua);
+    const isSafari = /safari/.test(ua) && !/crios|fxios|edgios|chrome|android/.test(ua);
+
+    if (isIOS && isSafari) {
+      try {
+        await signInWithRedirect(auth, provider);
+        return;
+      } catch (err) {
+        console.error('Google redirect start failed:', err);
+        setError(getLoginErrorMessage(err));
+        setLoading(false);
+        return;
+      }
+    }
+
     try {
       const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-
-      // Create user profile in Firestore if it doesn't exist
-      const userDoc = await getDoc(doc(db, 'users', user.uid));
-      if (!userDoc.exists()) {
-        await setDoc(doc(db, 'users', user.uid), {
-          uid: user.uid,
-          email: user.email,
-          displayName: user.displayName,
-          role: 'user',
-          createdAt: new Date().toISOString()
-        });
-      }
+      await ensureUserProfile(result.user);
     } catch (err) {
       console.error('Google login failed:', err);
-      setError(getLoginErrorMessage(err));
+
+      if (err instanceof FirebaseError && (err.code === 'auth/popup-blocked' || err.code === 'auth/operation-not-supported-in-this-environment')) {
+        try {
+          await signInWithRedirect(auth, provider);
+          return;
+        } catch (redirectErr) {
+          console.error('Google redirect fallback failed:', redirectErr);
+          setError(getLoginErrorMessage(redirectErr));
+        }
+      } else {
+        setError(getLoginErrorMessage(err));
+      }
     } finally {
       setLoading(false);
     }
