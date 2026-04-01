@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 
 // Sub-components
-import Overview from './dashboard/Overview';
+import DashboardOverview from './dashboard/DashboardOverview';
 import RestaurantSettings from './dashboard/RestaurantSettings';
 import MenuManagement from './dashboard/MenuManagement';
 
@@ -24,42 +24,25 @@ interface DashboardProps {
   profile: UserProfile | null;
 }
 
+import StoreList from './dashboard/StoreList';
+import StoreManager from './dashboard/StoreManager';
+
 export default function Dashboard({ user, profile }: DashboardProps) {
-  const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
-  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
-
-  useEffect(() => {
-    const q = query(collection(db, 'restaurants'), where('ownerId', '==', user.uid));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      if (!snapshot.empty) {
-        setRestaurant({ id: snapshot.docs[0].id, ...snapshot.docs[0].data() } as Restaurant);
-      } else {
-        setRestaurant(null);
-      }
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, [user.uid]);
 
   const handleLogout = () => {
     auth.signOut();
     navigate('/');
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-orange-500"></div>
-      </div>
-    );
-  }
+  const isStoresPage = location.pathname.startsWith('/dashboard/stores');
+  const isStoreDetailPage = location.pathname.startsWith('/dashboard/store/');
+  const isDashboardOverview = location.pathname === '/dashboard';
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      {/* Sidebar */}
+    <div className="flex min-h-screen bg-gray-50 pb-20 md:pb-0">
+      {/* Sidebar - Desktop */}
       <aside className="w-64 bg-white border-r border-gray-100 hidden md:flex flex-col sticky top-0 h-screen">
         <div className="p-6 flex items-center gap-2 border-b border-gray-50">
           <div className="bg-orange-500 p-1.5 rounded-lg">
@@ -69,9 +52,8 @@ export default function Dashboard({ user, profile }: DashboardProps) {
         </div>
 
         <nav className="flex-1 p-4 space-y-1">
-          <SidebarLink to="/dashboard" icon={<LayoutDashboard size={20} />} label="Tổng quan" active={location.pathname === '/dashboard'} />
-          <SidebarLink to="/dashboard/menu" icon={<MenuIcon size={20} />} label="Quản lý Menu" active={location.pathname.startsWith('/dashboard/menu')} />
-          <SidebarLink to="/dashboard/settings" icon={<Settings size={20} />} label="Cài đặt" active={location.pathname === '/dashboard/settings'} />
+          <SidebarLink to="/dashboard" icon={<LayoutDashboard size={20} />} label="Dashboard" active={isDashboardOverview} />
+          <SidebarLink to="/dashboard/stores" icon={<MenuIcon size={20} />} label="Cửa hàng của tôi" active={isStoresPage || isStoreDetailPage} />
         </nav>
 
         <div className="p-4 border-t border-gray-50">
@@ -85,44 +67,43 @@ export default function Dashboard({ user, profile }: DashboardProps) {
         </div>
       </aside>
 
+      {/* Mobile Navigation Bar */}
+      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 flex md:hidden items-center justify-around p-2 z-50">
+        <MobileNavLink to="/dashboard" icon={<LayoutDashboard size={20} />} label="Dashboard" active={isDashboardOverview} />
+        <MobileNavLink to="/dashboard/stores" icon={<MenuIcon size={20} />} label="Cửa hàng" active={isStoresPage || isStoreDetailPage} />
+        <button onClick={handleLogout} className="flex flex-col items-center gap-1 p-2 text-gray-400">
+          <LogOut size={20} />
+          <span className="text-[10px] font-bold">Thoát</span>
+        </button>
+      </nav>
+
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0">
-        <header className="bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between sticky top-0 z-10">
-          <div className="flex items-center gap-2 text-sm text-gray-400">
-            <span>Dashboard</span>
-            <ChevronRight size={14} />
-            <span className="text-gray-900 font-medium">
-              {location.pathname === '/dashboard' ? 'Tổng quan' : 
-               location.pathname.includes('/menu') ? 'Quản lý Menu' : 'Cài đặt'}
-            </span>
+        <header className="bg-white border-b border-gray-100 px-4 md:px-6 py-4 flex items-center justify-between sticky top-0 z-10">
+          <div className="flex items-center gap-2 text-sm text-gray-400 flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <span className="hidden sm:inline">Dashboard</span>
+              <ChevronRight size={14} className="hidden sm:inline" />
+              <span className="text-gray-900 font-medium truncate">
+                {isDashboardOverview ? 'Tổng quan' : 
+                 isStoresPage ? 'Cửa hàng của tôi' : 
+                 isStoreDetailPage ? 'Quản lý cửa hàng' : 'Dashboard'}
+              </span>
+            </div>
           </div>
 
           <div className="flex items-center gap-4">
-            {restaurant && (
-              <a 
-                href={`/m/${restaurant.slug}`} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 text-sm font-medium text-orange-500 hover:bg-orange-50 px-4 py-2 rounded-full transition-all"
-              >
-                Xem Menu <ExternalLink size={14} />
-              </a>
-            )}
             <div className="flex items-center gap-3 pl-4 border-l border-gray-100">
-              <div className="text-right hidden sm:block">
-                <p className="text-sm font-bold text-gray-900 leading-none">{user.displayName}</p>
-                <p className="text-xs text-gray-400 mt-1">{user.email}</p>
-              </div>
-              <img src={user.photoURL || ''} alt="Avatar" className="w-10 h-10 rounded-full border border-gray-100" referrerPolicy="no-referrer" />
+              <img src={user.photoURL || ''} alt="Avatar" className="w-8 h-8 rounded-full border border-gray-100" referrerPolicy="no-referrer" />
             </div>
           </div>
         </header>
 
-        <div className="p-6 max-w-6xl mx-auto w-full">
+        <div className="p-4 md:p-6 max-w-6xl mx-auto w-full">
           <Routes>
-            <Route index element={<Overview user={user} restaurant={restaurant} />} />
-            <Route path="menu" element={<MenuManagement user={user} restaurant={restaurant} />} />
-            <Route path="settings" element={<RestaurantSettings user={user} restaurant={restaurant} />} />
+            <Route index element={<DashboardOverview user={user} />} />
+            <Route path="stores" element={<StoreList user={user} />} />
+            <Route path="store/:id/*" element={<StoreManager user={user} />} />
           </Routes>
         </div>
       </main>
@@ -142,6 +123,20 @@ function SidebarLink({ to, icon, label, active }: { to: string, icon: ReactNode,
     >
       {icon}
       {label}
+    </Link>
+  );
+}
+
+function MobileNavLink({ to, icon, label, active }: { to: string, icon: ReactNode, label: string, active: boolean }) {
+  return (
+    <Link 
+      to={to} 
+      className={`flex flex-col items-center gap-1 p-2 transition-all ${
+        active ? 'text-orange-500' : 'text-gray-400'
+      }`}
+    >
+      {icon}
+      <span className="text-[10px] font-bold">{label}</span>
     </Link>
   );
 }

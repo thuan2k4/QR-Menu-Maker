@@ -48,9 +48,9 @@ export default function LandingPage() {
           <Link to="/login" className="w-full sm:w-auto bg-orange-500 text-white px-8 py-4 rounded-full text-lg font-bold hover:bg-orange-600 transition-all shadow-lg shadow-orange-200">
             Tạo Menu Miễn Phí
           </Link>
-          <button className="w-full sm:w-auto border border-gray-200 text-gray-600 px-8 py-4 rounded-full text-lg font-bold hover:bg-gray-50 transition-all">
+          <a href="#features" className="w-full sm:w-auto border border-gray-200 text-gray-600 px-8 py-4 rounded-full text-lg font-bold hover:bg-gray-50 transition-all">
             Xem Demo
-          </button>
+          </a>
         </motion.div>
       </section>
 

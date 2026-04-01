@@ -1,7 +1,7 @@
-import React, { useState, useEffect, FormEvent } from 'react';
+import React, { useState, useEffect, FormEvent, useRef, ChangeEvent } from 'react';
 import { User } from 'firebase/auth';
 import { Restaurant, Category, Product } from '../../types';
-import { db } from '../../firebase';
+import { db, storage } from '../../firebase';
 import { 
   collection, 
   query, 
@@ -13,6 +13,7 @@ import {
   doc, 
   orderBy 
 } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { 
   Plus, 
   Edit2, 
@@ -21,7 +22,9 @@ import {
   ChevronRight, 
   Image as ImageIcon,
   Check,
-  X
+  X,
+  Upload,
+  Loader2
 } from 'lucide-react';
 
 interface MenuManagementProps {
@@ -161,11 +164,6 @@ export default function MenuManagement({ user, restaurant }: MenuManagementProps
                     <Trash2 size={16} />
                   </button>
                 </div>
-                {!prod.isAvailable && (
-                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                    <span className="bg-white text-gray-900 text-xs font-bold px-3 py-1 rounded-full">Hết hàng</span>
-                  </div>
-                )}
               </div>
               <div className="p-5">
                 <div className="flex justify-between items-start mb-2">
@@ -199,6 +197,7 @@ export default function MenuManagement({ user, restaurant }: MenuManagementProps
       )}
       {showProductModal && (
         <ProductModal 
+          user={user}
           restaurantId={restaurant.id}
           categoryId={activeCategory!}
           editing={editingProduct}
@@ -215,6 +214,7 @@ function CategoryModal({ restaurantId, editing, onClose }: { restaurantId: strin
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if (!name.trim()) return;
     setLoading(true);
     try {
       if (editing) {
@@ -244,7 +244,7 @@ function CategoryModal({ restaurantId, editing, onClose }: { restaurantId: strin
         </div>
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">Tên danh mục</label>
+            <label className="block text-sm font-bold text-gray-700 mb-2">Tên danh mục <span className="text-red-500">*</span></label>
             <input 
               type="text" 
               required
@@ -267,27 +267,52 @@ function CategoryModal({ restaurantId, editing, onClose }: { restaurantId: strin
   );
 }
 
-function ProductModal({ restaurantId, categoryId, editing, onClose }: { restaurantId: string, categoryId: string, editing: Product | null, onClose: () => void }) {
+function ProductModal({ user, restaurantId, categoryId, editing, onClose }: { user: User, restaurantId: string, categoryId: string, editing: Product | null, onClose: () => void }) {
   const [formData, setFormData] = useState({
     name: editing?.name || '',
     description: editing?.description || '',
     price: editing?.price || 0,
-    imageUrl: editing?.imageUrl || '',
-    isAvailable: editing?.isAvailable ?? true
+    imageUrl: editing?.imageUrl || ''
   });
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const storageRef = ref(storage, `products/${user.uid}/${Date.now()}_${file.name}`);
+      await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(storageRef);
+      setFormData(prev => ({ ...prev, imageUrl: url }));
+    } catch (err) {
+      console.error(err);
+      alert('Lỗi khi tải ảnh lên.');
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if (!formData.name.trim()) return;
     setLoading(true);
     try {
+      const data = {
+        ...formData,
+        categoryId,
+        restaurantId,
+        updatedAt: new Date().toISOString()
+      };
+
       if (editing) {
-        await updateDoc(doc(db, 'products', editing.id), formData);
+        await updateDoc(doc(db, 'products', editing.id), data);
       } else {
         await addDoc(collection(db, 'products'), {
-          ...formData,
-          categoryId,
-          restaurantId,
+          ...data,
           createdAt: new Date().toISOString()
         });
       }
@@ -310,7 +335,7 @@ function ProductModal({ restaurantId, categoryId, editing, onClose }: { restaura
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-6">
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Tên món ăn/sản phẩm</label>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Tên món ăn/sản phẩm <span className="text-red-500">*</span></label>
                 <input 
                   type="text" 
                   required
@@ -321,7 +346,7 @@ function ProductModal({ restaurantId, categoryId, editing, onClose }: { restaura
                 />
               </div>
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Giá bán (VNĐ)</label>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Giá bán (VNĐ) <span className="text-red-500">*</span></label>
                 <input 
                   type="number" 
                   required
@@ -343,35 +368,41 @@ function ProductModal({ restaurantId, categoryId, editing, onClose }: { restaura
             </div>
             <div className="space-y-6">
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">URL Hình ảnh</label>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Hình ảnh sản phẩm</label>
                 <div className="space-y-4">
-                  <div className="w-full h-32 bg-gray-100 rounded-2xl flex items-center justify-center overflow-hidden border border-gray-200">
-                    {formData.imageUrl ? <img src={formData.imageUrl} alt="Preview" className="w-full h-full object-cover" referrerPolicy="no-referrer" /> : <ImageIcon className="text-gray-300" />}
+                  <div className="w-full h-48 bg-gray-100 rounded-2xl flex items-center justify-center overflow-hidden border border-gray-200 relative">
+                    {formData.imageUrl ? (
+                      <img src={formData.imageUrl} alt="Preview" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                    ) : (
+                      <ImageIcon className="text-gray-300 w-12 h-12" />
+                    )}
+                    {uploading && (
+                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                        <Loader2 className="text-white animate-spin" />
+                      </div>
+                    )}
                   </div>
                   <input 
-                    type="url" 
-                    value={formData.imageUrl}
-                    onChange={(e) => setFormData(prev => ({ ...prev, imageUrl: e.target.value }))}
-                    placeholder="https://example.com/food.jpg"
-                    className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all text-sm"
+                    type="file" 
+                    ref={fileInputRef}
+                    onChange={handleFileUpload}
+                    accept="image/*"
+                    className="hidden"
                   />
+                  <button 
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="w-full flex items-center justify-center gap-2 bg-gray-50 border border-gray-100 text-gray-600 px-4 py-3 rounded-2xl text-sm font-bold hover:bg-gray-100 transition-all"
+                  >
+                    <Upload size={16} /> Tải ảnh lên
+                  </button>
                 </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <button 
-                  type="button"
-                  onClick={() => setFormData(prev => ({ ...prev, isAvailable: !prev.isAvailable }))}
-                  className={`w-12 h-6 rounded-full transition-all relative ${formData.isAvailable ? 'bg-orange-500' : 'bg-gray-200'}`}
-                >
-                  <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${formData.isAvailable ? 'left-7' : 'left-1'}`} />
-                </button>
-                <span className="text-sm font-bold text-gray-700">Còn hàng</span>
               </div>
             </div>
           </div>
           <button 
             type="submit" 
-            disabled={loading}
+            disabled={loading || uploading}
             className="w-full bg-orange-500 text-white py-4 rounded-2xl font-bold hover:bg-orange-600 transition-all disabled:opacity-50"
           >
             {loading ? 'Đang lưu...' : 'Lưu sản phẩm'}

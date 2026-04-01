@@ -2,10 +2,14 @@ export interface Restaurant {
   id: string;
   name: string;
   bio: string;
+  address?: string;
   logoUrl: string;
   coverUrl: string;
   slug: string;
   ownerId: string;
+  phone?: string;
+  serviceType?: string;
+  themeColor?: string;
 }
 
 export interface Category {
@@ -21,7 +25,6 @@ export interface Product {
   description: string;
   price: number;
   imageUrl: string;
-  isAvailable: boolean;
   categoryId: string;
   restaurantId: string;
 }

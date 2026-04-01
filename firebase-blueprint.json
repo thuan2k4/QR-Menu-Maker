@@ -7,10 +7,14 @@
       "properties": {
         "name": { "type": "string", "description": "Tên nhà hàng" },
         "bio": { "type": "string", "description": "Giới thiệu ngắn" },
+        "address": { "type": "string", "description": "Địa chỉ nhà hàng" },
         "logoUrl": { "type": "string", "description": "URL ảnh đại diện" },
         "coverUrl": { "type": "string", "description": "URL ảnh bìa" },
         "slug": { "type": "string", "description": "Đường dẫn duy nhất cho menu" },
-        "ownerId": { "type": "string", "description": "UID của chủ sở hữu" }
+        "ownerId": { "type": "string", "description": "UID của chủ sở hữu" },
+        "phone": { "type": "string", "description": "Số điện thoại liên hệ" },
+        "serviceType": { "type": "string", "description": "Loại hình dịch vụ (tại chỗ, ship...)" },
+        "themeColor": { "type": "string", "description": "Màu chủ đạo của menu" }
       },
       "required": ["name", "slug", "ownerId"]
     },
@@ -34,7 +38,6 @@
         "description": { "type": "string", "description": "Mô tả chi tiết" },
         "price": { "type": "number", "description": "Giá bán" },
         "imageUrl": { "type": "string", "description": "URL ảnh sản phẩm" },
-        "isAvailable": { "type": "boolean", "description": "Trạng thái còn hàng" },
         "categoryId": { "type": "string", "description": "ID danh mục" },
         "restaurantId": { "type": "string", "description": "ID nhà hàng" }
       },

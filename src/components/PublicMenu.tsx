@@ -4,7 +4,7 @@ import { db } from '../firebase';
 import { collection, query, where, getDocs, onSnapshot, orderBy } from 'firebase/firestore';
 import { Restaurant, Category, Product } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
-import { Smartphone, Info, MapPin, Phone, ChevronRight } from 'lucide-react';
+import { Smartphone, Info, MapPin, Phone, ShoppingBag } from 'lucide-react';
 
 export default function PublicMenu() {
   const { slug } = useParams<{ slug: string }>();
@@ -61,6 +61,8 @@ export default function PublicMenu() {
     );
   }
 
+  const themeColor = restaurant.themeColor || '#f97316';
+
   const filteredProducts = activeCategory 
     ? products.filter(p => p.categoryId === activeCategory)
     : [];
@@ -72,7 +74,7 @@ export default function PublicMenu() {
         {restaurant.coverUrl ? (
           <img src={restaurant.coverUrl} alt="Cover" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
         ) : (
-          <div className="w-full h-full bg-orange-500" />
+          <div className="w-full h-full bg-orange-500" style={{ backgroundColor: themeColor }} />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
       </div>
@@ -92,14 +94,14 @@ export default function PublicMenu() {
             </div>
             <div className="flex-1 min-w-0">
               <h1 className="text-2xl font-bold text-gray-900 truncate">{restaurant.name}</h1>
+              {restaurant.address && (
+                <p className="text-xs text-gray-400 mt-1 flex items-center gap-1">
+                  <MapPin size={12} style={{ color: themeColor }} />
+                  {restaurant.address}
+                </p>
+              )}
               <p className="text-sm text-gray-500 line-clamp-2 mt-1">{restaurant.bio}</p>
             </div>
-          </div>
-          
-          <div className="mt-6 flex items-center gap-4 text-xs text-gray-400 font-medium">
-            <div className="flex items-center gap-1"><MapPin size={14} /> Tại chỗ</div>
-            <div className="flex items-center gap-1"><Phone size={14} /> Liên hệ</div>
-            <div className="flex items-center gap-1"><Info size={14} /> Thông tin</div>
           </div>
         </div>
       </div>
@@ -113,9 +115,13 @@ export default function PublicMenu() {
               onClick={() => setActiveCategory(cat.id)}
               className={`whitespace-nowrap px-6 py-2.5 rounded-full text-sm font-bold transition-all ${
                 activeCategory === cat.id
-                  ? 'bg-orange-500 text-white shadow-lg shadow-orange-200'
+                  ? 'text-white shadow-lg'
                   : 'bg-white text-gray-500 border border-gray-100'
               }`}
+              style={{ 
+                backgroundColor: activeCategory === cat.id ? themeColor : undefined,
+                boxShadow: activeCategory === cat.id ? `0 10px 15px -3px ${themeColor}40` : undefined
+              }}
             >
               {cat.name}
             </button>
@@ -137,7 +143,7 @@ export default function PublicMenu() {
             {filteredProducts.map(prod => (
               <div 
                 key={prod.id} 
-                className={`bg-white p-4 rounded-2xl flex gap-4 border border-gray-100 shadow-sm transition-all ${!prod.isAvailable ? 'opacity-60 grayscale' : ''}`}
+                className="bg-white p-4 rounded-2xl flex gap-4 border border-gray-100 shadow-sm transition-all"
               >
                 <div className="w-24 h-24 bg-gray-50 rounded-xl overflow-hidden flex-shrink-0 border border-gray-50">
                   {prod.imageUrl ? (
@@ -152,15 +158,13 @@ export default function PublicMenu() {
                   <div>
                     <div className="flex justify-between items-start">
                       <h3 className="font-bold text-gray-900 truncate pr-2">{prod.name}</h3>
-                      {!prod.isAvailable && <span className="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full font-bold">Hết</span>}
                     </div>
                     <p className="text-xs text-gray-400 line-clamp-2 mt-1 leading-relaxed">{prod.description}</p>
                   </div>
                   <div className="flex items-center justify-between mt-2">
-                    <span className="text-orange-500 font-bold">{prod.price.toLocaleString('vi-VN')}đ</span>
-                    <button className="p-1.5 bg-orange-50 text-orange-500 rounded-lg">
-                      <ChevronRight size={16} />
-                    </button>
+                    <span className="font-bold" style={{ color: themeColor }}>
+                      {prod.price.toLocaleString('vi-VN')}đ
+                    </span>
                   </div>
                 </div>
               </div>
@@ -174,11 +178,10 @@ export default function PublicMenu() {
         </AnimatePresence>
       </div>
 
-      {/* Floating Action (Optional) */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-xs px-6">
-        <button className="w-full bg-gray-900 text-white py-4 rounded-2xl font-bold shadow-2xl flex items-center justify-center gap-2 hover:bg-black transition-all">
-          <Smartphone size={18} /> Gọi nhân viên
-        </button>
+      {/* Footer Info */}
+      <div className="max-w-2xl mx-auto px-4 mt-12 text-center">
+        <div className="h-px bg-gray-200 w-24 mx-auto mb-6" />
+        <p className="text-gray-400 text-xs uppercase tracking-widest font-bold">Cung cấp bởi QR Menu Maker</p>
       </div>
     </div>
   );
