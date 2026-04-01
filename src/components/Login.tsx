@@ -26,6 +26,10 @@ function getLoginErrorMessage(error: unknown): string {
   }
 }
 
+function goToDashboard() {
+  window.location.replace('/dashboard');
+}
+
 export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -49,6 +53,7 @@ export default function Login() {
         const result = await getRedirectResult(auth);
         if (result?.user) {
           await ensureUserProfile(result.user);
+          goToDashboard();
         }
       } catch (err) {
         console.error('Google redirect login failed:', err);
@@ -61,12 +66,24 @@ export default function Login() {
     setLoading(true);
     setError('');
     const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'select_account' });
+
+    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    if (!window.isSecureContext && !isLocalhost) {
+      setError('Moi truong dang nhap khong an toan (HTTPS/certificate). Vui long dung domain HTTPS hop le de dang nhap Google.');
+      setLoading(false);
+      return;
+    }
 
     const ua = navigator.userAgent.toLowerCase();
     const isIOS = /iphone|ipad|ipod/.test(ua);
+    const isAndroid = /android/.test(ua);
     const isSafari = /safari/.test(ua) && !/crios|fxios|edgios|chrome|android/.test(ua);
+    const isInAppBrowser = /fbav|fban|instagram|line|zalo|wv/.test(ua);
 
-    if (isIOS && isSafari) {
+    const shouldUseRedirect = isInAppBrowser || isAndroid || (isIOS && isSafari);
+
+    if (shouldUseRedirect) {
       try {
         await signInWithRedirect(auth, provider);
         return;
@@ -81,10 +98,11 @@ export default function Login() {
     try {
       const result = await signInWithPopup(auth, provider);
       await ensureUserProfile(result.user);
+      goToDashboard();
     } catch (err) {
       console.error('Google login failed:', err);
 
-      if (err instanceof FirebaseError && (err.code === 'auth/popup-blocked' || err.code === 'auth/operation-not-supported-in-this-environment')) {
+      if (err instanceof FirebaseError && (err.code === 'auth/popup-blocked' || err.code === 'auth/operation-not-supported-in-this-environment' || err.code === 'auth/network-request-failed')) {
         try {
           await signInWithRedirect(auth, provider);
           return;
