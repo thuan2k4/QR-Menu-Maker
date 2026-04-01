@@ -3,9 +3,13 @@ import { storage, storageDebugInfo, storageFallback } from '../firebase';
 
 type MediaProvider = 'auto' | 'firebase' | 'cloudinary';
 
-const configuredProvider = (import.meta.env.VITE_MEDIA_PROVIDER || 'auto').toLowerCase() as MediaProvider;
-const cloudinaryCloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME?.trim();
-const cloudinaryUploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET?.trim();
+const DEFAULT_MEDIA_PROVIDER: MediaProvider = 'cloudinary';
+const DEFAULT_CLOUDINARY_CLOUD_NAME = 'dz89ma5di';
+const DEFAULT_CLOUDINARY_UPLOAD_PRESET = 'qrmenu_1';
+
+const configuredProvider = (import.meta.env.VITE_MEDIA_PROVIDER || DEFAULT_MEDIA_PROVIDER).toLowerCase() as MediaProvider;
+const cloudinaryCloudName = (import.meta.env.VITE_CLOUDINARY_CLOUD_NAME?.trim() || DEFAULT_CLOUDINARY_CLOUD_NAME);
+const cloudinaryUploadPreset = (import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET?.trim() || DEFAULT_CLOUDINARY_UPLOAD_PRESET);
 
 const isCloudinaryConfigured = Boolean(cloudinaryCloudName && cloudinaryUploadPreset);
 
@@ -41,7 +45,7 @@ async function uploadToCloudinary(path: string, file: File): Promise<string> {
 
 export async function uploadImageWithBucketFallback(path: string, file: File): Promise<string> {
   if (configuredProvider === 'cloudinary' && !isCloudinaryConfigured) {
-    throw new Error('Cloudinary provider is selected but VITE_CLOUDINARY_CLOUD_NAME or VITE_CLOUDINARY_UPLOAD_PRESET is missing.');
+    throw new Error('Cloudinary provider is selected but Cloudinary config is missing.');
   }
 
   const shouldTryCloudinaryFirst = (configuredProvider === 'cloudinary' || configuredProvider === 'auto') && isCloudinaryConfigured;
