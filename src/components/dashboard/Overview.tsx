@@ -117,7 +117,7 @@ export default function Overview({ user, restaurant }: OverviewProps) {
         <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
           <h3 className="text-xl font-bold mb-6">Hướng dẫn nhanh</h3>
           <div className="space-y-6">
-            <TipItem step="1" title="Cập nhật thông tin" description="Vào phần Cài đặt để cập nhật Logo, Ảnh bìa và giới thiệu nhà hàng." />
+            <TipItem step="1" title="Cập nhật thông tin" description="Vào phần Thông tin cửa hàng để cập nhật Logo, Ảnh bìa và giới thiệu nhà hàng." />
             <TipItem step="2" title="Tạo danh mục" description="Tạo các danh mục như: Khai vị, Món chính, Đồ uống..." />
             <TipItem step="3" title="Thêm món ăn" description="Thêm hình ảnh, mô tả và giá cho từng món ăn trong danh mục." />
             <TipItem step="4" title="In mã QR" description="Tải mã QR về, in ra và dán tại bàn để khách hàng quét." />

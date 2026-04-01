@@ -4,7 +4,7 @@ import { db } from '../firebase';
 import { collection, query, where, getDocs, onSnapshot, orderBy } from 'firebase/firestore';
 import { Restaurant, Category, Product } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
-import { Smartphone, Info, MapPin, Phone, ShoppingBag } from 'lucide-react';
+import { Smartphone, Info, MapPin, Phone, ShoppingBag, X } from 'lucide-react';
 
 export default function PublicMenu() {
   const { slug } = useParams<{ slug: string }>();
@@ -13,6 +13,7 @@ export default function PublicMenu() {
   const [products, setProducts] = useState<Product[]>([]);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   useEffect(() => {
     if (slug) {
@@ -94,12 +95,20 @@ export default function PublicMenu() {
             </div>
             <div className="flex-1 min-w-0">
               <h1 className="text-2xl font-bold text-gray-900 truncate">{restaurant.name}</h1>
-              {restaurant.address && (
-                <p className="text-xs text-gray-400 mt-1 flex items-center gap-1">
-                  <MapPin size={12} style={{ color: themeColor }} />
-                  {restaurant.address}
-                </p>
-              )}
+              <div className="flex flex-col gap-1 mt-1">
+                {restaurant.address && (
+                  <p className="text-xs text-gray-400 flex items-center gap-1">
+                    <MapPin size={12} style={{ color: themeColor }} />
+                    {restaurant.address}
+                  </p>
+                )}
+                {restaurant.phone && (
+                  <p className="text-xs text-gray-400 flex items-center gap-1">
+                    <Phone size={12} style={{ color: themeColor }} />
+                    {restaurant.phone}
+                  </p>
+                )}
+              </div>
               <p className="text-sm text-gray-500 line-clamp-2 mt-1">{restaurant.bio}</p>
             </div>
           </div>
@@ -143,7 +152,8 @@ export default function PublicMenu() {
             {filteredProducts.map(prod => (
               <div 
                 key={prod.id} 
-                className="bg-white p-4 rounded-2xl flex gap-4 border border-gray-100 shadow-sm transition-all"
+                onClick={() => setSelectedProduct(prod)}
+                className="bg-white p-4 rounded-2xl flex gap-4 border border-gray-100 shadow-sm transition-all hover:shadow-md cursor-pointer active:scale-[0.98]"
               >
                 <div className="w-24 h-24 bg-gray-50 rounded-xl overflow-hidden flex-shrink-0 border border-gray-50">
                   {prod.imageUrl ? (
@@ -177,6 +187,69 @@ export default function PublicMenu() {
           </motion.div>
         </AnimatePresence>
       </div>
+
+      {/* Product Detail Modal */}
+      <AnimatePresence>
+        {selectedProduct && (
+          <>
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedProduct(null)}
+              className="fixed inset-0 bg-black/60 z-[60] backdrop-blur-sm"
+            />
+            <motion.div 
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="fixed bottom-0 left-0 right-0 max-w-2xl mx-auto bg-white z-[70] rounded-t-[40px] overflow-hidden shadow-2xl"
+            >
+              <div className="relative h-72 md:h-96">
+                {selectedProduct.imageUrl ? (
+                  <img src={selectedProduct.imageUrl} alt={selectedProduct.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                ) : (
+                  <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-300">
+                    <Smartphone size={64} />
+                  </div>
+                )}
+                <button 
+                  onClick={() => setSelectedProduct(null)}
+                  className="absolute top-6 right-6 bg-white/80 backdrop-blur-md p-2 rounded-full text-gray-900 shadow-lg"
+                >
+                  <X size={24} />
+                </button>
+              </div>
+              <div className="p-8">
+                <div className="flex justify-between items-start mb-4">
+                  <h2 className="text-2xl font-bold text-gray-900 pr-4">{selectedProduct.name}</h2>
+                  <span className="text-2xl font-bold whitespace-nowrap" style={{ color: themeColor }}>
+                    {selectedProduct.price.toLocaleString('vi-VN')}đ
+                  </span>
+                </div>
+                <div className="h-px bg-gray-100 w-full mb-6" />
+                <div className="space-y-4">
+                  <h4 className="text-xs uppercase tracking-widest font-bold text-gray-400">Mô tả chi tiết</h4>
+                  <p className="text-gray-600 leading-relaxed">
+                    {selectedProduct.description || 'Không có mô tả cho sản phẩm này.'}
+                  </p>
+                </div>
+                <button 
+                  onClick={() => setSelectedProduct(null)}
+                  className="w-full mt-10 py-4 rounded-2xl text-white font-bold text-lg shadow-lg"
+                  style={{ 
+                    backgroundColor: themeColor,
+                    boxShadow: `0 10px 20px -5px ${themeColor}40`
+                  }}
+                >
+                  Đóng
+                </button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       {/* Footer Info */}
       <div className="max-w-2xl mx-auto px-4 mt-12 text-center">

@@ -21,7 +21,6 @@ export default function RestaurantSettings({ user, restaurant, onCreated }: Rest
     slug: '',
     address: '',
     phone: '',
-    serviceType: 'Tại chỗ',
     themeColor: '#f97316' // Default orange-500
   });
   const [loading, setLoading] = useState(false);
@@ -41,7 +40,6 @@ export default function RestaurantSettings({ user, restaurant, onCreated }: Rest
         slug: restaurant.slug || '',
         address: restaurant.address || '',
         phone: restaurant.phone || '',
-        serviceType: restaurant.serviceType || 'Tại chỗ',
         themeColor: restaurant.themeColor || '#f97316'
       });
     } else {
@@ -53,7 +51,6 @@ export default function RestaurantSettings({ user, restaurant, onCreated }: Rest
         slug: '',
         address: '',
         phone: '',
-        serviceType: 'Tại chỗ',
         themeColor: '#f97316'
       });
     }
@@ -196,30 +193,15 @@ export default function RestaurantSettings({ user, restaurant, onCreated }: Rest
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Số điện thoại</label>
-                  <input 
-                    type="tel" 
-                    value={formData.phone}
-                    onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                    placeholder="090..."
-                    className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Loại hình</label>
-                  <select 
-                    value={formData.serviceType}
-                    onChange={(e) => setFormData(prev => ({ ...prev, serviceType: e.target.value }))}
-                    className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all"
-                  >
-                    <option value="Tại chỗ">Tại chỗ</option>
-                    <option value="Đặt ship">Đặt ship</option>
-                    <option value="Mang đi">Mang đi</option>
-                    <option value="Tất cả">Tất cả</option>
-                  </select>
-                </div>
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Số điện thoại</label>
+                <input 
+                  type="tel" 
+                  value={formData.phone}
+                  onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                  placeholder="090..."
+                  className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all"
+                />
               </div>
 
               <div>

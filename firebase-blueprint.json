@@ -13,7 +13,6 @@
         "slug": { "type": "string", "description": "Đường dẫn duy nhất cho menu" },
         "ownerId": { "type": "string", "description": "UID của chủ sở hữu" },
         "phone": { "type": "string", "description": "Số điện thoại liên hệ" },
-        "serviceType": { "type": "string", "description": "Loại hình dịch vụ (tại chỗ, ship...)" },
         "themeColor": { "type": "string", "description": "Màu chủ đạo của menu" }
       },
       "required": ["name", "slug", "ownerId"]

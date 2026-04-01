@@ -8,7 +8,6 @@ export interface Restaurant {
   slug: string;
   ownerId: string;
   phone?: string;
-  serviceType?: string;
   themeColor?: string;
 }
 

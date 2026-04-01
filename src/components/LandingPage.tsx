@@ -16,7 +16,6 @@ export default function LandingPage() {
         </div>
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-600">
           <a href="#features" className="hover:text-orange-500 transition-colors">Tính năng</a>
-          <a href="#pricing" className="hover:text-orange-500 transition-colors">Bảng giá</a>
           <Link to="/login" className="bg-orange-500 text-white px-5 py-2 rounded-full hover:bg-orange-600 transition-colors">Bắt đầu ngay</Link>
         </nav>
       </header>
