@@ -50,10 +50,21 @@ export default function Login() {
   useEffect(() => {
     void (async () => {
       try {
+        // Debug: Check secure context
+        console.log('[OAuth Debug]', {
+          secureContext: window.isSecureContext,
+          hostname: window.location.hostname,
+          protocol: window.location.protocol,
+          href: window.location.href,
+        });
+
         const result = await getRedirectResult(auth);
         if (result?.user) {
+          console.log('[OAuth] Redirect result received:', result.user.email);
           await ensureUserProfile(result.user);
           goToDashboard();
+        } else {
+          console.log('[OAuth] No redirect result (first visit or popup login)');
         }
       } catch (err) {
         console.error('Google redirect login failed:', err);
@@ -68,9 +79,19 @@ export default function Login() {
     const provider = new GoogleAuthProvider();
     provider.setCustomParameters({ prompt: 'select_account' });
 
+    // Debug: Check environment
+    console.log('[Google Login] Starting OAuth', {
+      isSecureContext: window.isSecureContext,
+      isLocalhost: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1',
+      hostname: window.location.hostname,
+      protocol: window.location.protocol,
+    });
+
     const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
     if (!window.isSecureContext && !isLocalhost) {
-      setError('Moi truong dang nhap khong an toan (HTTPS/certificate). Vui long dung domain HTTPS hop le de dang nhap Google.');
+      const errorMsg = 'Moi truong dang nhap khong an toan (HTTPS/certificate). Vui long dung domain HTTPS hop le de dang nhap Google.';
+      console.error('[Google Login] Blocked:', errorMsg);
+      setError(errorMsg);
       setLoading(false);
       return;
     }
@@ -83,8 +104,18 @@ export default function Login() {
 
     const shouldUseRedirect = isInAppBrowser || isAndroid || (isIOS && isSafari);
 
+    console.log('[Google Login] Device Detection', {
+      ua: ua.substring(0, 60),
+      isIOS,
+      isAndroid,
+      isSafari,
+      isInAppBrowser,
+      shouldUseRedirect,
+    });
+
     if (shouldUseRedirect) {
       try {
+        console.log('[Google Login] Using redirect flow...');
         await signInWithRedirect(auth, provider);
         return;
       } catch (err) {
@@ -96,7 +127,9 @@ export default function Login() {
     }
 
     try {
+      console.log('[Google Login] Using popup flow...');
       const result = await signInWithPopup(auth, provider);
+      console.log('[Google Login] Popup succeeded:', result.user.email);
       await ensureUserProfile(result.user);
       goToDashboard();
     } catch (err) {
@@ -104,6 +137,7 @@ export default function Login() {
 
       if (err instanceof FirebaseError && (err.code === 'auth/popup-blocked' || err.code === 'auth/operation-not-supported-in-this-environment' || err.code === 'auth/network-request-failed')) {
         try {
+          console.log('[Google Login] Popup failed, trying redirect fallback...', err.code);
           await signInWithRedirect(auth, provider);
           return;
         } catch (redirectErr) {
