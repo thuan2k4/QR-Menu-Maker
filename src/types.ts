@@ -1,3 +1,28 @@
+export type StoreFontFamily = 'Inter' | 'Roboto' | 'Playfair Display' | 'Be Vietnam Pro';
+export type StoreSizePreset = 'large' | 'normal' | 'compact';
+export type StoreCurrency = 'EUR' | 'USD' | 'VND';
+
+export type MenuTemplateLayout = 'stacked' | 'editorial' | 'split';
+export type MenuTemplateCardStyle = 'soft' | 'outline' | 'solid';
+export type MenuTemplateNavStyle = 'pill' | 'underline' | 'block';
+export type MenuTemplateBackgroundStyle = 'soft' | 'paper' | 'duotone' | 'solid';
+
+export interface MenuTemplate {
+  id: string;
+  name: string;
+  description: string;
+  badge: string;
+  primaryColor: string;
+  secondaryColor: string;
+  fontFamily: StoreFontFamily;
+  sizePreset: StoreSizePreset;
+  currency: StoreCurrency;
+  layout: MenuTemplateLayout;
+  cardStyle: MenuTemplateCardStyle;
+  navStyle: MenuTemplateNavStyle;
+  backgroundStyle: MenuTemplateBackgroundStyle;
+}
+
 export interface Store {
   id: string;
   name: string;
@@ -10,9 +35,10 @@ export interface Store {
   phone?: string;
   primaryColor?: string;
   secondaryColor?: string;
-  fontFamily?: 'Inter' | 'Roboto' | 'Playfair Display' | 'Be Vietnam Pro';
-  sizePreset?: 'large' | 'normal' | 'compact';
-  currency?: 'EUR' | 'USD' | 'VND';
+  fontFamily?: StoreFontFamily;
+  sizePreset?: StoreSizePreset;
+  currency?: StoreCurrency;
+  templateId?: string;
   themeColor?: string; // backward compatibility for existing data
   menuVisibility?: 'public' | 'private';
 }

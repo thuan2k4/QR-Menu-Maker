@@ -57,6 +57,10 @@
           "type": "string",
           "description": "Đơn vị tiền tệ: EUR/USD/VND"
         },
+        "templateId": {
+          "type": "string",
+          "description": "Mã template menu: modern/classic/minimal/vintage/eco/luxury/fresh/bold/cozy/tech"
+        },
         "themeColor": {
           "type": "string",
           "description": "Màu chủ đạo (legacy)"

@@ -5,7 +5,8 @@ import { collection, query, where, getDocs, onSnapshot } from 'firebase/firestor
 import { onAuthStateChanged } from 'firebase/auth';
 import { Store, Category, Product } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
-import { Smartphone, Info, MapPin, Phone, ShoppingBag, X } from 'lucide-react';
+import { Smartphone, Info, MapPin, Phone, X } from 'lucide-react';
+import { getMenuTemplateById } from '../constants/menuTemplates';
 
 export default function PublicMenu() {
   const { slug } = useParams<{ slug: string }>();
@@ -124,11 +125,12 @@ export default function PublicMenu() {
     );
   }
 
-  const primaryColor = store.primaryColor || store.themeColor || '#f97316';
-  const secondaryColor = store.secondaryColor || '#fff7ed';
-  const currency = store.currency === 'EUR' || store.currency === 'USD' || store.currency === 'VND' ? store.currency : 'VND';
-  const sizePreset = store.sizePreset === 'large' || store.sizePreset === 'compact' ? store.sizePreset : 'normal';
-  const fontFamily = store.fontFamily === 'Roboto' || store.fontFamily === 'Playfair Display' || store.fontFamily === 'Be Vietnam Pro' ? store.fontFamily : 'Inter';
+  const selectedTemplate = getMenuTemplateById(store.templateId);
+  const primaryColor = store.primaryColor || store.themeColor || selectedTemplate.primaryColor;
+  const secondaryColor = store.secondaryColor || selectedTemplate.secondaryColor;
+  const currency = store.currency === 'EUR' || store.currency === 'USD' || store.currency === 'VND' ? store.currency : selectedTemplate.currency;
+  const sizePreset = store.sizePreset === 'large' || store.sizePreset === 'compact' ? store.sizePreset : selectedTemplate.sizePreset;
+  const fontFamily = store.fontFamily === 'Roboto' || store.fontFamily === 'Playfair Display' || store.fontFamily === 'Be Vietnam Pro' ? store.fontFamily : selectedTemplate.fontFamily;
   const fontFamilyMap: Record<string, string> = {
     Inter: 'Inter, Segoe UI, sans-serif',
     Roboto: 'Roboto, Segoe UI, sans-serif',
@@ -168,6 +170,32 @@ export default function PublicMenu() {
     },
   };
   const typography = sizePresetClasses[sizePreset];
+  const layoutSpacingMap = {
+    stacked: 'space-y-4',
+    editorial: 'space-y-6',
+    split: 'grid grid-cols-1 sm:grid-cols-2 gap-4',
+  };
+  const productListClass = layoutSpacingMap[selectedTemplate.layout];
+  const isSplitLayout = selectedTemplate.layout === 'split';
+  const isEditorialLayout = selectedTemplate.layout === 'editorial';
+  const productCardShapeClass = isEditorialLayout ? 'rounded-3xl' : 'rounded-2xl';
+  const productCardSurfaceClass = selectedTemplate.cardStyle === 'outline'
+    ? 'border-2 shadow-none'
+    : selectedTemplate.cardStyle === 'solid'
+      ? 'border shadow-md'
+      : 'border shadow-sm hover:shadow-md';
+  const productCardInlineStyle = selectedTemplate.cardStyle === 'outline'
+    ? { borderColor: `${primaryColor}55` }
+    : selectedTemplate.cardStyle === 'solid'
+      ? { backgroundColor: secondaryColor, borderColor: `${primaryColor}22` }
+      : undefined;
+  const rootStyle = selectedTemplate.backgroundStyle === 'solid'
+    ? { backgroundColor: secondaryColor, fontFamily: fontFamilyMap[fontFamily] }
+    : selectedTemplate.backgroundStyle === 'duotone'
+      ? { backgroundColor: secondaryColor, backgroundImage: `linear-gradient(180deg, ${secondaryColor} 0%, #f8f8f8 52%, #ffffff 100%)`, fontFamily: fontFamilyMap[fontFamily] }
+      : selectedTemplate.backgroundStyle === 'paper'
+        ? { backgroundColor: secondaryColor, backgroundImage: `radial-gradient(circle at 0% 0%, #ffffff 0%, ${secondaryColor} 45%, #fffaf5 100%)`, fontFamily: fontFamilyMap[fontFamily] }
+        : { backgroundColor: secondaryColor, backgroundImage: `linear-gradient(180deg, ${secondaryColor} 0%, #ffffff 72%)`, fontFamily: fontFamilyMap[fontFamily] };
 
   const formatCurrency = (value: number) => {
     const localeByCurrency: Record<'EUR' | 'USD' | 'VND', string> = {
@@ -232,7 +260,7 @@ export default function PublicMenu() {
   };
 
   return (
-    <div className="min-h-screen pb-20" style={{ backgroundColor: secondaryColor, fontFamily: fontFamilyMap[fontFamily] }}>
+    <div className="min-h-screen pb-20" style={rootStyle}>
       {/* Cover Image */}
       <div className="h-48 md:h-64 w-full relative overflow-hidden">
         {store.coverUrl ? (
@@ -258,6 +286,11 @@ export default function PublicMenu() {
             </div>
             <div className="flex-1 min-w-0">
               <h1 className={`${typography.storeTitle} font-bold text-gray-900 truncate`}>{store.name}</h1>
+              <div className="mt-1">
+                <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide" style={{ color: primaryColor, backgroundColor: `${primaryColor}14` }}>
+                  {selectedTemplate.name}
+                </span>
+              </div>
               <div className="flex flex-col gap-1 mt-1">
                 {store.address && (
                   <p className="text-xs text-gray-400 flex items-center gap-1">
@@ -286,18 +319,21 @@ export default function PublicMenu() {
 
       {/* Categories Horizontal Scroll */}
       <div className="sticky top-0 backdrop-blur-md z-20 mt-6 border-b border-gray-100" style={{ backgroundColor: `${secondaryColor}cc` }}>
-        <div className="max-w-2xl mx-auto px-6 py-4 flex gap-3 overflow-x-auto no-scrollbar">
+        <div className={`max-w-2xl mx-auto px-6 py-4 flex overflow-x-auto no-scrollbar ${selectedTemplate.navStyle === 'underline' ? 'gap-6' : 'gap-3'}`}>
           {categories.map(cat => (
             <button
               key={cat.id}
               onClick={() => setActiveCategory(cat.id)}
-              className={`whitespace-nowrap px-6 py-2.5 rounded-full text-sm font-bold transition-all ${activeCategory === cat.id
-                ? 'text-white shadow-lg'
-                : 'bg-white text-gray-500 border border-gray-100'
+              className={`whitespace-nowrap text-sm font-bold transition-all ${selectedTemplate.navStyle === 'underline'
+                ? `px-1 pb-1 border-b-2 ${activeCategory === cat.id ? 'text-gray-900' : 'text-gray-500 border-transparent'}`
+                : selectedTemplate.navStyle === 'block'
+                  ? `px-5 py-2.5 rounded-xl ${activeCategory === cat.id ? 'text-white' : 'bg-white text-gray-500 border border-gray-100'}`
+                  : `px-6 py-2.5 rounded-full ${activeCategory === cat.id ? 'text-white shadow-lg' : 'bg-white text-gray-500 border border-gray-100'}`
                 }`}
               style={{
-                backgroundColor: activeCategory === cat.id ? primaryColor : undefined,
-                boxShadow: activeCategory === cat.id ? `0 10px 15px -3px ${primaryColor}40` : undefined
+                backgroundColor: activeCategory === cat.id && selectedTemplate.navStyle !== 'underline' ? primaryColor : undefined,
+                borderColor: activeCategory === cat.id && selectedTemplate.navStyle === 'underline' ? primaryColor : undefined,
+                boxShadow: activeCategory === cat.id && selectedTemplate.navStyle === 'pill' ? `0 10px 15px -3px ${primaryColor}40` : undefined,
               }}
             >
               {cat.name}
@@ -315,15 +351,16 @@ export default function PublicMenu() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="space-y-4"
+            className={productListClass}
           >
             {filteredProducts.map(prod => (
               <div
                 key={prod.id}
                 onClick={() => handleProductClick(prod)}
-                className="bg-white p-4 rounded-2xl flex gap-4 border border-gray-100 shadow-sm transition-all hover:shadow-md cursor-pointer active:scale-[0.98]"
+                className={`bg-white p-4 ${productCardShapeClass} ${productCardSurfaceClass} ${isSplitLayout ? 'flex flex-col gap-3' : 'flex gap-4'} transition-all cursor-pointer active:scale-[0.98]`}
+                style={productCardInlineStyle}
               >
-                <div className="w-24 h-24 bg-gray-50 rounded-xl overflow-hidden flex-shrink-0 border border-gray-50">
+                <div className={`${isSplitLayout ? 'w-full h-40 rounded-2xl' : 'w-24 h-24 rounded-xl flex-shrink-0'} bg-gray-50 overflow-hidden border border-gray-50`}>
                   {prod.imageUrl ? (
                     <img src={prod.imageUrl} alt={prod.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                   ) : (
@@ -332,10 +369,10 @@ export default function PublicMenu() {
                     </div>
                   )}
                 </div>
-                <div className="flex-1 flex flex-col justify-between py-1 min-w-0">
+                <div className={`flex-1 flex flex-col justify-between ${isSplitLayout ? 'py-0' : 'py-1'} min-w-0`}>
                   <div>
                     <div className="flex justify-between items-start">
-                      <h3 className={`${typography.productName} font-bold text-gray-900 truncate pr-2`}>{prod.name}</h3>
+                      <h3 className={`${typography.productName} font-bold text-gray-900 line-clamp-2 break-words pr-2 leading-snug`}>{prod.name}</h3>
                     </div>
                     <p className={`${typography.productDescription} text-gray-400 line-clamp-2 mt-1 leading-relaxed`}>{prod.shortDescription || prod.longDescription || prod.description}</p>
                     {prod.hashtags && prod.hashtags.length > 0 && (
@@ -346,8 +383,8 @@ export default function PublicMenu() {
                       </div>
                     )}
                   </div>
-                  <div className="flex items-center justify-between mt-2">
-                    <span className={`${typography.price} font-bold`} style={{ color: primaryColor }}>
+                  <div className="mt-2">
+                    <span className={`${typography.price} font-bold block break-words leading-tight`} style={{ color: primaryColor }}>
                       {getProductDisplayPrice(prod)}
                     </span>
                   </div>
@@ -379,7 +416,7 @@ export default function PublicMenu() {
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed bottom-0 left-0 right-0 max-w-2xl mx-auto bg-white z-[70] rounded-t-[40px] overflow-hidden shadow-2xl"
+              className={`fixed bottom-0 left-0 right-0 max-w-2xl mx-auto bg-white z-[70] ${isEditorialLayout ? 'rounded-t-[24px]' : 'rounded-t-[40px]'} overflow-hidden shadow-2xl`}
             >
               <div className="relative h-72 md:h-96">
                 {selectedProduct.imageUrl ? (
@@ -396,17 +433,20 @@ export default function PublicMenu() {
                   <X size={24} />
                 </button>
               </div>
-              <div className="p-8">
-                <div className="flex justify-between items-start mb-4">
+              <div className="p-6 md:p-8">
+                <div className="mb-4 space-y-3">
                   <div className="min-w-0">
-                    <h2 className={`${typography.modalTitle} font-bold text-gray-900 pr-4 truncate`}>{selectedProduct.name}</h2>
+                    <h2 className={`${typography.modalTitle} font-bold text-gray-900 break-words leading-tight`}>{selectedProduct.name}</h2>
                     {selectedProduct.shortDescription ? (
                       <p className="text-sm text-gray-500 mt-1 line-clamp-2">{selectedProduct.shortDescription}</p>
                     ) : null}
                   </div>
-                  <span className={`${typography.modalPrice} font-bold whitespace-nowrap`} style={{ color: primaryColor }}>
-                    {getProductDisplayPrice(selectedProduct)}
-                  </span>
+                  <div className="inline-flex w-full md:w-auto flex-col rounded-2xl border border-gray-100 px-4 py-3 bg-gray-50">
+                    <span className="text-[10px] uppercase tracking-wider font-bold text-gray-500">Mức giá</span>
+                    <span className={`${typography.modalPrice} font-bold break-words leading-tight mt-1`} style={{ color: primaryColor }}>
+                      {getProductDisplayPrice(selectedProduct)}
+                    </span>
+                  </div>
                 </div>
                 <div className="h-px bg-gray-100 w-full mb-6" />
                 {selectedProduct.hashtags && selectedProduct.hashtags.length > 0 && (
@@ -427,9 +467,9 @@ export default function PublicMenu() {
                     <h4 className="text-xs uppercase tracking-widest font-bold text-gray-400">Variants</h4>
                     <ul className="mt-2 space-y-2">
                       {[...selectedProduct.variants].sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0)).map((variant) => (
-                        <li key={variant.id} className="flex justify-between items-center text-sm text-gray-700 bg-gray-50 p-2 rounded-xl border border-gray-100">
-                          <span>{variant.name || 'Tên variant'}</span>
-                          <span>{formatCurrency(Number(variant.price) || 0)} {variant.isDefault ? '(Mặc định)' : ''}</span>
+                        <li key={variant.id} className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 text-sm text-gray-700 bg-gray-50 p-2 rounded-xl border border-gray-100">
+                          <span className="break-words">{variant.name || 'Tên variant'}</span>
+                          <span className="break-words">{formatCurrency(Number(variant.price) || 0)} {variant.isDefault ? '(Mặc định)' : ''}</span>
                         </li>
                       ))}
                     </ul>
@@ -437,7 +477,7 @@ export default function PublicMenu() {
                 )}
                 <button
                   onClick={() => setSelectedProduct(null)}
-                  className={`w-full mt-10 py-4 rounded-2xl text-white font-bold ${typography.closeButton} shadow-lg`}
+                  className={`w-full mt-10 py-4 ${selectedTemplate.navStyle === 'underline' ? 'rounded-lg' : 'rounded-2xl'} text-white font-bold ${typography.closeButton} shadow-lg`}
                   style={{
                     backgroundColor: primaryColor,
                     boxShadow: `0 10px 20px -5px ${primaryColor}40`
