@@ -54,6 +54,16 @@ export default function StoreManager({ user }: StoreManagerProps) {
 
   const currentVisibility = store.menuVisibility || 'private';
   const isOwner = user.uid === store.ownerId;
+  const storeCurrency = store.currency || 'VND';
+  const storeSizePreset = store.sizePreset || 'normal';
+  const storeFontFamily = store.fontFamily || 'Inter';
+  const storePrimaryColor = store.primaryColor || store.themeColor || '#f97316';
+  const fontFamilyMap: Record<string, string> = {
+    Inter: 'Inter, Segoe UI, sans-serif',
+    Roboto: 'Roboto, Segoe UI, sans-serif',
+    'Playfair Display': 'Playfair Display, Georgia, serif',
+    'Be Vietnam Pro': 'Be Vietnam Pro, Segoe UI, sans-serif'
+  };
 
   const handleVisibilityToggle = async () => {
     if (!isOwner) return;
@@ -76,7 +86,7 @@ export default function StoreManager({ user }: StoreManagerProps) {
     location.pathname.endsWith('/menu') ? 'menu' : 'overview';
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" style={{ fontFamily: fontFamilyMap[storeFontFamily] || fontFamilyMap.Inter }}>
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
@@ -96,6 +106,15 @@ export default function StoreManager({ user }: StoreManagerProps) {
         <div className="flex items-center gap-3 mt-4 md:mt-0">
           <span className={`px-3 py-1 rounded-full text-xs font-bold ${currentVisibility === 'public' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
             {currentVisibility === 'public' ? 'Công khai' : 'Riêng tư'}
+          </span>
+          <span className="px-3 py-1 rounded-full text-xs font-bold bg-orange-50 text-orange-700" style={{ border: `1px solid ${storePrimaryColor}` }}>
+            {storeCurrency}
+          </span>
+          <span className="px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700">
+            {storeSizePreset}
+          </span>
+          <span className="px-3 py-1 rounded-full text-xs font-bold bg-purple-50 text-purple-700">
+            {storeFontFamily}
           </span>
           <button
             onClick={handleVisibilityToggle}

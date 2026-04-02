@@ -9,6 +9,10 @@ export interface Store {
   ownerId: string;
   phone?: string;
   primaryColor?: string;
+  secondaryColor?: string;
+  fontFamily?: 'Inter' | 'Roboto' | 'Playfair Display' | 'Be Vietnam Pro';
+  sizePreset?: 'large' | 'normal' | 'compact';
+  currency?: 'EUR' | 'USD' | 'VND';
   themeColor?: string; // backward compatibility for existing data
   menuVisibility?: 'public' | 'private';
 }

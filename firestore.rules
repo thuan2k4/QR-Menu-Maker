@@ -66,10 +66,64 @@ service cloud.firestore {
          get(/databases/$(database)/documents/categories/$(categoryId)).data.restaurantId == storeId);
     }
 
-    function isValidStore(data) {
-      return data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
-             data.slug is string && data.slug.size() > 0 && data.slug.size() < 50 &&
+    function isNonEmptyString(value, maxLen) {
+      return value is string && value.size() > 0 && value.size() <= maxLen;
+    }
+
+    function isOptionalShortString(value, maxLen) {
+      return value == null || (value is string && value.size() <= maxLen);
+    }
+
+    // Legacy-compatible: accept hex, css named colors, rgb/rgba and values already persisted by previous builds.
+    function isValidStoreColor(value) {
+      return value == null || (value is string && value.size() > 0 && value.size() <= 64);
+    }
+
+    function isValidStoreFontFamily(value) {
+      return value == null ||
+        value == 'Inter' ||
+        value == 'Roboto' ||
+        value == 'Playfair Display' ||
+        value == 'Be Vietnam Pro' ||
+        value == 'Arial' ||
+        value == 'Helvetica' ||
+        value == 'system-ui' ||
+        (value is string && value.size() > 0 && value.size() <= 64);
+    }
+
+    function isValidSizePreset(value) {
+      return value == null || value == 'large' || value == 'normal' || value == 'compact' || value == 'medium';
+    }
+
+    function isValidCurrency(value) {
+      return value == null || value == 'EUR' || value == 'USD' || value == 'VND' || value == 'VNĐ';
+    }
+
+    function isValidStoreLoose(data) {
+      return data.name is string && data.name.size() > 0 &&
+             data.slug is string && data.slug.size() > 0 &&
              data.ownerId is string;
+    }
+
+    function isValidStore(data) {
+      return data.name is string && data.name.size() > 0 && data.name.size() <= 200 &&
+             data.slug is string && data.slug.size() > 0 && data.slug.size() <= 200 &&
+             data.ownerId is string &&
+             isOptionalShortString(data.bio, 500) &&
+             isOptionalShortString(data.address, 500) &&
+             isOptionalShortString(data.phone, 50) &&
+             isOptionalShortString(data.logoUrl, 1024) &&
+             isOptionalShortString(data.coverUrl, 1024) &&
+             (data.primaryColor == null || isValidStoreColor(data.primaryColor)) &&
+             (data.secondaryColor == null || isValidStoreColor(data.secondaryColor)) &&
+             (data.themeColor == null || isValidStoreColor(data.themeColor)) &&
+             isValidStoreFontFamily(data.fontFamily) &&
+             isValidSizePreset(data.sizePreset) &&
+             isValidCurrency(data.currency) &&
+             (data.menuVisibility == null || data.menuVisibility == 'public' || data.menuVisibility == 'private') &&
+             (data.createdAt == null || data.createdAt is string || data.createdAt is timestamp) &&
+             (data.updatedAt == null || data.updatedAt is string || data.updatedAt is timestamp) &&
+             (data.extra == null || data.extra is map);
     }
 
     function isValidCategory(data) {
@@ -107,8 +161,16 @@ service cloud.firestore {
     // Rules
     match /restaurants/{storeId} {
       allow read: if true; // Publicly readable for menu display
-      allow create: if isAuthenticated() && isValidStore(request.resource.data) && request.resource.data.ownerId == request.auth.uid;
-      allow update: if isAuthenticated() && (request.auth.uid == resource.data.ownerId || isAdmin()) && isValidStore(request.resource.data) && request.resource.data.ownerId == resource.data.ownerId;
+      allow create: if isAuthenticated() && request.resource.data.ownerId == request.auth.uid && (isValidStore(request.resource.data) || isValidStoreLoose(request.resource.data));
+      allow update: if isAuthenticated() && (request.auth.uid == resource.data.ownerId || isAdmin()) && request.resource.data.ownerId == resource.data.ownerId && (isValidStore(request.resource.data) || isValidStoreLoose(request.resource.data));
+      allow delete: if isAuthenticated() && (request.auth.uid == resource.data.ownerId || isAdmin());
+    }
+
+    // Backward/forward compatibility for clients reading/writing stores directly.
+    match /stores/{storeId} {
+      allow read: if true;
+      allow create: if isAuthenticated() && request.resource.data.ownerId == request.auth.uid && (isValidStore(request.resource.data) || isValidStoreLoose(request.resource.data));
+      allow update: if isAuthenticated() && (request.auth.uid == resource.data.ownerId || isAdmin()) && request.resource.data.ownerId == resource.data.ownerId && (isValidStore(request.resource.data) || isValidStoreLoose(request.resource.data));
       allow delete: if isAuthenticated() && (request.auth.uid == resource.data.ownerId || isAdmin());
     }
 

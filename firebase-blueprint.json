@@ -41,9 +41,29 @@
           "type": "string",
           "description": "Màu chủ đạo của menu"
         },
+        "secondaryColor": {
+          "type": "string",
+          "description": "Màu nền phụ của menu"
+        },
+        "fontFamily": {
+          "type": "string",
+          "description": "Font hiển thị cho menu"
+        },
+        "sizePreset": {
+          "type": "string",
+          "description": "Kích thước hiển thị: large/normal/compact"
+        },
+        "currency": {
+          "type": "string",
+          "description": "Đơn vị tiền tệ: EUR/USD/VND"
+        },
         "themeColor": {
           "type": "string",
           "description": "Màu chủ đạo (legacy)"
+        },
+        "menuVisibility": {
+          "type": "string",
+          "description": "Trạng thái menu: public/private"
         }
       },
       "required": [

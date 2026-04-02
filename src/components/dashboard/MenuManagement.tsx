@@ -38,6 +38,24 @@ interface MenuManagementProps {
   store: Store | null;
 }
 
+const CURRENCY_LOCALE_MAP: Record<'EUR' | 'USD' | 'VND', string> = {
+  EUR: 'de-DE',
+  USD: 'en-US',
+  VND: 'vi-VN'
+};
+
+const formatPriceByCurrency = (value: number, currency: 'EUR' | 'USD' | 'VND') => {
+  try {
+    return new Intl.NumberFormat(CURRENCY_LOCALE_MAP[currency], {
+      style: 'currency',
+      currency,
+      maximumFractionDigits: currency === 'VND' ? 0 : 2
+    }).format(value);
+  } catch {
+    return `${value.toLocaleString('vi-VN')}đ`;
+  }
+};
+
 export default function MenuManagement({ user, store }: MenuManagementProps) {
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
@@ -87,6 +105,10 @@ export default function MenuManagement({ user, store }: MenuManagementProps) {
     );
   }
 
+  const storeCurrency: 'EUR' | 'USD' | 'VND' = store.currency === 'EUR' || store.currency === 'USD' || store.currency === 'VND'
+    ? store.currency
+    : 'VND';
+
   const getProductDisplayPrice = (prod: Product) => {
     const variants = prod.variants || [];
     const validVariantPrices = variants
@@ -97,12 +119,12 @@ export default function MenuManagement({ user, store }: MenuManagementProps) {
       const min = Math.min(...validVariantPrices);
       const max = Math.max(...validVariantPrices);
       if (min === max) {
-        return `${min.toLocaleString('vi-VN')}đ`;
+        return formatPriceByCurrency(min, storeCurrency);
       }
-      return `Từ ${min.toLocaleString('vi-VN')}đ - ${max.toLocaleString('vi-VN')}đ`;
+      return `Từ ${formatPriceByCurrency(min, storeCurrency)} - ${formatPriceByCurrency(max, storeCurrency)}`;
     }
 
-    return `${(prod.price || 0).toLocaleString('vi-VN')}đ`;
+    return formatPriceByCurrency(prod.price || 0, storeCurrency);
   };
 
   const filteredProducts = activeCategory
@@ -239,6 +261,7 @@ export default function MenuManagement({ user, store }: MenuManagementProps) {
         <ProductModal
           user={user}
           storeId={store.id}
+          currency={storeCurrency}
           categoryId={activeCategory!}
           editing={editingProduct}
           onClose={() => setShowProductModal(false)}
@@ -308,7 +331,7 @@ function CategoryModal({ storeId, editing, onClose }: { storeId: string, editing
   );
 }
 
-function ProductModal({ user, storeId, categoryId, editing, onClose }: { user: User, storeId: string, categoryId: string, editing: Product | null, onClose: () => void }) {
+function ProductModal({ user, storeId, categoryId, currency, editing, onClose }: { user: User, storeId: string, categoryId: string, currency: 'EUR' | 'USD' | 'VND', editing: Product | null, onClose: () => void }) {
   const initialPriceValue = editing?.price != null ? Number(editing.price) : null;
   const normalizedInitialPrice = initialPriceValue != null && Number.isFinite(initialPriceValue) ? initialPriceValue : null;
   const initialHashtags = Array.isArray(editing?.hashtags)
@@ -353,17 +376,38 @@ function ProductModal({ user, storeId, categoryId, editing, onClose }: { user: U
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const formatCurrency = (value: number) => formatPriceByCurrency(value, currency);
+
   const handlePriceChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const digitsOnly = e.target.value.replace(/\D/g, '');
-    setPriceInput(digitsOnly);
-    setFormData(prev => ({ ...prev, price: digitsOnly === '' ? null : Number(digitsOnly) }));
+    const raw = e.target.value;
+    let normalized: string;
+    if (currency === 'VND') {
+      normalized = raw.replace(/\D/g, '');
+    } else {
+      normalized = raw.replace(/[^0-9.]/g, '');
+      const parts = normalized.split('.');
+      if (parts.length > 2) {
+        normalized = `${parts[0]}.${parts[1]}`;
+      }
+      if (parts[1]?.length > 2) {
+        normalized = `${parts[0]}.${parts[1].slice(0, 2)}`;
+      }
+    }
+    setPriceInput(normalized);
+    setFormData(prev => ({ ...prev, price: normalized === '' ? null : Number(normalized) }));
   };
 
   const handlePriceBlur = () => {
     if (!priceInput) return;
-    const normalized = String(Number(priceInput));
-    setPriceInput(normalized);
-    setFormData(prev => ({ ...prev, price: Number(normalized) }));
+    const value = Number(priceInput);
+    if (Number.isNaN(value)) {
+      setPriceInput('');
+      setFormData(prev => ({ ...prev, price: null }));
+      return;
+    }
+    const formatted = currency === 'VND' ? String(Math.round(value)) : value.toFixed(2);
+    setPriceInput(formatted);
+    setFormData(prev => ({ ...prev, price: Number(formatted) }));
   };
 
   const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -418,10 +462,32 @@ function ProductModal({ user, storeId, categoryId, editing, onClose }: { user: U
   };
 
   const updateVariantPrice = (id: string, value: string) => {
-    const digitsOnly = value.replace(/\D/g, '');
+    let normalized: string;
+    if (currency === 'VND') {
+      normalized = value.replace(/\D/g, '');
+    } else {
+      normalized = value.replace(/[^0-9.]/g, '');
+      const parts = normalized.split('.');
+      if (parts.length > 2) {
+        normalized = `${parts[0]}.${parts[1]}`;
+      }
+      if (parts[1]?.length > 2) {
+        normalized = `${parts[0]}.${parts[1].slice(0, 2)}`;
+      }
+    }
     setFormData(prev => ({
       ...prev,
-      variants: prev.variants.map((item) => item.id === id ? { ...item, price: digitsOnly === '' ? 0 : Number(digitsOnly) } : item)
+      variants: prev.variants.map((item) => item.id === id ? { ...item, price: normalized === '' ? 0 : Number(normalized) } : item)
+    }));
+  };
+
+  const setVariantDefault = (id: string) => {
+    setFormData(prev => ({
+      ...prev,
+      variants: prev.variants.map((item) => ({
+        ...item,
+        isDefault: item.id === id
+      }))
     }));
   };
 
@@ -515,7 +581,10 @@ function ProductModal({ user, storeId, categoryId, editing, onClose }: { user: U
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-6">
       <div className="bg-white w-full max-w-3xl rounded-3xl overflow-hidden shadow-2xl max-h-[92vh] flex flex-col">
         <div className="p-5 sm:p-6 border-b border-gray-50 flex items-center justify-between bg-white">
-          <h3 className="text-xl font-bold">{editing ? 'Sửa sản phẩm' : 'Thêm sản phẩm'}</h3>
+          <div>
+            <h3 className="text-xl font-bold">{editing ? 'Sửa sản phẩm' : 'Thêm sản phẩm'}</h3>
+            <p className="text-xs text-gray-500 mt-1">Tiền tệ hiện tại của cửa hàng: <span className="font-semibold text-orange-600">{currency}</span></p>
+          </div>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-900"><X size={24} /></button>
         </div>
         <form onSubmit={handleSubmit} className="p-5 sm:p-6 space-y-6 overflow-y-auto overflow-x-hidden overscroll-contain">
@@ -556,18 +625,19 @@ function ProductModal({ user, storeId, categoryId, editing, onClose }: { user: U
                 <div>
                   <label className="block text-sm font-bold text-gray-700 mb-2">Giá bán <span className="text-red-500">*</span></label>
                   <input
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
+                    type="number"
+                    step={currency === 'VND' ? 1 : 0.01}
+                    min={0}
+                    inputMode={currency === 'VND' ? 'numeric' : 'decimal'}
                     required
                     value={priceInput}
                     onChange={handlePriceChange}
                     onBlur={handlePriceBlur}
-                    placeholder="Nhập giá, ví dụ 45000"
+                    placeholder={`Nhập giá theo ${currency}, ví dụ ${currency === 'VND' ? '45000' : '45.00'}`}
                     className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all"
                   />
                   <p className="text-xs text-gray-400 mt-2">
-                    {priceInput ? `Giá hiển thị: ${Number(priceInput).toLocaleString('vi-VN')}đ` : 'Bạn có thể để trống rồi nhập giá sau.'}
+                    {priceInput ? `Giá hiển thị: ${formatCurrency(Number(priceInput))}` : 'Bạn có thể để trống rồi nhập giá sau.'}
                   </p>
                 </div>
               )}
@@ -656,7 +726,10 @@ function ProductModal({ user, storeId, categoryId, editing, onClose }: { user: U
 
           <div className="bg-white p-4 rounded-2xl border border-gray-100">
             <div className="flex items-center justify-between mb-3">
-              <h4 className="font-bold">Variants (tuỳ chọn giá)</h4>
+              <div>
+                <h4 className="font-bold">Variants (tuỳ chọn giá)</h4>
+                <p className="text-xs text-gray-500">Đơn vị tiền tệ đang áp dụng: {currency}</p>
+              </div>
               <button type="button" onClick={addVariant} className="px-3 py-1.5 text-xs text-white bg-blue-500 rounded-lg hover:bg-blue-600">Thêm variant</button>
             </div>
             {formData.variants.length === 0 && <p className="text-xs text-gray-400">Chưa có variant. Tạo variant để hiển thị đoạn giá Từ - Đến.</p>}
@@ -671,22 +744,25 @@ function ProductModal({ user, storeId, categoryId, editing, onClose }: { user: U
                   />
                   <input
                     className="sm:col-span-4 px-3 py-2 border rounded-xl"
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
+                    type="number"
+                    step={currency === 'VND' ? 1 : 0.01}
+                    min={0}
+                    inputMode={currency === 'VND' ? 'numeric' : 'decimal'}
                     value={variant.price.toString()}
                     onChange={(e) => updateVariantPrice(variant.id, e.target.value)}
                     onBlur={(e) => {
-                      const normalized = e.target.value.replace(/\D/g, '');
+                      const normalized = currency === 'VND'
+                        ? e.target.value.replace(/\D/g, '')
+                        : e.target.value.replace(/[^0-9.]/g, '');
                       updateVariantPrice(variant.id, normalized);
                     }}
-                    placeholder="Giá"
+                    placeholder={`Giá (${currency})`}
                   />
                   <label className="sm:col-span-2 text-xs flex items-center gap-2">
                     <input
                       type="checkbox"
                       checked={variant.isDefault || false}
-                      onChange={() => updateVariant(variant.id, { isDefault: !variant.isDefault })}
+                      onChange={() => setVariantDefault(variant.id)}
                     />
                     Default
                   </label>

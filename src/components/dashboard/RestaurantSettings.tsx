@@ -12,6 +12,10 @@ interface RestaurantSettingsProps {
   onCreated?: (id: string) => void;
 }
 
+const FONT_FAMILY_OPTIONS = ['Inter', 'Roboto', 'Playfair Display', 'Be Vietnam Pro'] as const;
+const SIZE_PRESET_OPTIONS = ['large', 'normal', 'compact'] as const;
+const CURRENCY_OPTIONS = ['EUR', 'USD', 'VND'] as const;
+
 export default function RestaurantSettings({ user, restaurant, onCreated }: RestaurantSettingsProps) {
   const [formData, setFormData] = useState({
     name: '',
@@ -22,6 +26,10 @@ export default function RestaurantSettings({ user, restaurant, onCreated }: Rest
     address: '',
     phone: '',
     primaryColor: '#f97316', // Default orange-500
+    secondaryColor: '#fff7ed', // Default orange-50
+    fontFamily: 'Inter' as Store['fontFamily'],
+    sizePreset: 'normal' as Store['sizePreset'],
+    currency: 'VND' as Store['currency'],
     themeColor: '#f97316', // backward compatibility
     menuVisibility: 'private' as 'public' | 'private'
   });
@@ -43,7 +51,11 @@ export default function RestaurantSettings({ user, restaurant, onCreated }: Rest
         address: restaurant.address || '',
         phone: restaurant.phone || '',
         primaryColor: restaurant.primaryColor || restaurant.themeColor || '#f97316',
-        themeColor: restaurant.themeColor || '#f97316',
+        secondaryColor: restaurant.secondaryColor || '#fff7ed',
+        fontFamily: restaurant.fontFamily || 'Inter',
+        sizePreset: restaurant.sizePreset || 'normal',
+        currency: restaurant.currency || 'VND',
+        themeColor: restaurant.themeColor || restaurant.primaryColor || '#f97316',
         menuVisibility: restaurant.menuVisibility || 'private'
       });
     } else {
@@ -56,6 +68,10 @@ export default function RestaurantSettings({ user, restaurant, onCreated }: Rest
         address: '',
         phone: '',
         primaryColor: '#f97316',
+        secondaryColor: '#fff7ed',
+        fontFamily: 'Inter',
+        sizePreset: 'normal',
+        currency: 'VND',
         themeColor: '#f97316',
         menuVisibility: 'private'
       });
@@ -96,8 +112,16 @@ export default function RestaurantSettings({ user, restaurant, onCreated }: Rest
         }
       }
 
+      const normalizedPrimaryColor = formData.primaryColor || '#f97316';
+
       const dataToSave = {
         ...formData,
+        primaryColor: normalizedPrimaryColor,
+        themeColor: normalizedPrimaryColor,
+        secondaryColor: formData.secondaryColor || '#fff7ed',
+        fontFamily: formData.fontFamily || 'Inter',
+        sizePreset: formData.sizePreset || 'normal',
+        currency: formData.currency || 'VND',
         menuVisibility: formData.menuVisibility || 'private',
         updatedAt: new Date().toISOString()
       };
@@ -225,6 +249,73 @@ export default function RestaurantSettings({ user, restaurant, onCreated }: Rest
                     className="flex-1 px-5 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none text-sm font-mono"
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Màu nền phụ (Secondary Color)</label>
+                <div className="flex items-center gap-4">
+                  <input
+                    type="color"
+                    value={formData.secondaryColor}
+                    onChange={(e) => setFormData(prev => ({ ...prev, secondaryColor: e.target.value }))}
+                    className="w-12 h-12 rounded-xl border-none cursor-pointer"
+                  />
+                  <input
+                    type="text"
+                    value={formData.secondaryColor}
+                    onChange={(e) => setFormData(prev => ({ ...prev, secondaryColor: e.target.value }))}
+                    className="flex-1 px-5 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none text-sm font-mono"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Font Family</label>
+                <select
+                  value={formData.fontFamily}
+                  onChange={(e) => setFormData(prev => ({ ...prev, fontFamily: e.target.value as Store['fontFamily'] }))}
+                  className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all"
+                >
+                  {FONT_FAMILY_OPTIONS.map((fontOption) => (
+                    <option key={fontOption} value={fontOption}>{fontOption}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Kích thước hiển thị</label>
+                  <select
+                    value={formData.sizePreset}
+                    onChange={(e) => setFormData(prev => ({ ...prev, sizePreset: e.target.value as Store['sizePreset'] }))}
+                    className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all"
+                  >
+                    {SIZE_PRESET_OPTIONS.map((sizeOption) => (
+                      <option key={sizeOption} value={sizeOption}>
+                        {sizeOption === 'large' ? 'Large' : sizeOption === 'compact' ? 'Compact' : 'Normal'}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Tiền tệ</label>
+                  <select
+                    value={formData.currency}
+                    onChange={(e) => setFormData(prev => ({ ...prev, currency: e.target.value as Store['currency'] }))}
+                    className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all"
+                  >
+                    {CURRENCY_OPTIONS.map((currencyOption) => (
+                      <option key={currencyOption} value={currencyOption}>{currencyOption}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="p-4 rounded-2xl border border-gray-100" style={{ backgroundColor: formData.secondaryColor, fontFamily: formData.fontFamily === 'Inter' ? 'Inter, Segoe UI, sans-serif' : formData.fontFamily === 'Roboto' ? 'Roboto, Segoe UI, sans-serif' : formData.fontFamily === 'Playfair Display' ? 'Playfair Display, Georgia, serif' : 'Be Vietnam Pro, Segoe UI, sans-serif' }}>
+                <p className="text-xs font-bold uppercase tracking-wide" style={{ color: formData.primaryColor }}>
+                  Preview menu style
+                </p>
+                <p className="mt-1 text-sm text-gray-700">Mẫu xem trước nhanh cho màu sắc và typography của menu public.</p>
               </div>
 
               <div>
