@@ -29,13 +29,35 @@ service cloud.firestore {
          (request.auth.token.email == "qthuan1234@gmail.com" && request.auth.token.email_verified == true));
     }
 
+    function getStoreRef(data) {
+      return data.storeId == null ? data.restaurantId : data.storeId;
+    }
+
+    function getStoreOwnerId(storeId) {
+      return exists(/databases/$(database)/documents/restaurants/$(storeId))
+        ? get(/databases/$(database)/documents/restaurants/$(storeId)).data.ownerId
+        : (exists(/databases/$(database)/documents/stores/$(storeId))
+          ? get(/databases/$(database)/documents/stores/$(storeId)).data.ownerId
+          : null);
+    }
+
     function isStoreOwnerOrAdmin(storeId) {
+      let ownerId = getStoreOwnerId(storeId);
       return isAuthenticated() &&
-        exists(/databases/$(database)/documents/restaurants/$(storeId)) &&
-        (
-          get(/databases/$(database)/documents/restaurants/$(storeId)).data.ownerId == request.auth.uid ||
-          isAdmin()
-        );
+        storeId is string &&
+        ownerId != null &&
+        (ownerId == request.auth.uid || isAdmin());
+    }
+
+    function sameStoreRefOnUpdate(newData, oldData) {
+      let newStoreRef = getStoreRef(newData);
+      let oldStoreId = oldData.storeId;
+      let oldRestaurantId = oldData.restaurantId;
+
+      // Legacy-friendly: accept either previous storeId or restaurantId as the stable store reference.
+      return (oldStoreId == null && oldRestaurantId == null)
+        ? (newStoreRef is string)
+        : (newStoreRef == oldStoreId || newStoreRef == oldRestaurantId);
     }
 
     function categoryBelongsToStore(categoryId, storeId) {
@@ -58,6 +80,10 @@ service cloud.firestore {
     function isValidProduct(data) {
       return data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
              data.price is number && data.price >= 0 &&
+             (data.shortDescription == null || data.shortDescription is string) &&
+             (data.longDescription == null || data.longDescription is string) &&
+             (data.hashtags == null || (data.hashtags is list && data.hashtags.size() <= 20)) &&
+             (data.variants == null || (data.variants is list && data.variants.size() <= 20)) &&
              data.categoryId is string && (data.storeId is string || data.restaurantId is string);
     }
 
@@ -73,28 +99,31 @@ service cloud.firestore {
       allow read: if true;
       allow create: if isAuthenticated() &&
         isValidCategory(request.resource.data) &&
-        isStoreOwnerOrAdmin(request.resource.data.storeId == null ? request.resource.data.restaurantId : request.resource.data.storeId);
+        isStoreOwnerOrAdmin(getStoreRef(request.resource.data));
       allow update: if isAuthenticated() &&
         isValidCategory(request.resource.data) &&
-        ((request.resource.data.storeId != null && request.resource.data.storeId == resource.data.storeId) || (request.resource.data.restaurantId != null && request.resource.data.restaurantId == resource.data.restaurantId)) &&
-        isStoreOwnerOrAdmin(request.resource.data.storeId == null ? request.resource.data.restaurantId : request.resource.data.storeId);
+        sameStoreRefOnUpdate(request.resource.data, resource.data) &&
+        isStoreOwnerOrAdmin(getStoreRef(request.resource.data));
       allow delete: if isAuthenticated() &&
-        isStoreOwnerOrAdmin(resource.data.storeId == null ? resource.data.restaurantId : resource.data.storeId);
+        isStoreOwnerOrAdmin(getStoreRef(resource.data));
     }
 
     match /products/{productId} {
       allow read: if true;
       allow create: if isAuthenticated() &&
         isValidProduct(request.resource.data) &&
-        isStoreOwnerOrAdmin(request.resource.data.storeId == null ? request.resource.data.restaurantId : request.resource.data.storeId) &&
-        categoryBelongsToStore(request.resource.data.categoryId, request.resource.data.storeId == null ? request.resource.data.restaurantId : request.resource.data.storeId);
+        isStoreOwnerOrAdmin(getStoreRef(request.resource.data)) &&
+        categoryBelongsToStore(request.resource.data.categoryId, getStoreRef(request.resource.data));
       allow update: if isAuthenticated() &&
         isValidProduct(request.resource.data) &&
-        ((request.resource.data.storeId != null && request.resource.data.storeId == resource.data.storeId) || (request.resource.data.restaurantId != null && request.resource.data.restaurantId == resource.data.restaurantId)) &&
-        isStoreOwnerOrAdmin(resource.data.storeId == null ? resource.data.restaurantId : resource.data.storeId) &&
-        categoryBelongsToStore(request.resource.data.categoryId, request.resource.data.storeId == null ? request.resource.data.restaurantId : request.resource.data.storeId);
+        sameStoreRefOnUpdate(request.resource.data, resource.data) &&
+        isStoreOwnerOrAdmin(getStoreRef(request.resource.data)) &&
+        (
+          categoryBelongsToStore(request.resource.data.categoryId, getStoreRef(request.resource.data)) ||
+          request.resource.data.categoryId == resource.data.categoryId
+        );
       allow delete: if isAuthenticated() &&
-        isStoreOwnerOrAdmin(resource.data.storeId == null ? resource.data.restaurantId : resource.data.storeId);
+        isStoreOwnerOrAdmin(getStoreRef(resource.data));
     }
 
     match /users/{userId} {

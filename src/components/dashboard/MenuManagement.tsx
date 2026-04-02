@@ -1,7 +1,14 @@
 import React, { useState, useEffect, FormEvent, useRef, ChangeEvent } from 'react';
 import { User } from 'firebase/auth';
-import { Store, Category, Product } from '../../types';
+import { Store, Category, Product, Variant } from '../../types';
 import { db } from '../../firebase';
+
+const EU_DEFAULT_HASHTAGS = [
+  '#organic', '#vegan', '#gluten-free', '#farm-to-table', '#locally-sourced',
+  '#easy-togo', '#allergen-free', '#low-carb', '#non-gmo', '#plantbased',
+  '#dessert', '#quick-bite', '#healthy', '#family-friendly', '#seasonal',
+  '#kids-friendly', '#street-food', '#premium', '#modern', '#artisan'
+];
 import {
   collection,
   query,
@@ -79,6 +86,24 @@ export default function MenuManagement({ user, store }: MenuManagementProps) {
       </div>
     );
   }
+
+  const getProductDisplayPrice = (prod: Product) => {
+    const variants = prod.variants || [];
+    const validVariantPrices = variants
+      .map((v) => Number(v.price))
+      .filter((p) => !Number.isNaN(p));
+
+    if (validVariantPrices.length > 0) {
+      const min = Math.min(...validVariantPrices);
+      const max = Math.max(...validVariantPrices);
+      if (min === max) {
+        return `${min.toLocaleString('vi-VN')}đ`;
+      }
+      return `Từ ${min.toLocaleString('vi-VN')}đ - ${max.toLocaleString('vi-VN')}đ`;
+    }
+
+    return `${(prod.price || 0).toLocaleString('vi-VN')}đ`;
+  };
 
   const filteredProducts = activeCategory
     ? products.filter(p => p.categoryId === activeCategory)
@@ -176,9 +201,16 @@ export default function MenuManagement({ user, store }: MenuManagementProps) {
               <div className="p-5">
                 <div className="flex justify-between items-start mb-2">
                   <h4 className="font-bold text-gray-900 truncate pr-2">{prod.name}</h4>
-                  <span className="text-orange-500 font-bold whitespace-nowrap">{prod.price.toLocaleString('vi-VN')}đ</span>
+                  <span className="text-orange-500 font-bold whitespace-nowrap">{getProductDisplayPrice(prod)}</span>
                 </div>
-                <p className="text-xs text-gray-400 line-clamp-2 leading-relaxed">{prod.description || 'Chưa có mô tả'}</p>
+                <p className="text-xs text-gray-400 line-clamp-2 leading-relaxed">{prod.shortDescription || prod.longDescription || prod.description || 'Chưa có mô tả'}</p>
+                {prod.hashtags && prod.hashtags.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {prod.hashtags.slice(0, 4).map((tag) => (
+                      <span key={tag} className="text-[10px] px-2 py-1 bg-gray-100 text-gray-600 rounded-full">{tag}</span>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           ))}
@@ -277,18 +309,46 @@ function CategoryModal({ storeId, editing, onClose }: { storeId: string, editing
 }
 
 function ProductModal({ user, storeId, categoryId, editing, onClose }: { user: User, storeId: string, categoryId: string, editing: Product | null, onClose: () => void }) {
+  const initialPriceValue = editing?.price != null ? Number(editing.price) : null;
+  const normalizedInitialPrice = initialPriceValue != null && Number.isFinite(initialPriceValue) ? initialPriceValue : null;
+  const initialHashtags = Array.isArray(editing?.hashtags)
+    ? editing.hashtags.filter((tag): tag is string => typeof tag === 'string').slice(0, 20)
+    : [];
+  const initialVariants = Array.isArray(editing?.variants)
+    ? editing.variants
+      .filter((variant): variant is Variant => !!variant && typeof variant === 'object')
+      .slice(0, 20)
+      .map((variant, index) => {
+        const variantPrice = Number(variant.price);
+        return {
+          id: typeof variant.id === 'string' && variant.id ? variant.id : `${Date.now()}-${index}`,
+          name: typeof variant.name === 'string' ? variant.name : '',
+          price: Number.isFinite(variantPrice) && variantPrice >= 0 ? variantPrice : 0,
+          isDefault: Boolean(variant.isDefault),
+          sortOrder: typeof variant.sortOrder === 'number' ? variant.sortOrder : index
+        };
+      })
+    : [];
+
   const [formData, setFormData] = useState<{
     name: string;
-    description: string;
+    shortDescription: string;
+    longDescription: string;
     price: number | null;
+    hashtags: string[];
+    variants: Variant[];
     imageUrl: string;
   }>({
     name: editing?.name || '',
-    description: editing?.description || '',
-    price: editing?.price ?? null,
-    imageUrl: editing?.imageUrl || ''
+    shortDescription: typeof editing?.shortDescription === 'string' ? editing.shortDescription : '',
+    longDescription: typeof editing?.longDescription === 'string' ? editing.longDescription : '',
+    price: normalizedInitialPrice,
+    hashtags: initialHashtags,
+    variants: initialVariants,
+    imageUrl: typeof editing?.imageUrl === 'string' ? editing.imageUrl : ''
   });
-  const [priceInput, setPriceInput] = useState(editing?.price != null ? String(editing.price) : '');
+  const [priceInput, setPriceInput] = useState(normalizedInitialPrice != null ? String(normalizedInitialPrice) : '');
+  const [newTag, setNewTag] = useState('');
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -323,21 +383,111 @@ function ProductModal({ user, storeId, categoryId, editing, onClose }: { user: U
     }
   };
 
+  const addHashtag = () => {
+    const normalized = newTag.trim().toLowerCase().replace(/^#?/, '#');
+    if (!normalized || formData.hashtags.includes(normalized)) {
+      setNewTag('');
+      return;
+    }
+    setFormData(prev => ({ ...prev, hashtags: [...prev.hashtags, normalized] }));
+    setNewTag('');
+  };
+
+  const removeHashtag = (tag: string) => {
+    setFormData(prev => ({ ...prev, hashtags: prev.hashtags.filter((t) => t !== tag) }));
+  };
+
+  const addVariant = () => {
+    setFormData(prev => ({
+      ...prev,
+      variants: [...prev.variants, {
+        id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+        name: '',
+        price: prev.variants.length === 0 ? Number(prev.price ?? 0) : 0,
+        isDefault: prev.variants.length === 0,
+        sortOrder: prev.variants.length
+      }]
+    }));
+  };
+
+  const updateVariant = (id: string, update: Partial<Variant>) => {
+    setFormData(prev => ({
+      ...prev,
+      variants: prev.variants.map((item) => item.id === id ? { ...item, ...update } : item)
+    }));
+  };
+
+  const updateVariantPrice = (id: string, value: string) => {
+    const digitsOnly = value.replace(/\D/g, '');
+    setFormData(prev => ({
+      ...prev,
+      variants: prev.variants.map((item) => item.id === id ? { ...item, price: digitsOnly === '' ? 0 : Number(digitsOnly) } : item)
+    }));
+  };
+
+  const removeVariant = (id: string) => {
+    setFormData(prev => ({
+      ...prev,
+      variants: prev.variants
+        .filter((item) => item.id !== id)
+        .map((item, idx) => ({ ...item, sortOrder: idx }))
+    }));
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!formData.name.trim()) return;
 
-    if (formData.price == null || Number.isNaN(formData.price) || formData.price < 0) {
+    const hasVariants = formData.variants.length > 0;
+
+    const normalizedBasePrice = Number(formData.price ?? 0);
+    if (!hasVariants && (!Number.isFinite(normalizedBasePrice) || normalizedBasePrice < 0)) {
       alert('Vui lòng nhập giá hợp lệ (số nguyên >= 0).');
       return;
     }
 
+    const normalizedHashtags = (Array.isArray(formData.hashtags) ? formData.hashtags : [])
+      .map((tag) => String(tag).trim().toLowerCase().replace(/^#?/, '#'))
+      .filter((tag) => tag.length > 1)
+      .slice(0, 20);
+
+    const normalizedVariants = (Array.isArray(formData.variants) ? formData.variants : [])
+      .slice(0, 20)
+      .map((variant, index) => {
+        const variantPrice = Number(variant.price);
+        return {
+          id: typeof variant.id === 'string' && variant.id ? variant.id : `${Date.now()}-${index}`,
+          name: typeof variant.name === 'string' ? variant.name.trim() : '',
+          price: Number.isFinite(variantPrice) && variantPrice >= 0 ? variantPrice : 0,
+          isDefault: Boolean(variant.isDefault),
+          sortOrder: typeof variant.sortOrder === 'number' ? variant.sortOrder : index
+        };
+      });
+
+    const normalizedShortDescription = formData.shortDescription.trim();
+    const normalizedLongDescription = formData.longDescription.trim();
+    const normalizedDescription = normalizedLongDescription || normalizedShortDescription;
+    const targetCategoryId = editing?.categoryId || categoryId;
+
     setLoading(true);
     try {
+      const variantPrices = normalizedVariants
+        .map((variant) => variant.price)
+        .filter((price) => Number.isFinite(price));
+      const choicePrice = variantPrices.length > 0
+        ? Math.min(...variantPrices)
+        : (Number.isFinite(normalizedBasePrice) ? normalizedBasePrice : 0);
+
       const data = {
-        ...formData,
-        price: formData.price,
-        categoryId,
+        name: formData.name.trim(),
+        shortDescription: normalizedShortDescription,
+        longDescription: normalizedLongDescription,
+        description: normalizedDescription,
+        price: choicePrice ?? 0,
+        hashtags: normalizedHashtags,
+        variants: normalizedVariants,
+        imageUrl: formData.imageUrl.trim(),
+        categoryId: targetCategoryId,
         storeId,
         restaurantId: storeId,
         updatedAt: new Date().toISOString()
@@ -359,15 +509,17 @@ function ProductModal({ user, storeId, categoryId, editing, onClose }: { user: U
     }
   };
 
+  const hasVariants = formData.variants.length > 0;
+
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-6">
-      <div className="bg-white w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl max-h-[90vh] overflow-y-auto">
-        <div className="p-6 border-b border-gray-50 flex items-center justify-between sticky top-0 bg-white z-10">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-6">
+      <div className="bg-white w-full max-w-3xl rounded-3xl overflow-hidden shadow-2xl max-h-[92vh] flex flex-col">
+        <div className="p-5 sm:p-6 border-b border-gray-50 flex items-center justify-between bg-white">
           <h3 className="text-xl font-bold">{editing ? 'Sửa sản phẩm' : 'Thêm sản phẩm'}</h3>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-900"><X size={24} /></button>
         </div>
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <form onSubmit={handleSubmit} className="p-5 sm:p-6 space-y-6 overflow-y-auto overflow-x-hidden overscroll-contain">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="space-y-6">
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-2">Tên món ăn/sản phẩm <span className="text-red-500">*</span></label>
@@ -381,32 +533,49 @@ function ProductModal({ user, storeId, categoryId, editing, onClose }: { user: U
                 />
               </div>
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Giá bán (VNĐ) <span className="text-red-500">*</span></label>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Mô tả ngắn</label>
                 <input
                   type="text"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  required
-                  value={priceInput}
-                  onChange={handlePriceChange}
-                  onBlur={handlePriceBlur}
-                  placeholder="Nhập giá, ví dụ 45000"
+                  value={formData.shortDescription}
+                  onChange={(e) => setFormData(prev => ({ ...prev, shortDescription: e.target.value }))}
+                  placeholder="Tóm tắt trong 1-2 câu"
                   className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all"
                 />
-                <p className="text-xs text-gray-400 mt-2">
-                  {priceInput ? `Giá hiển thị: ${Number(priceInput).toLocaleString('vi-VN')}đ` : 'Bạn có thể để trống rồi nhập giá sau.'}
-                </p>
               </div>
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Mô tả</label>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Mô tả chi tiết</label>
                 <textarea
                   rows={3}
-                  value={formData.description}
-                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                  placeholder="Mô tả thành phần, hương vị..."
+                  value={formData.longDescription}
+                  onChange={(e) => setFormData(prev => ({ ...prev, longDescription: e.target.value }))}
+                  placeholder="Mô tả chi tiết hơn về nguyên liệu, đồ ăn..."
                   className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all"
                 />
               </div>
+              {!hasVariants && (
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Giá bán <span className="text-red-500">*</span></label>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    required
+                    value={priceInput}
+                    onChange={handlePriceChange}
+                    onBlur={handlePriceBlur}
+                    placeholder="Nhập giá, ví dụ 45000"
+                    className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all"
+                  />
+                  <p className="text-xs text-gray-400 mt-2">
+                    {priceInput ? `Giá hiển thị: ${Number(priceInput).toLocaleString('vi-VN')}đ` : 'Bạn có thể để trống rồi nhập giá sau.'}
+                  </p>
+                </div>
+              )}
+              {hasVariants && (
+                <div className="rounded-2xl border border-blue-100 bg-blue-50/60 px-4 py-3 text-xs text-blue-700">
+                  Đang dùng giá theo variants. Giá đơn đã được ẩn.
+                </div>
+              )}
             </div>
             <div className="space-y-6">
               <div>
@@ -440,6 +609,94 @@ function ProductModal({ user, storeId, categoryId, editing, onClose }: { user: U
                   </button>
                 </div>
               </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-4 rounded-2xl border border-gray-100">
+            <h4 className="font-bold mb-3">Hashtags (thẻ)</h4>
+            <div className="flex gap-2 flex-wrap mb-3">
+              {EU_DEFAULT_HASHTAGS.slice(0, 8).map((tag) => (
+                <button
+                  type="button"
+                  key={tag}
+                  onClick={() => {
+                    if (!formData.hashtags.includes(tag)) {
+                      setFormData(prev => ({ ...prev, hashtags: [...prev.hashtags, tag] }));
+                    }
+                  }}
+                  className={`px-2 py-1 rounded-full border text-xs ${formData.hashtags.includes(tag) ? 'bg-orange-500 text-white border-orange-200' : 'bg-gray-100 text-gray-600 border-gray-200'}`}
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
+            <div className="flex gap-2 items-center mb-3">
+              <input
+                type="text"
+                value={newTag}
+                onChange={(e) => setNewTag(e.target.value)}
+                placeholder="#ví dụ"
+                className="flex-1 px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
+              />
+              <button
+                type="button"
+                onClick={addHashtag}
+                className="px-4 py-2 bg-orange-500 text-white rounded-xl hover:bg-orange-600"
+              >Thêm</button>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {formData.hashtags.map((tag) => (
+                <span key={tag} className="inline-flex items-center gap-1 px-2 py-1 bg-orange-50 text-orange-600 rounded-full border border-orange-100 text-sm">
+                  {tag}
+                  <button type="button" onClick={() => removeHashtag(tag)} className="text-xs font-bold">×</button>
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-white p-4 rounded-2xl border border-gray-100">
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="font-bold">Variants (tuỳ chọn giá)</h4>
+              <button type="button" onClick={addVariant} className="px-3 py-1.5 text-xs text-white bg-blue-500 rounded-lg hover:bg-blue-600">Thêm variant</button>
+            </div>
+            {formData.variants.length === 0 && <p className="text-xs text-gray-400">Chưa có variant. Tạo variant để hiển thị đoạn giá Từ - Đến.</p>}
+            <div className="space-y-2">
+              {formData.variants.map((variant) => (
+                <div key={variant.id} className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center">
+                  <input
+                    className="sm:col-span-5 px-3 py-2 border rounded-xl"
+                    value={variant.name}
+                    onChange={(e) => updateVariant(variant.id, { name: e.target.value })}
+                    placeholder="Tên variant, ví dụ: Nhỏ"
+                  />
+                  <input
+                    className="sm:col-span-4 px-3 py-2 border rounded-xl"
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    value={variant.price.toString()}
+                    onChange={(e) => updateVariantPrice(variant.id, e.target.value)}
+                    onBlur={(e) => {
+                      const normalized = e.target.value.replace(/\D/g, '');
+                      updateVariantPrice(variant.id, normalized);
+                    }}
+                    placeholder="Giá"
+                  />
+                  <label className="sm:col-span-2 text-xs flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={variant.isDefault || false}
+                      onChange={() => updateVariant(variant.id, { isDefault: !variant.isDefault })}
+                    />
+                    Default
+                  </label>
+                  <button
+                    type="button"
+                    className="sm:col-span-1 text-red-500 font-bold justify-self-end"
+                    onClick={() => removeVariant(variant.id)}
+                  >×</button>
+                </div>
+              ))}
             </div>
           </div>
           <button

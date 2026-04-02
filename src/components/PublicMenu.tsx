@@ -94,6 +94,31 @@ export default function PublicMenu() {
 
   const themeColor = store.primaryColor || store.themeColor || '#f97316';
 
+  const getProductDisplayPrice = (prod: Product) => {
+    const variants = prod.variants || [];
+    const validVariantPrices = variants
+      .map((v) => Number(v.price))
+      .filter((p) => !Number.isNaN(p));
+
+    if (validVariantPrices.length > 0) {
+      const min = Math.min(...validVariantPrices);
+      const max = Math.max(...validVariantPrices);
+      if (min === max) {
+        return `${min.toLocaleString('vi-VN')}đ`;
+      }
+      return `Từ ${min.toLocaleString('vi-VN')}đ - ${max.toLocaleString('vi-VN')}đ`;
+    }
+
+    return `${(prod.price || 0).toLocaleString('vi-VN')}đ`;
+  };
+
+  const getProductDetailDescription = (prod: Product) => {
+    const longDescription = prod.longDescription?.trim();
+    const legacyDescription = prod.description?.trim();
+    const shortDescription = prod.shortDescription?.trim();
+    return longDescription || legacyDescription || shortDescription || 'Không có mô tả cho sản phẩm này.';
+  };
+
   const filteredProducts = activeCategory
     ? products.filter(p => p.categoryId === activeCategory)
     : [];
@@ -204,11 +229,18 @@ export default function PublicMenu() {
                     <div className="flex justify-between items-start">
                       <h3 className="font-bold text-gray-900 truncate pr-2">{prod.name}</h3>
                     </div>
-                    <p className="text-xs text-gray-400 line-clamp-2 mt-1 leading-relaxed">{prod.description}</p>
+                    <p className="text-xs text-gray-400 line-clamp-2 mt-1 leading-relaxed">{prod.shortDescription || prod.longDescription || prod.description}</p>
+                    {prod.hashtags && prod.hashtags.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {prod.hashtags.slice(0, 5).map((tag) => (
+                          <span key={tag} className="text-[10px] px-2 py-1 bg-gray-100 text-gray-600 rounded-full">{tag}</span>
+                        ))}
+                      </div>
+                    )}
                   </div>
                   <div className="flex items-center justify-between mt-2">
                     <span className="font-bold" style={{ color: themeColor }}>
-                      {prod.price.toLocaleString('vi-VN')}đ
+                      {getProductDisplayPrice(prod)}
                     </span>
                   </div>
                 </div>
@@ -258,18 +290,43 @@ export default function PublicMenu() {
               </div>
               <div className="p-8">
                 <div className="flex justify-between items-start mb-4">
-                  <h2 className="text-2xl font-bold text-gray-900 pr-4">{selectedProduct.name}</h2>
+                  <div className="min-w-0">
+                    <h2 className="text-2xl font-bold text-gray-900 pr-4 truncate">{selectedProduct.name}</h2>
+                    {selectedProduct.shortDescription ? (
+                      <p className="text-sm text-gray-500 mt-1 line-clamp-2">{selectedProduct.shortDescription}</p>
+                    ) : null}
+                  </div>
                   <span className="text-2xl font-bold whitespace-nowrap" style={{ color: themeColor }}>
-                    {selectedProduct.price.toLocaleString('vi-VN')}đ
+                    {getProductDisplayPrice(selectedProduct)}
                   </span>
                 </div>
                 <div className="h-px bg-gray-100 w-full mb-6" />
+                {selectedProduct.hashtags && selectedProduct.hashtags.length > 0 && (
+                  <div className="mb-4 flex flex-wrap gap-2">
+                    {selectedProduct.hashtags.map((tag) => (
+                      <span key={tag} className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded-full">{tag}</span>
+                    ))}
+                  </div>
+                )}
                 <div className="space-y-4">
-                  <h4 className="text-xs uppercase tracking-widest font-bold text-gray-400">Mô tả chi tiết</h4>
+                  <h4 className="text-xs uppercase tracking-widest font-bold text-gray-400">Mô tả</h4>
                   <p className="text-gray-600 leading-relaxed">
-                    {selectedProduct.description || 'Không có mô tả cho sản phẩm này.'}
+                    {getProductDetailDescription(selectedProduct)}
                   </p>
                 </div>
+                {selectedProduct.variants && selectedProduct.variants.length > 0 && (
+                  <div className="mt-4">
+                    <h4 className="text-xs uppercase tracking-widest font-bold text-gray-400">Variants</h4>
+                    <ul className="mt-2 space-y-2">
+                      {[...selectedProduct.variants].sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0)).map((variant) => (
+                        <li key={variant.id} className="flex justify-between items-center text-sm text-gray-700 bg-gray-50 p-2 rounded-xl border border-gray-100">
+                          <span>{variant.name || 'Tên variant'}</span>
+                          <span>{Number(variant.price).toLocaleString('vi-VN')}đ {variant.isDefault ? '(Mặc định)' : ''}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
                 <button
                   onClick={() => setSelectedProduct(null)}
                   className="w-full mt-10 py-4 rounded-2xl text-white font-bold text-lg shadow-lg"
