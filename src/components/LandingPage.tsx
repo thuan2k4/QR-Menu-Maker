@@ -12,7 +12,7 @@ export default function LandingPage() {
           <div className="bg-orange-500 p-2 rounded-lg">
             <QrCode className="text-white w-6 h-6" />
           </div>
-          <span className="text-xl font-bold tracking-tight">QR Menu Maker</span>
+          <span className="text-xl font-bold tracking-tight">MenuQRGenerate</span>
         </div>
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-600">
           <a href="#features" className="hover:text-orange-500 transition-colors">Tính năng</a>
@@ -22,7 +22,7 @@ export default function LandingPage() {
 
       {/* Hero Section */}
       <section className="px-6 py-20 md:py-32 max-w-7xl mx-auto text-center">
-        <motion.h1 
+        <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-5xl md:text-7xl font-extrabold tracking-tight leading-tight mb-6"
@@ -30,15 +30,15 @@ export default function LandingPage() {
           Menu Kỹ Thuật Số <br />
           <span className="text-orange-500">Chuyên Nghiệp</span> Trong 5 Phút
         </motion.h1>
-        <motion.p 
+        <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
           className="text-xl text-gray-500 max-w-2xl mx-auto mb-10"
         >
-          Giải pháp tạo QR Menu tối ưu cho nhà hàng, quán cafe, spa. Giúp khách hàng xem món nhanh chóng, an toàn và hiện đại.
+          Giải pháp tạo QR Menu tối ưu cho cửa hàng, quán cafe, dịch vụ. Giúp khách hàng xem món nhanh chóng, an toàn và hiện đại.
         </motion.p>
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.2 }}
@@ -56,19 +56,19 @@ export default function LandingPage() {
       {/* Features */}
       <section id="features" className="bg-gray-50 py-20 px-6">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-16">Tại sao chọn QR Menu Maker?</h2>
+          <h2 className="text-3xl font-bold text-center mb-16">Tại sao chọn MenuQRGenerate?</h2>
           <div className="grid md:grid-cols-3 gap-12">
-            <FeatureCard 
+            <FeatureCard
               icon={<Utensils className="w-8 h-8 text-orange-500" />}
               title="Quản lý dễ dàng"
-              description="Cập nhật món ăn, giá cả, hình ảnh chỉ trong vài giây. Không cần in lại menu giấy."
+              description="Cập nhật sản phẩm, giá cả, hình ảnh chỉ trong vài giây. Không cần in lại menu giấy."
             />
-            <FeatureCard 
+            <FeatureCard
               icon={<Smartphone className="w-8 h-8 text-orange-500" />}
               title="Tối ưu Mobile"
               description="Menu hiển thị mượt mà trên mọi thiết bị di động. Khách hàng không cần cài ứng dụng."
             />
-            <FeatureCard 
+            <FeatureCard
               icon={<CheckCircle className="w-8 h-8 text-orange-500" />}
               title="Tạo QR Tự Động"
               description="Hệ thống tự động tạo mã QR duy nhất cho cửa hàng của bạn. Tải về và in ngay."
@@ -79,7 +79,7 @@ export default function LandingPage() {
 
       {/* Footer */}
       <footer className="py-12 px-6 border-t border-gray-100 text-center text-gray-400 text-sm">
-        <p>&copy; 2026 QR Menu Maker. All rights reserved.</p>
+        <p>&copy; 2026 MenuQRGenerate. All rights reserved.</p>
       </footer>
     </div>
   );

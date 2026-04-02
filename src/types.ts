@@ -1,4 +1,4 @@
-export interface Restaurant {
+export interface Store {
   id: string;
   name: string;
   bio: string;
@@ -8,14 +8,18 @@ export interface Restaurant {
   slug: string;
   ownerId: string;
   phone?: string;
-  themeColor?: string;
+  primaryColor?: string;
+  themeColor?: string; // backward compatibility for existing data
 }
+
+export type Restaurant = Store; // legacy alias for compatibility
 
 export interface Category {
   id: string;
   name: string;
   order: number;
-  restaurantId: string;
+  storeId: string;
+  restaurantId?: string; // legacy compatibility
 }
 
 export interface Product {
@@ -25,7 +29,8 @@ export interface Product {
   price: number;
   imageUrl: string;
   categoryId: string;
-  restaurantId: string;
+  storeId: string;
+  restaurantId?: string; // legacy compatibility
 }
 
 export interface UserProfile {

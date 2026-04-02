@@ -1,6 +1,6 @@
 import React, { useState, useEffect, FormEvent, ChangeEvent, useRef } from 'react';
 import { User } from 'firebase/auth';
-import { Restaurant } from '../../types';
+import { Store } from '../../types';
 import { db } from '../../firebase';
 import { doc, setDoc, updateDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { Save, Image as ImageIcon, CheckCircle, AlertCircle, Upload, Loader2 } from 'lucide-react';
@@ -8,7 +8,7 @@ import { getStorageSetupHint, uploadImageWithBucketFallback } from '../../utils/
 
 interface RestaurantSettingsProps {
   user: User;
-  restaurant: Restaurant | null;
+  restaurant: Store | null;
   onCreated?: (id: string) => void;
 }
 
@@ -21,7 +21,8 @@ export default function RestaurantSettings({ user, restaurant, onCreated }: Rest
     slug: '',
     address: '',
     phone: '',
-    themeColor: '#f97316' // Default orange-500
+    primaryColor: '#f97316', // Default orange-500
+    themeColor: '#f97316' // backward compatibility
   });
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState<'logo' | 'cover' | null>(null);
@@ -40,6 +41,7 @@ export default function RestaurantSettings({ user, restaurant, onCreated }: Rest
         slug: restaurant.slug || '',
         address: restaurant.address || '',
         phone: restaurant.phone || '',
+        primaryColor: restaurant.primaryColor || restaurant.themeColor || '#f97316',
         themeColor: restaurant.themeColor || '#f97316'
       });
     } else {
@@ -51,6 +53,7 @@ export default function RestaurantSettings({ user, restaurant, onCreated }: Rest
         slug: '',
         address: '',
         phone: '',
+        primaryColor: '#f97316',
         themeColor: '#f97316'
       });
     }
@@ -79,7 +82,7 @@ export default function RestaurantSettings({ user, restaurant, onCreated }: Rest
     setMessage(null);
 
     try {
-      if (!formData.name.trim()) throw new Error('Tên nhà hàng là bắt buộc.');
+      if (!formData.name.trim()) throw new Error('Tên cửa hàng là bắt buộc.');
       if (!formData.slug.trim()) throw new Error('Đường dẫn (slug) là bắt buộc.');
 
       if (!restaurant || formData.slug !== restaurant.slug) {
@@ -105,7 +108,7 @@ export default function RestaurantSettings({ user, restaurant, onCreated }: Rest
           ownerId: user.uid,
           createdAt: new Date().toISOString()
         });
-        setMessage({ type: 'success', text: 'Tạo nhà hàng mới thành công!' });
+        setMessage({ type: 'success', text: 'Tạo cửa hàng mới thành công!' });
         if (onCreated) onCreated(newDocRef.id);
       }
     } catch (err: any) {
@@ -155,7 +158,7 @@ export default function RestaurantSettings({ user, restaurant, onCreated }: Rest
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-6">
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Tên nhà hàng <span className="text-red-500">*</span></label>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Tên cửa hàng <span className="text-red-500">*</span></label>
                 <input
                   type="text"
                   required
@@ -203,18 +206,18 @@ export default function RestaurantSettings({ user, restaurant, onCreated }: Rest
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Màu chủ đạo (Theme Color)</label>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Màu chủ đạo (Primary Color)</label>
                 <div className="flex items-center gap-4">
                   <input
                     type="color"
-                    value={formData.themeColor}
-                    onChange={(e) => setFormData(prev => ({ ...prev, themeColor: e.target.value }))}
+                    value={formData.primaryColor}
+                    onChange={(e) => setFormData(prev => ({ ...prev, primaryColor: e.target.value, themeColor: e.target.value }))}
                     className="w-12 h-12 rounded-xl border-none cursor-pointer"
                   />
                   <input
                     type="text"
-                    value={formData.themeColor}
-                    onChange={(e) => setFormData(prev => ({ ...prev, themeColor: e.target.value }))}
+                    value={formData.primaryColor}
+                    onChange={(e) => setFormData(prev => ({ ...prev, primaryColor: e.target.value, themeColor: e.target.value }))}
                     className="flex-1 px-5 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none text-sm font-mono"
                   />
                 </div>
@@ -226,7 +229,7 @@ export default function RestaurantSettings({ user, restaurant, onCreated }: Rest
                   rows={4}
                   value={formData.bio}
                   onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
-                  placeholder="Mô tả ngắn về nhà hàng của bạn..."
+                  placeholder="Mô tả ngắn về cửa hàng của bạn..."
                   className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all"
                 />
               </div>

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { collection, query, where, onSnapshot, addDoc, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../../firebase';
-import { Restaurant } from '../../types';
+import { Store } from '../../types';
 import { User } from 'firebase/auth';
-import { Plus, Store, ChevronRight, Trash2, QrCode } from 'lucide-react';
+import { Plus, Store as StoreIcon, ChevronRight, Trash2, QrCode } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 interface StoreListProps {
@@ -11,7 +11,7 @@ interface StoreListProps {
 }
 
 export default function StoreList({ user }: StoreListProps) {
-  const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
+  const [stores, setStores] = useState<Store[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [newStoreName, setNewStoreName] = useState('');
@@ -21,7 +21,7 @@ export default function StoreList({ user }: StoreListProps) {
   useEffect(() => {
     const q = query(collection(db, 'restaurants'), where('ownerId', '==', user.uid));
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      setRestaurants(snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Restaurant)));
+      setStores(snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Store)));
       setLoading(false);
     });
     return () => unsubscribe();
@@ -80,25 +80,25 @@ export default function StoreList({ user }: StoreListProps) {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {restaurants.map(res => (
+        {stores.map(store => (
           <div
-            key={res.id}
-            onClick={() => navigate(`/dashboard/store/${res.id}`)}
+            key={store.id}
+            onClick={() => navigate(`/dashboard/store/${store.id}`)}
             className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all cursor-pointer group relative"
           >
             <div className="flex items-start justify-between mb-4">
               <div className="bg-orange-50 p-3 rounded-2xl text-orange-500">
-                <Store size={24} />
+                <StoreIcon size={24} />
               </div>
               <button
-                onClick={(e) => handleDeleteStore(e, res.id)}
+                onClick={(e) => handleDeleteStore(e, store.id)}
                 className="p-2 text-gray-300 hover:text-red-500 transition-colors"
               >
                 <Trash2 size={18} />
               </button>
             </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-1">{res.name}</h3>
-            <p className="text-sm text-gray-400 mb-6 truncate">/m/{res.slug}</p>
+            <h3 className="text-xl font-bold text-gray-900 mb-1">{store.name}</h3>
+            <p className="text-sm text-gray-400 mb-6 truncate">/m/{store.slug}</p>
 
             <div className="flex items-center justify-between pt-4 border-t border-gray-50">
               <div className="flex items-center gap-2 text-xs font-bold text-gray-400">
@@ -109,7 +109,7 @@ export default function StoreList({ user }: StoreListProps) {
           </div>
         ))}
 
-        {restaurants.length === 0 && (
+        {stores.length === 0 && (
           <div className="col-span-full bg-white p-12 rounded-3xl border border-dashed border-gray-200 text-center">
             <p className="text-gray-400">Bạn chưa có cửa hàng nào. Hãy tạo cửa hàng đầu tiên!</p>
           </div>

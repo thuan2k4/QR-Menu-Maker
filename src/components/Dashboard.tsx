@@ -3,7 +3,7 @@ import { Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom'
 import { User } from 'firebase/auth';
 import { auth, db } from '../firebase';
 import { collection, query, where, onSnapshot, doc, getDoc } from 'firebase/firestore';
-import { Restaurant, UserProfile } from '../types';
+import { UserProfile } from '../types';
 import {
   LayoutDashboard,
   Settings,
@@ -55,7 +55,7 @@ export default function Dashboard({ user, profile }: DashboardProps) {
           <div className="bg-orange-500 p-1.5 rounded-lg">
             <QrCode className="text-white w-5 h-5" />
           </div>
-          <span className="font-bold tracking-tight">QR Menu Maker</span>
+          <span className="font-bold tracking-tight">MenuQRGenerate</span>
         </div>
 
         <nav className="flex-1 p-4 space-y-1">
@@ -107,7 +107,7 @@ export default function Dashboard({ user, profile }: DashboardProps) {
                   <div className="bg-orange-500 p-1.5 rounded-lg">
                     <QrCode className="text-white w-5 h-5" />
                   </div>
-                  <span className="font-bold tracking-tight">QR Menu Maker</span>
+                  <span className="font-bold tracking-tight">MenuQRGenerate</span>
                 </div>
                 <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 hover:bg-gray-100 rounded-full text-gray-400">
                   <X size={20} />
@@ -169,8 +169,8 @@ function SidebarLink({ to, icon, label, active }: { to: string, icon: ReactNode,
     <Link
       to={to}
       className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${active
-          ? 'bg-orange-500 text-white shadow-lg shadow-orange-200'
-          : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'
+        ? 'bg-orange-500 text-white shadow-lg shadow-orange-200'
+        : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'
         }`}
     >
       {icon}

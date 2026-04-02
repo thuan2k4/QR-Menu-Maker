@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../../firebase';
-import { Restaurant } from '../../types';
+import { Store } from '../../types';
 import { User } from 'firebase/auth';
 import {
   Info,
@@ -23,7 +23,7 @@ interface StoreManagerProps {
 
 export default function StoreManager({ user }: StoreManagerProps) {
   const { id } = useParams<{ id: string }>();
-  const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
+  const [store, setStore] = useState<Store | null>(null);
   const [loading, setLoading] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
@@ -32,7 +32,7 @@ export default function StoreManager({ user }: StoreManagerProps) {
     if (id) {
       const unsubscribe = onSnapshot(doc(db, 'restaurants', id), (doc) => {
         if (doc.exists()) {
-          setRestaurant({ id: doc.id, ...doc.data() } as Restaurant);
+          setStore({ id: doc.id, ...doc.data() } as Store);
         } else {
           navigate('/dashboard');
         }
@@ -50,7 +50,7 @@ export default function StoreManager({ user }: StoreManagerProps) {
     );
   }
 
-  if (!restaurant) return null;
+  if (!store) return null;
 
   const tabs = [
     { id: 'overview', label: 'Mã QR', icon: <QrCode size={18} />, path: `/dashboard/store/${id}` },
@@ -70,10 +70,10 @@ export default function StoreManager({ user }: StoreManagerProps) {
             <ChevronLeft size={24} />
           </Link>
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">{restaurant.name}</h2>
+            <h2 className="text-2xl font-bold text-gray-900">{store.name}</h2>
             <div className="flex items-center gap-2 text-sm text-gray-400">
-              <span>/m/{restaurant.slug}</span>
-              <a href={`/m/${restaurant.slug}`} target="_blank" rel="noopener noreferrer" className="text-orange-500 hover:underline flex items-center gap-1">
+              <span>/m/{store.slug}</span>
+              <a href={`/m/${store.slug}`} target="_blank" rel="noopener noreferrer" className="text-orange-500 hover:underline flex items-center gap-1">
                 Xem Menu <ExternalLink size={12} />
               </a>
             </div>
@@ -88,8 +88,8 @@ export default function StoreManager({ user }: StoreManagerProps) {
             key={tab.id}
             to={tab.path}
             className={`flex items-center gap-2 px-6 py-4 text-sm font-bold border-b-2 transition-all whitespace-nowrap ${activeTab === tab.id
-                ? 'border-orange-500 text-orange-500'
-                : 'border-transparent text-gray-400 hover:text-gray-600'
+              ? 'border-orange-500 text-orange-500'
+              : 'border-transparent text-gray-400 hover:text-gray-600'
               }`}
           >
             {tab.icon}
@@ -101,9 +101,9 @@ export default function StoreManager({ user }: StoreManagerProps) {
       {/* Content */}
       <div className="pt-4">
         <Routes>
-          <Route index element={<Overview user={user} restaurant={restaurant} />} />
-          <Route path="menu" element={<MenuManagement user={user} restaurant={restaurant} />} />
-          <Route path="settings" element={<RestaurantSettings user={user} restaurant={restaurant} />} />
+          <Route index element={<Overview user={user} store={store} />} />
+          <Route path="menu" element={<MenuManagement user={user} store={store} />} />
+          <Route path="settings" element={<RestaurantSettings user={user} restaurant={store} />} />
         </Routes>
       </div>
     </div>

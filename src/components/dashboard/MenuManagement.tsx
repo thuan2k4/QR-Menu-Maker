@@ -1,6 +1,6 @@
 import React, { useState, useEffect, FormEvent, useRef, ChangeEvent } from 'react';
 import { User } from 'firebase/auth';
-import { Restaurant, Category, Product } from '../../types';
+import { Store, Category, Product } from '../../types';
 import { db } from '../../firebase';
 import {
   collection,
@@ -28,10 +28,10 @@ import { getStorageSetupHint, uploadImageWithBucketFallback } from '../../utils/
 
 interface MenuManagementProps {
   user: User;
-  restaurant: Restaurant | null;
+  store: Store | null;
 }
 
-export default function MenuManagement({ user, restaurant }: MenuManagementProps) {
+export default function MenuManagement({ user, store }: MenuManagementProps) {
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
@@ -41,9 +41,9 @@ export default function MenuManagement({ user, restaurant }: MenuManagementProps
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
   useEffect(() => {
-    if (restaurant) {
-      const catQuery = query(collection(db, 'categories'), where('restaurantId', '==', restaurant.id));
-      const prodQuery = query(collection(db, 'products'), where('restaurantId', '==', restaurant.id));
+    if (store) {
+      const catQuery = query(collection(db, 'categories'), where('restaurantId', '==', store.id));
+      const prodQuery = query(collection(db, 'products'), where('restaurantId', '==', store.id));
 
       const unsubCats = onSnapshot(catQuery, (snap) => {
         const cats = snap.docs
@@ -70,12 +70,12 @@ export default function MenuManagement({ user, restaurant }: MenuManagementProps
         unsubProds();
       };
     }
-  }, [restaurant]);
+  }, [store]);
 
-  if (!restaurant) {
+  if (!store) {
     return (
       <div className="bg-white p-12 rounded-3xl border border-gray-100 text-center shadow-sm">
-        <p className="text-gray-500">Vui lòng thiết lập thông tin nhà hàng trước khi quản lý Menu.</p>
+        <p className="text-gray-500">Vui lòng thiết lập thông tin cửa hàng trước khi quản lý Menu.</p>
       </div>
     );
   }
@@ -198,7 +198,7 @@ export default function MenuManagement({ user, restaurant }: MenuManagementProps
       {/* Modals */}
       {showCategoryModal && (
         <CategoryModal
-          restaurantId={restaurant.id}
+          storeId={store.id}
           editing={editingCategory}
           onClose={() => setShowCategoryModal(false)}
         />
@@ -206,7 +206,7 @@ export default function MenuManagement({ user, restaurant }: MenuManagementProps
       {showProductModal && (
         <ProductModal
           user={user}
-          restaurantId={restaurant.id}
+          storeId={store.id}
           categoryId={activeCategory!}
           editing={editingProduct}
           onClose={() => setShowProductModal(false)}
@@ -216,7 +216,7 @@ export default function MenuManagement({ user, restaurant }: MenuManagementProps
   );
 }
 
-function CategoryModal({ restaurantId, editing, onClose }: { restaurantId: string, editing: Category | null, onClose: () => void }) {
+function CategoryModal({ storeId, editing, onClose }: { storeId: string, editing: Category | null, onClose: () => void }) {
   const [name, setName] = useState(editing?.name || '');
   const [loading, setLoading] = useState(false);
 
@@ -231,7 +231,8 @@ function CategoryModal({ restaurantId, editing, onClose }: { restaurantId: strin
         await addDoc(collection(db, 'categories'), {
           name,
           order: Date.now(),
-          restaurantId,
+          storeId,
+          restaurantId: storeId,
           createdAt: new Date().toISOString()
         });
       }
@@ -275,7 +276,7 @@ function CategoryModal({ restaurantId, editing, onClose }: { restaurantId: strin
   );
 }
 
-function ProductModal({ user, restaurantId, categoryId, editing, onClose }: { user: User, restaurantId: string, categoryId: string, editing: Product | null, onClose: () => void }) {
+function ProductModal({ user, storeId, categoryId, editing, onClose }: { user: User, storeId: string, categoryId: string, editing: Product | null, onClose: () => void }) {
   const [formData, setFormData] = useState<{
     name: string;
     description: string;
@@ -337,7 +338,8 @@ function ProductModal({ user, restaurantId, categoryId, editing, onClose }: { us
         ...formData,
         price: formData.price,
         categoryId,
-        restaurantId,
+        storeId,
+        restaurantId: storeId,
         updatedAt: new Date().toISOString()
       };
 

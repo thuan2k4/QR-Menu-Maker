@@ -1,6 +1,6 @@
 {
-  "name": "QR Menu Maker",
-  "description": "Nền tảng tạo menu kỹ thuật số và mã QR chuyên nghiệp cho nhà hàng, spa và các dịch vụ khác.",
+  "name": "MenuQRGenerate",
+  "description": "Nền tảng tạo menu kỹ thuật số và mã QR chuyên nghiệp cho cửa hàng, dịch vụ và các mô hình kinh doanh khác.",
   "requestFramePermissions": [
     "camera",
     "microphone"

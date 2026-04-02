@@ -1,6 +1,6 @@
 import { QRCodeSVG } from 'qrcode.react';
 import { User } from 'firebase/auth';
-import { Restaurant } from '../../types';
+import { Store } from '../../types';
 import { Download, ExternalLink, QrCode, Utensils, LayoutList } from 'lucide-react';
 import React, { useState, useEffect, ReactNode } from 'react';
 import { collection, query, where, getDocs } from 'firebase/firestore';
@@ -8,32 +8,32 @@ import { db } from '../../firebase';
 
 interface OverviewProps {
   user: User;
-  restaurant: Restaurant | null;
+  store: Store | null;
 }
 
-export default function Overview({ user, restaurant }: OverviewProps) {
+export default function Overview({ user, store }: OverviewProps) {
   const [stats, setStats] = useState({ categories: 0, products: 0 });
 
   useEffect(() => {
-    if (restaurant) {
+    if (store) {
       const fetchStats = async () => {
-        const catQuery = query(collection(db, 'categories'), where('restaurantId', '==', restaurant.id));
-        const prodQuery = query(collection(db, 'products'), where('restaurantId', '==', restaurant.id));
+        const catQuery = query(collection(db, 'categories'), where('restaurantId', '==', store.id));
+        const prodQuery = query(collection(db, 'products'), where('restaurantId', '==', store.id));
         const [catSnap, prodSnap] = await Promise.all([getDocs(catQuery), getDocs(prodQuery)]);
         setStats({ categories: catSnap.size, products: prodSnap.size });
       };
       fetchStats();
     }
-  }, [restaurant]);
+  }, [store]);
 
-  if (!restaurant) {
+  if (!store) {
     return (
       <div className="bg-white p-12 rounded-3xl border border-gray-100 text-center shadow-sm">
         <div className="bg-orange-50 p-4 rounded-full inline-flex mb-6">
           <QrCode className="text-orange-500 w-12 h-12" />
         </div>
         <h2 className="text-2xl font-bold mb-2">Chào mừng bạn!</h2>
-        <p className="text-gray-500 mb-8 max-w-md mx-auto">Bạn chưa thiết lập thông tin nhà hàng. Hãy bắt đầu bằng cách cập nhật thông tin cơ bản để tạo Menu.</p>
+        <p className="text-gray-500 mb-8 max-w-md mx-auto">Bạn chưa thiết lập thông tin cửa hàng. Hãy bắt đầu bằng cách cập nhật thông tin cơ bản để tạo Menu.</p>
         <a href="/dashboard/settings" className="bg-orange-500 text-white px-8 py-4 rounded-full font-bold hover:bg-orange-600 transition-all shadow-lg shadow-orange-200">
           Thiết lập ngay
         </a>
@@ -41,7 +41,7 @@ export default function Overview({ user, restaurant }: OverviewProps) {
     );
   }
 
-  const menuUrl = `${window.location.origin}/m/${restaurant.slug}`;
+  const menuUrl = `${window.location.origin}/m/${store.slug}`;
 
   const downloadQR = () => {
     const svg = document.getElementById('qr-code-svg');
@@ -56,7 +56,7 @@ export default function Overview({ user, restaurant }: OverviewProps) {
         ctx?.drawImage(img, 0, 0);
         const pngFile = canvas.toDataURL('image/png');
         const downloadLink = document.createElement('a');
-        downloadLink.download = `qr-menu-${restaurant.slug}.png`;
+        downloadLink.download = `qr-menu-${store.slug}.png`;
         downloadLink.href = pngFile;
         downloadLink.click();
       };
@@ -85,7 +85,7 @@ export default function Overview({ user, restaurant }: OverviewProps) {
               level="H"
               includeMargin={true}
               imageSettings={{
-                src: restaurant.logoUrl || "https://picsum.photos/seed/restaurant/200/200",
+                src: store.logoUrl || "https://picsum.photos/seed/store/200/200",
                 x: undefined,
                 y: undefined,
                 height: 40,
@@ -117,7 +117,7 @@ export default function Overview({ user, restaurant }: OverviewProps) {
         <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
           <h3 className="text-xl font-bold mb-6">Hướng dẫn nhanh</h3>
           <div className="space-y-6">
-            <TipItem step="1" title="Cập nhật thông tin" description="Vào phần Thông tin cửa hàng để cập nhật Logo, Ảnh bìa và giới thiệu nhà hàng." />
+            <TipItem step="1" title="Cập nhật thông tin" description="Vào phần Thông tin cửa hàng để cập nhật Logo, Ảnh bìa và giới thiệu cửa hàng." />
             <TipItem step="2" title="Tạo danh mục" description="Tạo các danh mục như: Khai vị, Món chính, Đồ uống..." />
             <TipItem step="3" title="Thêm món ăn" description="Thêm hình ảnh, mô tả và giá cho từng món ăn trong danh mục." />
             <TipItem step="4" title="In mã QR" description="Tải mã QR về, in ra và dán tại bàn để khách hàng quét." />

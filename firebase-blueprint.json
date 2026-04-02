@@ -1,52 +1,130 @@
 {
   "entities": {
-    "Restaurant": {
-      "title": "Restaurant",
-      "description": "Thông tin cơ bản của nhà hàng/cửa hàng",
+    "Store": {
+      "title": "Store",
+      "description": "Thông tin cơ bản của cửa hàng/dịch vụ",
       "type": "object",
       "properties": {
-        "name": { "type": "string", "description": "Tên nhà hàng" },
-        "bio": { "type": "string", "description": "Giới thiệu ngắn" },
-        "address": { "type": "string", "description": "Địa chỉ nhà hàng" },
-        "logoUrl": { "type": "string", "description": "URL ảnh đại diện" },
-        "coverUrl": { "type": "string", "description": "URL ảnh bìa" },
-        "slug": { "type": "string", "description": "Đường dẫn duy nhất cho menu" },
-        "ownerId": { "type": "string", "description": "UID của chủ sở hữu" },
-        "phone": { "type": "string", "description": "Số điện thoại liên hệ" },
-        "themeColor": { "type": "string", "description": "Màu chủ đạo của menu" }
+        "name": {
+          "type": "string",
+          "description": "Tên cửa hàng"
+        },
+        "bio": {
+          "type": "string",
+          "description": "Giới thiệu ngắn"
+        },
+        "address": {
+          "type": "string",
+          "description": "Địa chỉ cửa hàng"
+        },
+        "logoUrl": {
+          "type": "string",
+          "description": "URL ảnh đại diện"
+        },
+        "coverUrl": {
+          "type": "string",
+          "description": "URL ảnh bìa"
+        },
+        "slug": {
+          "type": "string",
+          "description": "Đường dẫn duy nhất cho menu"
+        },
+        "ownerId": {
+          "type": "string",
+          "description": "UID của chủ sở hữu"
+        },
+        "phone": {
+          "type": "string",
+          "description": "Số điện thoại liên hệ"
+        },
+        "primaryColor": {
+          "type": "string",
+          "description": "Màu chủ đạo của menu"
+        },
+        "themeColor": {
+          "type": "string",
+          "description": "Màu chủ đạo (legacy)"
+        }
       },
-      "required": ["name", "slug", "ownerId"]
+      "required": [
+        "name",
+        "slug",
+        "ownerId"
+      ]
     },
     "Category": {
       "title": "Category",
       "description": "Danh mục sản phẩm",
       "type": "object",
       "properties": {
-        "name": { "type": "string", "description": "Tên danh mục" },
-        "order": { "type": "integer", "description": "Thứ tự hiển thị" },
-        "restaurantId": { "type": "string", "description": "ID nhà hàng sở hữu" }
+        "name": {
+          "type": "string",
+          "description": "Tên danh mục"
+        },
+        "order": {
+          "type": "integer",
+          "description": "Thứ tự hiển thị"
+        },
+        "storeId": {
+          "type": "string",
+          "description": "ID cửa hàng sở hữu"
+        },
+        "restaurantId": {
+          "type": "string",
+          "description": "ID nhà hàng cũ (legacy)"
+        }
       },
-      "required": ["name", "restaurantId"]
+      "required": [
+        "name",
+        "storeId"
+      ]
     },
     "Product": {
       "title": "Product",
       "description": "Sản phẩm/Món ăn trong menu",
       "type": "object",
       "properties": {
-        "name": { "type": "string", "description": "Tên sản phẩm" },
-        "description": { "type": "string", "description": "Mô tả chi tiết" },
-        "price": { "type": "number", "description": "Giá bán" },
-        "imageUrl": { "type": "string", "description": "URL ảnh sản phẩm" },
-        "categoryId": { "type": "string", "description": "ID danh mục" },
-        "restaurantId": { "type": "string", "description": "ID nhà hàng" }
+        "name": {
+          "type": "string",
+          "description": "Tên sản phẩm"
+        },
+        "description": {
+          "type": "string",
+          "description": "Mô tả chi tiết"
+        },
+        "price": {
+          "type": "number",
+          "description": "Giá bán"
+        },
+        "imageUrl": {
+          "type": "string",
+          "description": "URL ảnh sản phẩm"
+        },
+        "categoryId": {
+          "type": "string",
+          "description": "ID danh mục"
+        },
+        "storeId": {
+          "type": "string",
+          "description": "ID cửa hàng"
+        },
+        "restaurantId": {
+          "type": "string",
+          "description": "ID nhà hàng cũ (legacy)"
+        }
       },
-      "required": ["name", "price", "categoryId", "restaurantId"]
+      "required": [
+        "name",
+        "price",
+        "categoryId",
+        "storeId"
+      ]
     }
   },
   "firestore": {
-    "/restaurants/{restaurantId}": {
-      "schema": "Restaurant",
-      "description": "Dữ liệu nhà hàng"
+    "/restaurants/{storeId}": {
+      "schema": "Store",
+      "description": "Dữ liệu cửa hàng (collection restaurants giữ tên cũ)"
     },
     "/categories/{categoryId}": {
       "schema": "Category",

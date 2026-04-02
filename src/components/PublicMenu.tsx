@@ -2,13 +2,13 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { db } from '../firebase';
 import { collection, query, where, getDocs, onSnapshot } from 'firebase/firestore';
-import { Restaurant, Category, Product } from '../types';
+import { Store, Category, Product } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 import { Smartphone, Info, MapPin, Phone, ShoppingBag, X } from 'lucide-react';
 
 export default function PublicMenu() {
   const { slug } = useParams<{ slug: string }>();
-  const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
+  const [store, setStore] = useState<Store | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
@@ -17,16 +17,16 @@ export default function PublicMenu() {
 
   useEffect(() => {
     if (slug) {
-      const fetchRestaurant = async () => {
+      const fetchStore = async () => {
         const q = query(collection(db, 'restaurants'), where('slug', '==', slug));
         const snap = await getDocs(q);
         if (!snap.empty) {
-          const resData = { id: snap.docs[0].id, ...snap.docs[0].data() } as Restaurant;
-          setRestaurant(resData);
+          const storeData = { id: snap.docs[0].id, ...snap.docs[0].data() } as Store;
+          setStore(storeData);
 
           // Fetch categories and products
-          const catQuery = query(collection(db, 'categories'), where('restaurantId', '==', resData.id));
-          const prodQuery = query(collection(db, 'products'), where('restaurantId', '==', resData.id));
+          const catQuery = query(collection(db, 'categories'), where('restaurantId', '==', storeData.id));
+          const prodQuery = query(collection(db, 'products'), where('restaurantId', '==', storeData.id));
 
           onSnapshot(catQuery, (catSnap) => {
             const cats = catSnap.docs
@@ -46,7 +46,7 @@ export default function PublicMenu() {
         }
         setLoading(false);
       };
-      fetchRestaurant();
+      fetchStore();
     }
   }, [slug]);
 
@@ -58,7 +58,7 @@ export default function PublicMenu() {
     );
   }
 
-  if (!restaurant) {
+  if (!store) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-gray-50">
         <Smartphone className="w-16 h-16 text-gray-300 mb-4" />
@@ -68,7 +68,7 @@ export default function PublicMenu() {
     );
   }
 
-  const themeColor = restaurant.themeColor || '#f97316';
+  const themeColor = store.primaryColor || store.themeColor || '#f97316';
 
   const filteredProducts = activeCategory
     ? products.filter(p => p.categoryId === activeCategory)
@@ -78,44 +78,44 @@ export default function PublicMenu() {
     <div className="min-h-screen bg-gray-50 font-sans pb-20">
       {/* Cover Image */}
       <div className="h-48 md:h-64 w-full relative overflow-hidden">
-        {restaurant.coverUrl ? (
-          <img src={restaurant.coverUrl} alt="Cover" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+        {store.coverUrl ? (
+          <img src={store.coverUrl} alt="Cover" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
         ) : (
           <div className="w-full h-full bg-orange-500" style={{ backgroundColor: themeColor }} />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
       </div>
 
-      {/* Restaurant Info */}
+      {/* Store Info */}
       <div className="max-w-2xl mx-auto px-6 -mt-12 relative z-10">
         <div className="bg-white rounded-3xl p-6 shadow-xl shadow-gray-200/50 border border-gray-100">
           <div className="flex items-start gap-4">
             <div className="w-20 h-20 bg-white rounded-2xl overflow-hidden border-4 border-white shadow-lg flex-shrink-0 -mt-16">
-              {restaurant.logoUrl ? (
-                <img src={restaurant.logoUrl} alt="Logo" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+              {store.logoUrl ? (
+                <img src={store.logoUrl} alt="Logo" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
               ) : (
                 <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-300 font-bold text-xl">
-                  {restaurant.name.charAt(0)}
+                  {store.name.charAt(0)}
                 </div>
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <h1 className="text-2xl font-bold text-gray-900 truncate">{restaurant.name}</h1>
+              <h1 className="text-2xl font-bold text-gray-900 truncate">{store.name}</h1>
               <div className="flex flex-col gap-1 mt-1">
-                {restaurant.address && (
+                {store.address && (
                   <p className="text-xs text-gray-400 flex items-center gap-1">
                     <MapPin size={12} style={{ color: themeColor }} />
-                    {restaurant.address}
+                    {store.address}
                   </p>
                 )}
-                {restaurant.phone && (
+                {store.phone && (
                   <p className="text-xs text-gray-400 flex items-center gap-1">
                     <Phone size={12} style={{ color: themeColor }} />
-                    {restaurant.phone}
+                    {store.phone}
                   </p>
                 )}
               </div>
-              <p className="text-sm text-gray-500 line-clamp-2 mt-1">{restaurant.bio}</p>
+              <p className="text-sm text-gray-500 line-clamp-2 mt-1">{store.bio}</p>
             </div>
           </div>
         </div>
@@ -129,8 +129,8 @@ export default function PublicMenu() {
               key={cat.id}
               onClick={() => setActiveCategory(cat.id)}
               className={`whitespace-nowrap px-6 py-2.5 rounded-full text-sm font-bold transition-all ${activeCategory === cat.id
-                  ? 'text-white shadow-lg'
-                  : 'bg-white text-gray-500 border border-gray-100'
+                ? 'text-white shadow-lg'
+                : 'bg-white text-gray-500 border border-gray-100'
                 }`}
               style={{
                 backgroundColor: activeCategory === cat.id ? themeColor : undefined,
@@ -259,7 +259,7 @@ export default function PublicMenu() {
       {/* Footer Info */}
       <div className="max-w-2xl mx-auto px-4 mt-12 text-center">
         <div className="h-px bg-gray-200 w-24 mx-auto mb-6" />
-        <p className="text-gray-400 text-xs uppercase tracking-widest font-bold">Cung cấp bởi QR Menu Maker</p>
+        <p className="text-gray-400 text-xs uppercase tracking-widest font-bold">Cung cấp bởi MenuQRGenerate</p>
       </div>
     </div>
   );
