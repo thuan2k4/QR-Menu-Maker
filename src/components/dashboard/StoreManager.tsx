@@ -80,7 +80,7 @@ export default function StoreManager({ user }: StoreManagerProps) {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <Link to="/dashboard" className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-400">
+          <Link to="/dashboard/stores" className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-400">
             <ChevronLeft size={24} />
           </Link>
           <div>

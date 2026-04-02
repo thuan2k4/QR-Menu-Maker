@@ -87,6 +87,23 @@ service cloud.firestore {
              data.categoryId is string && (data.storeId is string || data.restaurantId is string);
     }
 
+    function isValidAnalyticsType(type) {
+      return type == 'menu_view' || type == 'product_detail_click';
+    }
+
+    function isValidAnalyticsEvent(data) {
+      return isValidAnalyticsType(data.type) &&
+             data.storeId is string &&
+             getStoreOwnerId(data.storeId) != null &&
+             (data.productId == null || data.productId is string) &&
+             (data.slug == null || data.slug is string) &&
+             (data.userId == null || data.userId is string) &&
+             (data.country == null || data.country is string) &&
+             (data.device == null || data.device is string) &&
+             (data.menuVisibility == null || data.menuVisibility == 'public' || data.menuVisibility == 'private') &&
+             (data.extra == null || data.extra is map);
+    }
+
     // Rules
     match /restaurants/{storeId} {
       allow read: if true; // Publicly readable for menu display
@@ -124,6 +141,15 @@ service cloud.firestore {
         );
       allow delete: if isAuthenticated() &&
         isStoreOwnerOrAdmin(getStoreRef(resource.data));
+    }
+
+    match /analytics/{eventId} {
+      allow create: if isValidAnalyticsEvent(request.resource.data) &&
+        request.resource.data.timestamp == request.time;
+      allow read: if isAuthenticated() &&
+        resource.data.storeId is string &&
+        isStoreOwnerOrAdmin(resource.data.storeId);
+      allow update, delete: if false;
     }
 
     match /users/{userId} {

@@ -119,6 +119,58 @@
         "categoryId",
         "storeId"
       ]
+    },
+    "Analytics": {
+      "title": "Analytics",
+      "description": "Sự kiện tương tác menu công khai",
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Loại sự kiện: menu_view hoặc product_detail_click"
+        },
+        "storeId": {
+          "type": "string",
+          "description": "ID cửa hàng"
+        },
+        "productId": {
+          "type": "string",
+          "description": "ID sản phẩm (nếu có)"
+        },
+        "slug": {
+          "type": "string",
+          "description": "Slug menu public"
+        },
+        "userId": {
+          "type": "string",
+          "description": "UID người dùng (nếu đã đăng nhập)"
+        },
+        "country": {
+          "type": "string",
+          "description": "Quốc gia suy ra từ locale"
+        },
+        "device": {
+          "type": "string",
+          "description": "Thiết bị truy cập: mobile/tablet/desktop"
+        },
+        "menuVisibility": {
+          "type": "string",
+          "description": "Trạng thái menu tại thời điểm event"
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "Thời điểm ghi event"
+        },
+        "extra": {
+          "type": "object",
+          "description": "Metadata bổ sung"
+        }
+      },
+      "required": [
+        "type",
+        "storeId",
+        "timestamp"
+      ]
     }
   },
   "firestore": {
@@ -133,6 +185,10 @@
     "/products/{productId}": {
       "schema": "Product",
       "description": "Dữ liệu sản phẩm"
+    },
+    "/analytics/{eventId}": {
+      "schema": "Analytics",
+      "description": "Dữ liệu tracking menu view và product detail click"
     }
   }
 }

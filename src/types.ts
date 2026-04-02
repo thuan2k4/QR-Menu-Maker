@@ -52,3 +52,25 @@ export interface UserProfile {
   displayName: string;
   role: 'admin' | 'user';
 }
+
+export type AnalyticsEventType = 'menu_view' | 'product_detail_click';
+
+export interface AnalyticsEvent {
+  id?: string;
+  type: AnalyticsEventType;
+  storeId: string;
+  productId?: string | null;
+  slug?: string | null;
+  userId?: string | null;
+  country?: string | null;
+  device?: 'mobile' | 'tablet' | 'desktop' | 'unknown';
+  menuVisibility?: 'public' | 'private' | null;
+  timestamp?: Date | string | number;
+  extra?: Record<string, unknown>;
+}
+
+export interface MenuMetrics {
+  menuViews: number;
+  productDetailClicks: number;
+  conversionRate: number;
+}

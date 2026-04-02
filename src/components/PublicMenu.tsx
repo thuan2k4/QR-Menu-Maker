@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import { auth, db } from '../firebase';
+import { auth, db, logEvent } from '../firebase';
 import { collection, query, where, getDocs, onSnapshot } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import { Store, Category, Product } from '../types';
@@ -16,6 +16,7 @@ export default function PublicMenu() {
   const [loading, setLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const lastMenuViewKeyRef = useRef<string | null>(null);
 
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
@@ -29,6 +30,9 @@ export default function PublicMenu() {
 
   useEffect(() => {
     if (slug) {
+      let unsubscribeCategories: (() => void) | null = null;
+      let unsubscribeProducts: (() => void) | null = null;
+
       const fetchStore = async () => {
         const q = query(collection(db, 'restaurants'), where('slug', '==', slug));
         const snap = await getDocs(q);
@@ -40,7 +44,7 @@ export default function PublicMenu() {
           const catQuery = query(collection(db, 'categories'), where('restaurantId', '==', storeData.id));
           const prodQuery = query(collection(db, 'products'), where('restaurantId', '==', storeData.id));
 
-          onSnapshot(catQuery, (catSnap) => {
+          unsubscribeCategories = onSnapshot(catQuery, (catSnap) => {
             const cats = catSnap.docs
               .map(d => ({ id: d.id, ...d.data() } as Category))
               .sort((a, b) => a.order - b.order);
@@ -50,7 +54,7 @@ export default function PublicMenu() {
             console.error('Failed to subscribe public categories snapshot:', error);
           });
 
-          onSnapshot(prodQuery, (prodSnap) => {
+          unsubscribeProducts = onSnapshot(prodQuery, (prodSnap) => {
             setProducts(prodSnap.docs.map(d => ({ id: d.id, ...d.data() } as Product)));
           }, (error) => {
             console.error('Failed to subscribe public products snapshot:', error);
@@ -59,8 +63,36 @@ export default function PublicMenu() {
         setLoading(false);
       };
       fetchStore();
+
+      return () => {
+        unsubscribeCategories?.();
+        unsubscribeProducts?.();
+      };
     }
   }, [slug]);
+
+  useEffect(() => {
+    if (!store || !slug) return;
+
+    const menuVisibility = store.menuVisibility || 'private';
+    const isOwner = !!currentUserId && currentUserId === store.ownerId;
+    if (menuVisibility !== 'public' && !isOwner) return;
+
+    const viewerType = isOwner ? 'owner-preview' : 'public-user';
+    const eventKey = `${store.id}:${slug}:${viewerType}`;
+    if (lastMenuViewKeyRef.current === eventKey) return;
+
+    lastMenuViewKeyRef.current = eventKey;
+    void logEvent('menu_view', {
+      storeId: store.id,
+      slug: store.slug,
+      menuVisibility,
+      extra: {
+        source: 'public_menu',
+        viewerType,
+      },
+    });
+  }, [store, slug, currentUserId]);
 
   if (loading) {
     return (
@@ -122,6 +154,21 @@ export default function PublicMenu() {
   const filteredProducts = activeCategory
     ? products.filter(p => p.categoryId === activeCategory)
     : [];
+
+  const handleProductClick = (prod: Product) => {
+    setSelectedProduct(prod);
+    void logEvent('product_detail_click', {
+      storeId: store.id,
+      productId: prod.id,
+      slug: store.slug,
+      menuVisibility,
+      extra: {
+        source: 'public_menu',
+        categoryId: prod.categoryId,
+        viewerType: isOwner ? 'owner-preview' : 'public-user',
+      },
+    });
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans pb-20">
@@ -212,7 +259,7 @@ export default function PublicMenu() {
             {filteredProducts.map(prod => (
               <div
                 key={prod.id}
-                onClick={() => setSelectedProduct(prod)}
+                onClick={() => handleProductClick(prod)}
                 className="bg-white p-4 rounded-2xl flex gap-4 border border-gray-100 shadow-sm transition-all hover:shadow-md cursor-pointer active:scale-[0.98]"
               >
                 <div className="w-24 h-24 bg-gray-50 rounded-xl overflow-hidden flex-shrink-0 border border-gray-50">

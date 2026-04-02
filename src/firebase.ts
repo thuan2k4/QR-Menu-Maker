@@ -1,8 +1,9 @@
 import { FirebaseOptions, initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { addDoc, collection, getFirestore, serverTimestamp } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import firebaseConfig from '../firebase-applet-config.json';
+import { AnalyticsEventType, Store } from './types';
 
 // const firebaseConfig = {
 //   apiKey: "AIzaSyBcKt2Q6e1us84cVCUcrstDQ8-mYDRLGoM",
@@ -53,5 +54,47 @@ export const storageDebugInfo = {
   primaryBucket: normalizedStorageBucket || null,
   fallbackBucket: fallbackStorageBucket || null,
 };
+
+type AnalyticsPayload = {
+  storeId: string;
+  productId?: string;
+  slug?: string;
+  menuVisibility?: Store['menuVisibility'];
+  extra?: Record<string, unknown>;
+};
+
+const detectDeviceType = (): 'mobile' | 'tablet' | 'desktop' | 'unknown' => {
+  if (typeof navigator === 'undefined') return 'unknown';
+  const ua = navigator.userAgent.toLowerCase();
+  if (/ipad|tablet|playbook|silk/.test(ua)) return 'tablet';
+  if (/mobi|android|iphone|ipod|blackberry|phone/.test(ua)) return 'mobile';
+  return 'desktop';
+};
+
+const getCountryFromLocale = (): string | null => {
+  if (typeof navigator === 'undefined') return null;
+  const locale = navigator.language || '';
+  const parts = locale.split('-');
+  return parts.length > 1 ? parts[1].toUpperCase() : null;
+};
+
+export async function logEvent(eventName: AnalyticsEventType, payload: AnalyticsPayload): Promise<void> {
+  try {
+    await addDoc(collection(db, 'analytics'), {
+      type: eventName,
+      storeId: payload.storeId,
+      productId: payload.productId || null,
+      slug: payload.slug || null,
+      userId: auth.currentUser?.uid || null,
+      country: getCountryFromLocale(),
+      device: detectDeviceType(),
+      menuVisibility: payload.menuVisibility || null,
+      extra: payload.extra || {},
+      timestamp: serverTimestamp(),
+    });
+  } catch (error) {
+    console.error('Failed to write analytics event:', error);
+  }
+}
 
 export default app;

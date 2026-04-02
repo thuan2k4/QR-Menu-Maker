@@ -1,9 +1,9 @@
 import { QRCodeSVG } from 'qrcode.react';
 import { User } from 'firebase/auth';
 import { Store } from '../../types';
-import { Download, ExternalLink, QrCode, Utensils, LayoutList } from 'lucide-react';
+import { Download, ExternalLink, QrCode, Utensils, LayoutList, Eye, MousePointerClick } from 'lucide-react';
 import React, { useState, useEffect, ReactNode } from 'react';
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { collection, query, where, getDocs, onSnapshot } from 'firebase/firestore';
 import { db } from '../../firebase';
 
 interface OverviewProps {
@@ -13,6 +13,24 @@ interface OverviewProps {
 
 export default function Overview({ user, store }: OverviewProps) {
   const [stats, setStats] = useState({ categories: 0, products: 0 });
+  const [timeRange, setTimeRange] = useState<7 | 30>(7);
+  const [analyticsStats, setAnalyticsStats] = useState({
+    menuViews: 0,
+    productDetailClicks: 0,
+  });
+
+  const getEventDate = (value: unknown): Date | null => {
+    if (!value) return null;
+    if (value instanceof Date) return value;
+    if (typeof value === 'string' || typeof value === 'number') {
+      const date = new Date(value);
+      return Number.isNaN(date.getTime()) ? null : date;
+    }
+    if (typeof value === 'object' && value !== null && 'toDate' in value && typeof (value as { toDate: () => Date }).toDate === 'function') {
+      return (value as { toDate: () => Date }).toDate();
+    }
+    return null;
+  };
 
   useEffect(() => {
     if (store) {
@@ -25,6 +43,39 @@ export default function Overview({ user, store }: OverviewProps) {
       fetchStats();
     }
   }, [store]);
+
+  useEffect(() => {
+    if (!store) return;
+
+    const analyticsQuery = query(collection(db, 'analytics'), where('storeId', '==', store.id));
+    const unsubscribe = onSnapshot(analyticsQuery, (analyticsSnap) => {
+      const cutoffDate = new Date();
+      cutoffDate.setDate(cutoffDate.getDate() - timeRange);
+
+      let menuViews = 0;
+      let productDetailClicks = 0;
+
+      analyticsSnap.docs.forEach((eventDoc) => {
+        const data = eventDoc.data();
+        const eventDate = getEventDate(data.timestamp);
+        if (!eventDate || eventDate < cutoffDate) return;
+
+        if (data.type === 'menu_view') {
+          menuViews += 1;
+        }
+        if (data.type === 'product_detail_click') {
+          productDetailClicks += 1;
+        }
+      });
+
+      setAnalyticsStats({
+        menuViews,
+        productDetailClicks,
+      });
+    });
+
+    return () => unsubscribe();
+  }, [store, timeRange]);
 
   if (!store) {
     return (
@@ -66,11 +117,30 @@ export default function Overview({ user, store }: OverviewProps) {
 
   return (
     <div className="space-y-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <h3 className="text-lg font-bold text-gray-900">Chỉ số menu</h3>
+        <div className="flex items-center gap-2 bg-gray-100 rounded-xl p-1 w-fit">
+          <button
+            onClick={() => setTimeRange(7)}
+            className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${timeRange === 7 ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
+          >
+            7 ngày
+          </button>
+          <button
+            onClick={() => setTimeRange(30)}
+            className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${timeRange === 30 ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
+          >
+            30 ngày
+          </button>
+        </div>
+      </div>
+
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <StatCard icon={<Utensils className="text-orange-500" />} label="Sản phẩm" value={stats.products} />
-        <StatCard icon={<LayoutList className="text-blue-500" />} label="Danh mục" value={stats.categories} />
-        <StatCard icon={<QrCode className="text-green-500" />} label="Lượt quét" value="Sắp có" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+        <StatCard icon={<Eye className="text-emerald-500" size={16} />} label="Lượt xem menu" value={analyticsStats.menuViews} />
+        <StatCard icon={<MousePointerClick className="text-fuchsia-500" size={16} />} label="Click chi tiết" value={analyticsStats.productDetailClicks} />
+        <StatCard icon={<Utensils className="text-orange-500" size={16} />} label="Sản phẩm" value={stats.products} />
+        <StatCard icon={<LayoutList className="text-blue-500" size={16} />} label="Danh mục" value={stats.categories} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -130,12 +200,12 @@ export default function Overview({ user, store }: OverviewProps) {
 
 function StatCard({ icon, label, value }: { icon: ReactNode, label: string, value: string | number }) {
   return (
-    <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm flex items-center gap-4">
-      <div className="bg-gray-50 p-3 rounded-2xl">{icon}</div>
-      <div>
-        <p className="text-sm text-gray-400 font-medium">{label}</p>
-        <p className="text-2xl font-bold text-gray-900">{value}</p>
+    <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
+      <div className="flex items-center gap-2 text-sm text-gray-500 font-medium">
+        {icon}
+        <span>{label}</span>
       </div>
+      <p className="text-3xl font-bold text-gray-900 mt-2">{value}</p>
     </div>
   );
 }
