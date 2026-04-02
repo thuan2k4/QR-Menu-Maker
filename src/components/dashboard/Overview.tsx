@@ -118,9 +118,9 @@ export default function Overview({ user, store }: OverviewProps) {
           <h3 className="text-xl font-bold mb-6">Hướng dẫn nhanh</h3>
           <div className="space-y-6">
             <TipItem step="1" title="Cập nhật thông tin" description="Vào phần Thông tin cửa hàng để cập nhật Logo, Ảnh bìa và giới thiệu cửa hàng." />
-            <TipItem step="2" title="Tạo danh mục" description="Tạo các danh mục như: Khai vị, Món chính, Đồ uống..." />
-            <TipItem step="3" title="Thêm món ăn" description="Thêm hình ảnh, mô tả và giá cho từng món ăn trong danh mục." />
-            <TipItem step="4" title="In mã QR" description="Tải mã QR về, in ra và dán tại bàn để khách hàng quét." />
+            <TipItem step="2" title="Tạo danh mục" description="Tạo các danh mục như: Đồ uống, Chăm sóc, Trẻ em..." />
+            <TipItem step="3" title="Thêm sản phẩm" description="Thêm hình ảnh, mô tả và giá cho từng sản phẩm trong danh mục." />
+            <TipItem step="4" title="In mã QR" description="Tải mã QR" />
           </div>
         </div>
       </div>
