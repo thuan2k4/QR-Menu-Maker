@@ -22,7 +22,8 @@ export default function RestaurantSettings({ user, restaurant, onCreated }: Rest
     address: '',
     phone: '',
     primaryColor: '#f97316', // Default orange-500
-    themeColor: '#f97316' // backward compatibility
+    themeColor: '#f97316', // backward compatibility
+    menuVisibility: 'private' as 'public' | 'private'
   });
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState<'logo' | 'cover' | null>(null);
@@ -42,7 +43,8 @@ export default function RestaurantSettings({ user, restaurant, onCreated }: Rest
         address: restaurant.address || '',
         phone: restaurant.phone || '',
         primaryColor: restaurant.primaryColor || restaurant.themeColor || '#f97316',
-        themeColor: restaurant.themeColor || '#f97316'
+        themeColor: restaurant.themeColor || '#f97316',
+        menuVisibility: restaurant.menuVisibility || 'private'
       });
     } else {
       setFormData({
@@ -54,7 +56,8 @@ export default function RestaurantSettings({ user, restaurant, onCreated }: Rest
         address: '',
         phone: '',
         primaryColor: '#f97316',
-        themeColor: '#f97316'
+        themeColor: '#f97316',
+        menuVisibility: 'private'
       });
     }
   }, [restaurant]);
@@ -95,6 +98,7 @@ export default function RestaurantSettings({ user, restaurant, onCreated }: Rest
 
       const dataToSave = {
         ...formData,
+        menuVisibility: formData.menuVisibility || 'private',
         updatedAt: new Date().toISOString()
       };
 
@@ -220,6 +224,33 @@ export default function RestaurantSettings({ user, restaurant, onCreated }: Rest
                     onChange={(e) => setFormData(prev => ({ ...prev, primaryColor: e.target.value, themeColor: e.target.value }))}
                     className="flex-1 px-5 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none text-sm font-mono"
                   />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Trạng thái Menu</label>
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, menuVisibility: 'public' }))}
+                    className={`px-4 py-2 rounded-2xl font-bold transition-all ${formData.menuVisibility === 'public'
+                      ? 'bg-green-500 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-green-100'
+                      }`}
+                  >
+                    Public
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, menuVisibility: 'private' }))}
+                    className={`px-4 py-2 rounded-2xl font-bold transition-all ${formData.menuVisibility === 'private'
+                      ? 'bg-gray-700 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                  >
+                    Private
+                  </button>
+                  <span className="text-xs text-gray-500">(menu sẽ được công khai khi chọn Public)</span>
                 </div>
               </div>
 

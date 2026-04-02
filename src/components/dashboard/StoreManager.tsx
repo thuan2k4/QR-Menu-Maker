@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
-import { doc, onSnapshot } from 'firebase/firestore';
+import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { Store } from '../../types';
 import { User } from 'firebase/auth';
@@ -52,6 +52,20 @@ export default function StoreManager({ user }: StoreManagerProps) {
 
   if (!store) return null;
 
+  const currentVisibility = store.menuVisibility || 'private';
+  const isOwner = user.uid === store.ownerId;
+
+  const handleVisibilityToggle = async () => {
+    if (!isOwner) return;
+    const newVisibility = currentVisibility === 'public' ? 'private' : 'public';
+    try {
+      await updateDoc(doc(db, 'restaurants', store.id), { menuVisibility: newVisibility, updatedAt: new Date().toISOString() });
+    } catch (error) {
+      console.error('Không thể cập nhật trạng thái menu:', error);
+      alert('Không thể cập nhật trạng thái menu. Vui lòng thử lại.');
+    }
+  };
+
   const tabs = [
     { id: 'overview', label: 'Mã QR', icon: <QrCode size={18} />, path: `/dashboard/store/${id}` },
     { id: 'menu', label: 'Quản lý Menu', icon: <MenuIcon size={18} />, path: `/dashboard/store/${id}/menu` },
@@ -78,6 +92,18 @@ export default function StoreManager({ user }: StoreManagerProps) {
               </a>
             </div>
           </div>
+        </div>
+        <div className="flex items-center gap-3 mt-4 md:mt-0">
+          <span className={`px-3 py-1 rounded-full text-xs font-bold ${currentVisibility === 'public' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
+            {currentVisibility === 'public' ? 'Công khai' : 'Riêng tư'}
+          </span>
+          <button
+            onClick={handleVisibilityToggle}
+            disabled={!isOwner}
+            className={`px-4 py-2 rounded-2xl font-bold transition-all ${isOwner ? 'bg-orange-500 text-white hover:bg-orange-600' : 'bg-gray-200 text-gray-500 cursor-not-allowed'}`}
+          >
+            {currentVisibility === 'public' ? 'Chuyển về Private' : 'Chuyển Public'}
+          </button>
         </div>
       </div>
 

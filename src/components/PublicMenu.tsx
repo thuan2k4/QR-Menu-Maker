@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { db } from '../firebase';
+import { auth, db } from '../firebase';
 import { collection, query, where, getDocs, onSnapshot } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
 import { Store, Category, Product } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 import { Smartphone, Info, MapPin, Phone, ShoppingBag, X } from 'lucide-react';
@@ -14,6 +15,17 @@ export default function PublicMenu() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+      setCurrentUserId(user?.uid || null);
+    });
+
+    return () => {
+      unsubscribeAuth();
+    };
+  }, []);
 
   useEffect(() => {
     if (slug) {
@@ -64,6 +76,18 @@ export default function PublicMenu() {
         <Smartphone className="w-16 h-16 text-gray-300 mb-4" />
         <h1 className="text-2xl font-bold text-gray-900">Không tìm thấy Menu</h1>
         <p className="text-gray-500 mt-2">Vui lòng kiểm tra lại mã QR hoặc đường dẫn.</p>
+      </div>
+    );
+  }
+
+  const menuVisibility = store.menuVisibility || 'private';
+  const isOwner = !!currentUserId && currentUserId === store.ownerId;
+
+  if (menuVisibility !== 'public' && !isOwner) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-gray-50">
+        <Info className="w-16 h-16 text-orange-400 mb-4" />
+        <h1 className="text-2xl font-bold text-gray-900">Menu đang trong trạng thái cập nhật, vui lòng quay lại sau.</h1>
       </div>
     );
   }
@@ -120,6 +144,12 @@ export default function PublicMenu() {
           </div>
         </div>
       </div>
+
+      {menuVisibility !== 'public' && isOwner && (
+        <div className="max-w-2xl mx-auto px-6 mt-4 p-4 rounded-2xl bg-orange-50 border border-orange-100 text-orange-700 text-sm font-medium">
+          Menu hiện đang ở chế độ Riêng tư (private). Chỉ bạn mới có thể xem xem trước.
+        </div>
+      )}
 
       {/* Categories Horizontal Scroll */}
       <div className="sticky top-0 bg-gray-50/80 backdrop-blur-md z-20 mt-6 border-b border-gray-100">

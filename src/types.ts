@@ -10,6 +10,7 @@ export interface Store {
   phone?: string;
   primaryColor?: string;
   themeColor?: string; // backward compatibility for existing data
+  menuVisibility?: 'public' | 'private';
 }
 
 export type Restaurant = Store; // legacy alias for compatibility
