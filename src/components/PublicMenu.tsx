@@ -77,9 +77,11 @@ export default function PublicMenu() {
 
     const menuVisibility = store.menuVisibility || 'private';
     const isOwner = !!currentUserId && currentUserId === store.ownerId;
-    if (menuVisibility !== 'public' && !isOwner) return;
 
-    const viewerType = isOwner ? 'owner-preview' : 'public-user';
+    // Chỉ tính lượt xem khi khách hàng public-user truy cập QR (không tính owner-preview)
+    if (menuVisibility !== 'public' || isOwner) return;
+
+    const viewerType = 'public-user';
     const eventKey = `${store.id}:${slug}:${viewerType}`;
     if (lastMenuViewKeyRef.current === eventKey) return;
 
@@ -260,7 +262,7 @@ export default function PublicMenu() {
   };
 
   return (
-    <div className="min-h-screen pb-20" style={rootStyle}>
+    <div className="min-h-screen pb-20 overflow-y-auto" style={rootStyle}>
       {/* Cover Image */}
       <div className="h-48 md:h-64 w-full relative overflow-hidden">
         {store.coverUrl ? (
@@ -286,11 +288,6 @@ export default function PublicMenu() {
             </div>
             <div className="flex-1 min-w-0">
               <h1 className={`${typography.storeTitle} font-bold text-gray-900 truncate`}>{store.name}</h1>
-              <div className="mt-1">
-                <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide" style={{ color: primaryColor, backgroundColor: `${primaryColor}14` }}>
-                  {selectedTemplate.name}
-                </span>
-              </div>
               <div className="flex flex-col gap-1 mt-1">
                 {store.address && (
                   <p className="text-xs text-gray-400 flex items-center gap-1">
@@ -306,99 +303,110 @@ export default function PublicMenu() {
                 )}
               </div>
               <p className="text-sm text-gray-500 line-clamp-2 mt-1">{store.bio}</p>
+              {menuVisibility !== 'public' && isOwner && (
+                <div className="mt-4 rounded-2xl bg-orange-50 border border-orange-100 text-orange-700 text-sm font-medium px-4 py-3">
+                  Menu đang ở chế độ Riêng tư (private). Chỉ bạn mới có thể xem xem trước.
+                </div>
+              )}
             </div>
           </div>
         </div>
       </div>
 
-      {menuVisibility !== 'public' && isOwner && (
-        <div className="max-w-2xl mx-auto px-6 mt-4 p-4 rounded-2xl bg-orange-50 border border-orange-100 text-orange-700 text-sm font-medium">
-          Menu hiện đang ở chế độ Riêng tư (private). Chỉ bạn mới có thể xem xem trước.
+      {categories.length === 0 && (
+        <div className="max-w-2xl mx-auto px-6 mt-6 py-8 bg-white rounded-2xl border border-dashed border-gray-200 text-center text-gray-500">
+          <p className="font-semibold text-gray-700">Menu của quán vẫn đang trống</p>
+          <p className="mt-2 text-sm leading-relaxed">Chưa có danh mục hoặc sản phẩm nào. Chủ cửa hàng cần vào quản trị để thêm danh mục và sản phẩm.</p>
         </div>
       )}
 
-      {/* Categories Horizontal Scroll */}
-      <div className="sticky top-0 backdrop-blur-md z-20 mt-6 border-b border-gray-100" style={{ backgroundColor: `${secondaryColor}cc` }}>
-        <div className={`max-w-2xl mx-auto px-6 py-4 flex overflow-x-auto no-scrollbar ${selectedTemplate.navStyle === 'underline' ? 'gap-6' : 'gap-3'}`}>
-          {categories.map(cat => (
-            <button
-              key={cat.id}
-              onClick={() => setActiveCategory(cat.id)}
-              className={`whitespace-nowrap text-sm font-bold transition-all ${selectedTemplate.navStyle === 'underline'
-                ? `px-1 pb-1 border-b-2 ${activeCategory === cat.id ? 'text-gray-900' : 'text-gray-500 border-transparent'}`
-                : selectedTemplate.navStyle === 'block'
-                  ? `px-5 py-2.5 rounded-xl ${activeCategory === cat.id ? 'text-white' : 'bg-white text-gray-500 border border-gray-100'}`
-                  : `px-6 py-2.5 rounded-full ${activeCategory === cat.id ? 'text-white shadow-lg' : 'bg-white text-gray-500 border border-gray-100'}`
-                }`}
-              style={{
-                backgroundColor: activeCategory === cat.id && selectedTemplate.navStyle !== 'underline' ? primaryColor : undefined,
-                borderColor: activeCategory === cat.id && selectedTemplate.navStyle === 'underline' ? primaryColor : undefined,
-                boxShadow: activeCategory === cat.id && selectedTemplate.navStyle === 'pill' ? `0 10px 15px -3px ${primaryColor}40` : undefined,
-              }}
-            >
-              {cat.name}
-            </button>
-          ))}
-        </div>
-      </div>
+      {categories.length > 0 && (
+        <>
+          {/* Categories Horizontal Scroll */}
+          <div className="sticky top-0 backdrop-blur-sm z-20 mt-6">
+            <div className="max-w-2xl mx-auto px-4 py-3 bg-white/80 backdrop-blur-md rounded-full border border-gray-200 shadow-sm overflow-hidden">
+              <div className={`flex items-center overflow-x-auto no-scrollbar whitespace-nowrap gap-3 px-1`}>
+                {categories.map(cat => (
+                  <button
+                    key={cat.id}
+                    onClick={() => setActiveCategory(cat.id)}
+                    className={`whitespace-nowrap text-sm font-bold transition-all duration-200 ${selectedTemplate.navStyle === 'underline'
+                      ? `px-3 py-2 rounded-full ${activeCategory === cat.id ? 'text-white bg-gradient-to-r from-orange-500 to-pink-500 border-0' : 'text-gray-600 bg-white/80 border border-gray-100'}`
+                      : selectedTemplate.navStyle === 'block'
+                        ? `px-5 py-2.5 rounded-full ${activeCategory === cat.id ? 'text-white bg-gradient-to-r from-indigo-500 to-purple-500' : 'text-gray-600 bg-gray-100 border border-gray-200'}`
+                        : `px-5 py-2.5 rounded-full ${activeCategory === cat.id ? 'text-white bg-gradient-to-r from-blue-500 to-teal-500 shadow-lg' : 'text-gray-600 bg-white/85 border border-gray-200'}`
+                      }`}
+                    style={{
+                      transform: activeCategory === cat.id ? 'scale(1.02)' : 'scale(1)',
+                      boxShadow: activeCategory === cat.id ? `0 8px 20px -8px ${primaryColor}66` : undefined,
+                    }}
+                  >
+                    {cat.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
 
-      {/* Products List */}
-      <div className="max-w-2xl mx-auto px-6 mt-8 space-y-4">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeCategory}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
-            className={productListClass}
-          >
-            {filteredProducts.map(prod => (
-              <div
-                key={prod.id}
-                onClick={() => handleProductClick(prod)}
-                className={`bg-white p-4 ${productCardShapeClass} ${productCardSurfaceClass} ${isSplitLayout ? 'flex flex-col gap-3' : 'flex gap-4'} transition-all cursor-pointer active:scale-[0.98]`}
-                style={productCardInlineStyle}
+          {/* Products List */}
+          <div className="max-w-2xl mx-auto px-6 mt-8 space-y-4">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeCategory}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+                className={productListClass}
               >
-                <div className={`${isSplitLayout ? 'w-full h-40 rounded-2xl' : 'w-24 h-24 rounded-xl flex-shrink-0'} bg-gray-50 overflow-hidden border border-gray-50`}>
-                  {prod.imageUrl ? (
-                    <img src={prod.imageUrl} alt={prod.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-200">
-                      <Smartphone size={24} />
+                {filteredProducts.map(prod => (
+                  <div
+                    key={prod.id}
+                    onClick={() => handleProductClick(prod)}
+                    className={`bg-white p-4 ${productCardShapeClass} ${productCardSurfaceClass} ${isSplitLayout ? 'flex flex-col gap-3' : 'flex gap-4'} transition-all cursor-pointer active:scale-[0.98]`}
+                    style={productCardInlineStyle}
+                  >
+                    <div className={`${isSplitLayout ? 'w-full h-40 rounded-2xl' : 'w-24 h-24 rounded-xl flex-shrink-0'} bg-gray-50 overflow-hidden border border-gray-50`}>
+                      {prod.imageUrl ? (
+                        <img src={prod.imageUrl} alt={prod.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-200">
+                          <Smartphone size={24} />
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-                <div className={`flex-1 flex flex-col justify-between ${isSplitLayout ? 'py-0' : 'py-1'} min-w-0`}>
-                  <div>
-                    <div className="flex justify-between items-start">
-                      <h3 className={`${typography.productName} font-bold text-gray-900 line-clamp-2 break-words pr-2 leading-snug`}>{prod.name}</h3>
-                    </div>
-                    <p className={`${typography.productDescription} text-gray-400 line-clamp-2 mt-1 leading-relaxed`}>{prod.shortDescription || prod.longDescription || prod.description}</p>
-                    {prod.hashtags && prod.hashtags.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-2">
-                        {prod.hashtags.slice(0, 5).map((tag) => (
-                          <span key={tag} className="text-[10px] px-2 py-1 bg-gray-100 text-gray-600 rounded-full">{tag}</span>
-                        ))}
+                    <div className={`flex-1 flex flex-col justify-between ${isSplitLayout ? 'py-0' : 'py-1'} min-w-0`}>
+                      <div>
+                        <div className="flex justify-between items-start">
+                          <h3 className={`${typography.productName} font-bold text-gray-900 line-clamp-2 break-words pr-2 leading-snug`}>{prod.name}</h3>
+                        </div>
+                        <p className={`${typography.productDescription} text-gray-400 line-clamp-2 mt-1 leading-relaxed`}>{prod.shortDescription || prod.longDescription || prod.description}</p>
+                        {prod.hashtags && prod.hashtags.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-2">
+                            {prod.hashtags.slice(0, 5).map((tag) => (
+                              <span key={tag} className="text-[10px] px-2 py-1 bg-gray-100 text-gray-600 rounded-full">{tag}</span>
+                            ))}
+                          </div>
+                        )}
                       </div>
-                    )}
+                      <div className="mt-2">
+                        <span className={`${typography.price} font-bold block break-words leading-tight`} style={{ color: primaryColor }}>
+                          {getProductDisplayPrice(prod)}
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="mt-2">
-                    <span className={`${typography.price} font-bold block break-words leading-tight`} style={{ color: primaryColor }}>
-                      {getProductDisplayPrice(prod)}
-                    </span>
+                ))}
+                {filteredProducts.length === 0 && (
+                  <div className="text-center py-20 text-gray-400">
+                    <p>Chưa có món ăn nào trong danh mục này</p>
                   </div>
-                </div>
-              </div>
-            ))}
-            {filteredProducts.length === 0 && (
-              <div className="text-center py-20 text-gray-400">
-                <p>Chưa có món ăn nào trong danh mục này</p>
-              </div>
-            )}
-          </motion.div>
-        </AnimatePresence>
-      </div>
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </>
+      )}
 
       {/* Product Detail Modal */}
       <AnimatePresence>
@@ -416,75 +424,77 @@ export default function PublicMenu() {
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className={`fixed bottom-0 left-0 right-0 max-w-2xl mx-auto bg-white z-[70] ${isEditorialLayout ? 'rounded-t-[24px]' : 'rounded-t-[40px]'} overflow-hidden shadow-2xl`}
+              className={`fixed inset-x-0 bottom-0 max-w-2xl mx-auto bg-white z-[70] ${isEditorialLayout ? 'rounded-t-[24px]' : 'rounded-t-[40px]'} overflow-hidden shadow-2xl max-h-[90vh]`}
             >
-              <div className="relative h-72 md:h-96">
-                {selectedProduct.imageUrl ? (
-                  <img src={selectedProduct.imageUrl} alt={selectedProduct.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                ) : (
-                  <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-300">
-                    <Smartphone size={64} />
-                  </div>
-                )}
-                <button
-                  onClick={() => setSelectedProduct(null)}
-                  className="absolute top-6 right-6 bg-white/80 backdrop-blur-md p-2 rounded-full text-gray-900 shadow-lg"
-                >
-                  <X size={24} />
-                </button>
-              </div>
-              <div className="p-6 md:p-8">
-                <div className="mb-4 space-y-3">
-                  <div className="min-w-0">
-                    <h2 className={`${typography.modalTitle} font-bold text-gray-900 break-words leading-tight`}>{selectedProduct.name}</h2>
-                    {selectedProduct.shortDescription ? (
-                      <p className="text-sm text-gray-500 mt-1 line-clamp-2">{selectedProduct.shortDescription}</p>
-                    ) : null}
-                  </div>
-                  <div className="inline-flex w-full md:w-auto flex-col rounded-2xl border border-gray-100 px-4 py-3 bg-gray-50">
-                    <span className="text-[10px] uppercase tracking-wider font-bold text-gray-500">Mức giá</span>
-                    <span className={`${typography.modalPrice} font-bold break-words leading-tight mt-1`} style={{ color: primaryColor }}>
-                      {getProductDisplayPrice(selectedProduct)}
-                    </span>
-                  </div>
+              <div className="flex flex-col h-full">
+                <div className="relative h-[32vh] md:h-72 lg:h-96 min-h-[220px] flex-shrink-0">
+                  {selectedProduct.imageUrl ? (
+                    <img src={selectedProduct.imageUrl} alt={selectedProduct.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                  ) : (
+                    <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-300">
+                      <Smartphone size={64} />
+                    </div>
+                  )}
+                  <button
+                    onClick={() => setSelectedProduct(null)}
+                    className="absolute top-4 right-4 bg-white/80 backdrop-blur-md p-2 rounded-full text-gray-900 shadow-lg"
+                  >
+                    <X size={24} />
+                  </button>
                 </div>
-                <div className="h-px bg-gray-100 w-full mb-6" />
-                {selectedProduct.hashtags && selectedProduct.hashtags.length > 0 && (
-                  <div className="mb-4 flex flex-wrap gap-2">
-                    {selectedProduct.hashtags.map((tag) => (
-                      <span key={tag} className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded-full">{tag}</span>
-                    ))}
+                <div className="p-6 md:p-8 flex-1 min-h-0 overflow-y-auto" style={{ maxHeight: 'calc(90vh - 32vh)' }}>
+                  <div className="mb-4 space-y-3">
+                    <div className="min-w-0">
+                      <h2 className={`${typography.modalTitle} font-bold text-gray-900 break-words leading-tight`}>{selectedProduct.name}</h2>
+                      {selectedProduct.shortDescription ? (
+                        <p className="text-sm text-gray-500 mt-1 line-clamp-2">{selectedProduct.shortDescription}</p>
+                      ) : null}
+                    </div>
+                    <div className="inline-flex w-full md:w-auto flex-col rounded-2xl border border-gray-100 px-4 py-3 bg-gray-50">
+                      <span className="text-[10px] uppercase tracking-wider font-bold text-gray-500">Mức giá</span>
+                      <span className={`${typography.modalPrice} font-bold break-words leading-tight mt-1`} style={{ color: primaryColor }}>
+                        {getProductDisplayPrice(selectedProduct)}
+                      </span>
+                    </div>
                   </div>
-                )}
-                <div className="space-y-4">
-                  <h4 className="text-xs uppercase tracking-widest font-bold text-gray-400">Mô tả</h4>
-                  <p className={`${typography.modalDescription} text-gray-600 leading-relaxed`}>
-                    {getProductDetailDescription(selectedProduct)}
-                  </p>
-                </div>
-                {selectedProduct.variants && selectedProduct.variants.length > 0 && (
-                  <div className="mt-4">
-                    <h4 className="text-xs uppercase tracking-widest font-bold text-gray-400">Variants</h4>
-                    <ul className="mt-2 space-y-2">
-                      {[...selectedProduct.variants].sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0)).map((variant) => (
-                        <li key={variant.id} className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 text-sm text-gray-700 bg-gray-50 p-2 rounded-xl border border-gray-100">
-                          <span className="break-words">{variant.name || 'Tên variant'}</span>
-                          <span className="break-words">{formatCurrency(Number(variant.price) || 0)} {variant.isDefault ? '(Mặc định)' : ''}</span>
-                        </li>
+                  <div className="h-px bg-gray-100 w-full mb-6" />
+                  {selectedProduct.hashtags && selectedProduct.hashtags.length > 0 && (
+                    <div className="mb-4 flex flex-wrap gap-2">
+                      {selectedProduct.hashtags.map((tag) => (
+                        <span key={tag} className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded-full">{tag}</span>
                       ))}
-                    </ul>
+                    </div>
+                  )}
+                  <div className="space-y-4">
+                    <h4 className="text-xs uppercase tracking-widest font-bold text-gray-400">Mô tả</h4>
+                    <p className={`${typography.modalDescription} text-gray-600 leading-relaxed`}>
+                      {getProductDetailDescription(selectedProduct)}
+                    </p>
                   </div>
-                )}
-                <button
-                  onClick={() => setSelectedProduct(null)}
-                  className={`w-full mt-10 py-4 ${selectedTemplate.navStyle === 'underline' ? 'rounded-lg' : 'rounded-2xl'} text-white font-bold ${typography.closeButton} shadow-lg`}
-                  style={{
-                    backgroundColor: primaryColor,
-                    boxShadow: `0 10px 20px -5px ${primaryColor}40`
-                  }}
-                >
-                  Đóng
-                </button>
+                  {selectedProduct.variants && selectedProduct.variants.length > 0 && (
+                    <div className="mt-4">
+                      <h4 className="text-xs uppercase tracking-widest font-bold text-gray-400">Variants</h4>
+                      <ul className="mt-2 space-y-2">
+                        {[...selectedProduct.variants].sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0)).map((variant) => (
+                          <li key={variant.id} className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 text-sm text-gray-700 bg-gray-50 p-2 rounded-xl border border-gray-100">
+                            <span className="break-words">{variant.name || 'Tên variant'}</span>
+                            <span className="break-words">{formatCurrency(Number(variant.price) || 0)} {variant.isDefault ? '(Mặc định)' : ''}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  <button
+                    onClick={() => setSelectedProduct(null)}
+                    className={`w-full mt-10 py-4 ${selectedTemplate.navStyle === 'underline' ? 'rounded-lg' : 'rounded-2xl'} text-white font-bold ${typography.closeButton} shadow-lg`}
+                    style={{
+                      backgroundColor: primaryColor,
+                      boxShadow: `0 10px 20px -5px ${primaryColor}40`
+                    }}
+                  >
+                    Đóng
+                  </button>
+                </div>
               </div>
             </motion.div>
           </>

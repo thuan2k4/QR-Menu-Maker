@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { signInWithPopup, signInWithRedirect, getRedirectResult, GoogleAuthProvider, User } from 'firebase/auth';
 import { FirebaseError } from 'firebase/app';
 import { auth, db } from '../firebase';
@@ -155,6 +156,14 @@ export default function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-6">
       <div className="max-w-md w-full bg-white p-10 rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100">
+        <div className="flex items-center justify-between mb-6">
+          <Link
+            to="/"
+            className="text-sm text-gray-500 hover:text-orange-500 transition-colors"
+          >
+            ← Quay về trang chủ
+          </Link>
+        </div>
         <div className="text-center mb-10">
           <div className="inline-flex bg-orange-500 p-3 rounded-2xl mb-4 shadow-lg shadow-orange-200">
             <QrCode className="text-white w-8 h-8" />

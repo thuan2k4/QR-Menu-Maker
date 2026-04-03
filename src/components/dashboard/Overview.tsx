@@ -136,7 +136,7 @@ export default function Overview({ user, store }: OverviewProps) {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-min">
         <StatCard icon={<Eye className="text-emerald-500" size={16} />} label="Lượt xem menu" value={analyticsStats.menuViews} />
         <StatCard icon={<MousePointerClick className="text-fuchsia-500" size={16} />} label="Click chi tiết" value={analyticsStats.productDetailClicks} />
         <StatCard icon={<Utensils className="text-orange-500" size={16} />} label="Sản phẩm" value={stats.products} />

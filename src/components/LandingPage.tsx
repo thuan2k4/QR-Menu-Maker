@@ -1,9 +1,17 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { QrCode, Utensils, Smartphone, CheckCircle } from 'lucide-react';
 
 export default function LandingPage() {
+  const demoImages = [
+    { src: '/preview_1.png', alt: 'Dashboard tổng quan menu' },
+    { src: '/preview_2.png', alt: 'Thêm cửa hàng' },
+    { src: '/preview_3.png', alt: 'Tổng quan quản lý menu' },
+    { src: '/preview_4.png', alt: 'Trình quản lý sản phẩm và hashtags' },
+  ];
+  const [activeDemoIndex, setActiveDemoIndex] = useState(0);
+
   return (
     <div className="min-h-screen bg-white text-gray-900 font-sans">
       {/* Header */}
@@ -15,7 +23,6 @@ export default function LandingPage() {
           <span className="text-xl font-bold tracking-tight">MenuQRGenerate</span>
         </div>
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-600">
-          <a href="#features" className="hover:text-orange-500 transition-colors">Tính năng</a>
           <Link to="/login" className="bg-orange-500 text-white px-5 py-2 rounded-full hover:bg-orange-600 transition-colors">Bắt đầu ngay</Link>
         </nav>
       </header>
@@ -47,7 +54,7 @@ export default function LandingPage() {
           <Link to="/login" className="w-full sm:w-auto bg-orange-500 text-white px-8 py-4 rounded-full text-lg font-bold hover:bg-orange-600 transition-all shadow-lg shadow-orange-200">
             Tạo Menu Miễn Phí
           </Link>
-          <a href="#features" className="w-full sm:w-auto border border-gray-200 text-gray-600 px-8 py-4 rounded-full text-lg font-bold hover:bg-gray-50 transition-all">
+          <a href="#demo" className="w-full sm:w-auto border border-gray-200 text-gray-600 px-8 py-4 rounded-full text-lg font-bold hover:bg-gray-50 transition-all">
             Xem Demo
           </a>
         </motion.div>
@@ -75,6 +82,67 @@ export default function LandingPage() {
             />
           </div>
         </div>
+      </section>
+
+      {/* Demo Section */}
+      <section id="demo" className="py-20 px-6 max-w-7xl mx-auto">
+        <h2 className="text-3xl font-bold text-center mb-4">Xem Demo Giao Diện</h2>
+        <p className="text-center text-gray-500 max-w-3xl mx-auto mb-8">
+          Giao diện thực tế từ các màn hình quản lý. Thiết kế dành cho laptop, rõ nét và không quá nhỏ.
+        </p>
+
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 items-stretch">
+          <div className="rounded-3xl overflow-hidden border border-gray-100 shadow-lg h-full min-h-[560px] xl:min-h-[700px] bg-black">
+            <div className="w-full h-full">
+              <img
+                src={demoImages[activeDemoIndex].src}
+                alt={demoImages[activeDemoIndex].alt}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-5 min-h-[560px] xl:min-h-[700px]">
+            <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
+              <p className="text-gray-500 text-sm mb-2">Màn hình đang hiển thị:</p>
+              <p className="text-lg font-semibold text-gray-900">{demoImages[activeDemoIndex].alt}</p>
+            </div>
+
+            <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
+              <p className="text-gray-600 leading-relaxed mb-4">
+                Dành cho laptop: đang hiển thị giao diện quản lý menu với yếu tố rõ ràng, độ tương phản cao.
+              </p>
+              <button
+                type="button"
+                onClick={() => window.open(demoImages[activeDemoIndex].src, '_blank')}
+                className="w-full justify-center inline-flex items-center gap-2 bg-orange-500 text-white py-3 rounded-xl font-semibold hover:bg-orange-600 transition-all"
+              >
+                Xem ảnh lớn
+              </button>
+            </div>
+
+            <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
+              <p className="text-gray-500 text-sm mb-2">Chọn ảnh khác:</p>
+              <div className="grid grid-cols-3 gap-3">
+                {demoImages.map((image, index) => (
+                  <button
+                    key={image.src}
+                    type="button"
+                    onClick={() => setActiveDemoIndex(index)}
+                    aria-label={`Xem ${image.alt}`}
+                    className={`rounded-lg overflow-hidden border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 ${index === activeDemoIndex
+                      ? 'border-orange-500 shadow-md ring-2 ring-orange-300'
+                      : 'border-gray-200 hover:border-orange-300 hover:shadow-sm'
+                      }`}
+                  >
+                    <img src={image.src} alt={image.alt} className="w-full h-24 xl:h-28 object-cover" />
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
       </section>
 
       {/* Footer */}
