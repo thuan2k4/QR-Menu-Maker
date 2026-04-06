@@ -9,6 +9,7 @@ import { CheckCircle, LayoutGrid, LayoutList, Palette, QrCode, RefreshCcw, Save 
 const TEMPLATE_OPTIONS = [
   { id: 'classic', name: 'Classic', description: 'Layout danh sách truyền thống.' },
   { id: 'modern_grid', name: 'Modern Grid', description: 'Grid cards, icon categories và banner hiện đại.' },
+  { id: 'vibrant', name: 'Vibrant', description: 'Thiết kế sống động với cam sôi động.' },
 ];
 
 interface ThemeEditorProps {
@@ -124,9 +125,65 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
 
   const productGridClass = 'space-y-4';
   const isModernGridPreview = theme.templateId === 'modern_grid';
+  const isVibrantPreview = theme.templateId === 'vibrant';
   const previewCategories = ['Rides', 'Food', 'Quik', 'Pay', 'Hala Taxi', 'Box'];
 
   const renderPreviewLayout = () => {
+    // Vibrant Template Preview
+    if (isVibrantPreview) {
+      return (
+        <div className="bg-gradient-to-b from-white to-orange-50 min-h-full">
+          {/* Cover Image */}
+          <div className="h-24 bg-gradient-to-r from-orange-500 to-orange-600" />
+
+          <div className="px-3 space-y-4 pt-4 pb-4">
+            {/* Store Info Card */}
+            <div className="rounded-3xl bg-white shadow-md overflow-hidden border-4 border-orange-100">
+              <div className="flex items-start gap-4 p-4">
+                <div className="flex-shrink-0 w-16 h-16 rounded-2xl overflow-hidden border-2 border-orange-400 bg-gradient-to-br from-orange-100 to-orange-50 flex items-center justify-center">
+                  <span className="text-2xl font-black text-orange-600">C</span>
+                </div>
+                <div className="flex-1 space-y-2">
+                  <h1 className="text-lg font-black text-gray-900">{restaurant?.name || 'Coffee Shop'}</h1>
+                  <div className="space-y-1 text-xs font-semibold text-gray-700">
+                    <p className="flex items-center gap-1.5"><span>📍</span>{restaurant?.address || 'Huế'}</p>
+                    <p className="flex items-center gap-1.5"><span>☎️</span>0123456789</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Category Buttons */}
+            <div className="space-y-2">
+              <p className="text-xs font-bold text-orange-600 uppercase tracking-wider">📋 Our Menu</p>
+              <div className="flex gap-2 flex-wrap">
+                {['Cà phê', 'Matcha'].map((cat) => (
+                  <button key={cat} type="button" className="px-4 py-2 rounded-full font-bold text-sm whitespace-nowrap bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md text-xs">
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Product Grid */}
+            <div className="grid gap-3 grid-cols-2">
+              {PREVIEW_PRODUCTS.map((product) => (
+                <div key={product.id} className="rounded-2xl bg-white border-2 border-orange-200 shadow-md overflow-hidden">
+                  <div className="h-20 bg-orange-50" />
+                  <div className="p-3 space-y-1.5">
+                    <h4 className="font-bold text-xs text-gray-900 line-clamp-2">{product.name}</h4>
+                    <p className="text-xs text-orange-600 font-black">
+                      {new Intl.NumberFormat(theme.currency === 'VND' ? 'vi-VN' : theme.currency === 'EUR' ? 'de-DE' : 'en-US', { style: 'currency', currency: theme.currency, maximumFractionDigits: theme.currency === 'VND' ? 0 : 2 }).format(product.price)}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     if (!isModernGridPreview) {
       return (
         <div className="px-4 py-5">

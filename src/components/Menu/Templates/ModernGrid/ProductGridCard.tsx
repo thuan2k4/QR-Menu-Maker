@@ -27,7 +27,7 @@ export default function ProductGridCard({ product }: ProductGridCardProps) {
       </div>
       <div className="px-4 py-5 text-left">
         {badgeLabel ? (
-          <span className="inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-900 mb-3">#{badgeLabel}</span>
+          <span className="inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-900 mb-3">{badgeLabel}</span>
         ) : null}
         <h3 className="text-lg font-bold text-gray-900 mb-2">{product.name}</h3>
         <p className="text-sm text-gray-500 line-clamp-2 mb-4">{product.shortDescription || product.description}</p>

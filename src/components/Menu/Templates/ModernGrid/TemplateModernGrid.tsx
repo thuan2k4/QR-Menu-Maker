@@ -150,7 +150,7 @@ export default function TemplateModernGrid() {
                     {selectedProduct.hashtags && selectedProduct.hashtags.length > 0 && (
                       <div className="flex flex-wrap gap-2">
                         {selectedProduct.hashtags.map((tag) => (
-                          <span key={tag} className="rounded-full bg-gray-100 px-3 py-1 text-xs text-gray-600">#{tag}</span>
+                          <span key={tag} className="rounded-full bg-gray-100 px-3 py-1 text-xs text-gray-600">{tag}</span>
                         ))}
                       </div>
                     )}
