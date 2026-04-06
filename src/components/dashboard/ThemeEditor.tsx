@@ -11,6 +11,7 @@ const TEMPLATE_OPTIONS = [
   { id: 'modern_grid', name: 'Modern Grid', description: 'Grid cards, icon categories và banner hiện đại.' },
   { id: 'vibrant', name: 'Vibrant', description: 'Thiết kế sống động với cam sôi động.' },
   { id: 'minimal', name: 'Minimal', description: 'Thiết kế tối giản, sạch sẽ và chuyên nghiệp.' },
+  { id: 'bakery', name: 'Bakery', description: 'Editorial ấm áp, ảnh lớn, phù hợp quán bánh và cà phê.' },
 ];
 
 interface ThemeEditorProps {
@@ -128,6 +129,7 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
   const isModernGridPreview = theme.templateId === 'modern_grid';
   const isVibrantPreview = theme.templateId === 'vibrant';
   const isMinimalPreview = theme.templateId === 'minimal';
+  const isBakeryPreview = theme.templateId === 'bakery';
   const previewCategories = ['Rides', 'Food', 'Quik', 'Pay', 'Hala Taxi', 'Box'];
 
   const renderPreviewLayout = () => {
@@ -267,6 +269,76 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                 {/* Price Range */}
                 <p className="text-sm font-black text-indigo-600">Từ 25.000đ - 30.000đ</p>
               </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Bakery Template Preview
+    if (isBakeryPreview) {
+      return (
+        <div className="min-h-[620px] bg-[#f2eadf] text-[#2d1c16]">
+          <div className="px-3 pb-3 pt-4">
+            <div className="overflow-hidden rounded-[30px] border border-[#ead8c3] bg-[#fff7ee] p-4 shadow-sm">
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="h-12 w-12 rounded-xl bg-[#dfc5ac]" />
+                  <div className="min-w-0">
+                    <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[#9f6840]">Fresh Batch Daily</p>
+                    <h1 className="truncate text-base font-black text-[#2d1c16]">{restaurant?.name || 'Bakery House'}</h1>
+                  </div>
+                </div>
+                <div className="space-y-0.5 text-[10px] font-semibold text-[#74503b]">
+                  <p>📍 {restaurant?.address || 'Huế'}</p>
+                  <p>☎️ 0123456789</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-4 rounded-[28px] border border-[#e6d2bf] bg-[#fff6eb] p-4 shadow-sm">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.12em] text-[#9c5a30]">Danh Mục</p>
+                  <h2 className="mt-2 text-base font-black text-[#2d1c16]">Chọn món bạn muốn thử</h2>
+                </div>
+                <div className="inline-flex rounded-full border border-[#e4d0bc] bg-[#f7ebdd] p-0.5">
+                  <span className="rounded-full bg-[#8f4f2d] px-3 py-1 text-[10px] font-black text-white">Thẻ lớn</span>
+                  <span className="px-3 py-1 text-[10px] font-black text-[#8f6449]">Gọn</span>
+                </div>
+              </div>
+
+              <div className="mt-4 flex flex-wrap gap-2">
+                <button className="rounded-full bg-[#8f4f2d] px-4 py-2 text-xs font-black text-white">Cà phê</button>
+                <button className="rounded-full border border-[#dcc5af] bg-white px-4 py-2 text-xs font-black text-[#744a33]">Matcha</button>
+              </div>
+            </div>
+
+            <div className="mt-4 space-y-3">
+              {[PREVIEW_PRODUCTS[0], PREVIEW_PRODUCTS[1]].map((product) => (
+                <div key={product.id} className="rounded-[28px] border border-[#e2d0bc] bg-[#fff9f2] p-4 shadow-sm">
+                  <div className="flex items-center gap-4">
+                    <div className="h-20 w-20 flex-shrink-0 rounded-[22px] bg-[#dcc4ad]" />
+                    <div className="min-w-0 flex-1 space-y-2">
+                      <h4 className="truncate text-sm font-black text-[#2f1f17]">{product.name}</h4>
+                      <p className="line-clamp-2 text-[11px] text-[#705340]">{product.description}</p>
+                      <div className="flex flex-wrap gap-1">
+                        <span className="rounded-full bg-[#f0dfce] px-2 py-1 text-[10px] font-bold text-[#7f5135]">#coffee</span>
+                        <span className="rounded-full bg-[#f0dfce] px-2 py-1 text-[10px] font-bold text-[#7f5135]">#hot</span>
+                      </div>
+                      <div className="mt-3 flex items-center justify-between gap-3">
+                        <p className="text-sm font-black text-[#8f4f2d]">
+                          {new Intl.NumberFormat(
+                            theme.currency === 'VND' ? 'vi-VN' : theme.currency === 'EUR' ? 'de-DE' : 'en-US',
+                            { style: 'currency', currency: theme.currency, maximumFractionDigits: theme.currency === 'VND' ? 0 : 2 },
+                          ).format(product.price)}
+                        </p>
+                        <button className="rounded-full border border-[#d4b69d] bg-white px-3 py-1 text-[10px] font-black text-[#774a31]">Chi tiết</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
