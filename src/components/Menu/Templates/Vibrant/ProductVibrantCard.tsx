@@ -7,7 +7,7 @@ interface ProductVibrantCardProps {
 }
 
 export default function ProductVibrantCard({ product, index = 0 }: ProductVibrantCardProps) {
-  const { selectProduct } = useMenuContext();
+  const { selectProduct, getProductDisplayPrice } = useMenuContext();
 
   return (
     <motion.button
@@ -71,7 +71,7 @@ export default function ProductVibrantCard({ product, index = 0 }: ProductVibran
         {/* Price Display - Bold */}
         <div className="flex items-baseline gap-2">
           <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-orange-500">
-            {product.price ? `${product.price.toLocaleString()}đ` : 'N/A'}
+            {getProductDisplayPrice(product)}
           </span>
         </div>
 

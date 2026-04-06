@@ -141,7 +141,7 @@ export default function TemplateOrganicMarket() {
               <h2 className="mt-2 text-3xl font-black leading-tight text-[#1f2b14] sm:text-[2rem]">Chọn hương vị bạn muốn thử</h2>
             </div>
 
-            <div className="inline-flex border border-[#c8d3a3] bg-[#eff3dc] p-1">
+            <div className="inline-flex justify-self-start border border-[#c8d3a3] bg-[#eff3dc] p-1">
               {[
                 { id: 'showcase', label: 'Thẻ lớn' },
                 { id: 'compact', label: 'Gọn' },
@@ -231,7 +231,7 @@ export default function TemplateOrganicMarket() {
                             key={`${product.id}-${tag}`}
                             className="border border-[#d6dfba] bg-[#f2f6e2] px-2 py-1 text-[10px] font-black uppercase tracking-[0.08em] text-[#6a7d35]"
                           >
-                            #{tag}
+                            {tag}
                           </span>
                         ))}
                       </div>
@@ -318,7 +318,7 @@ export default function TemplateOrganicMarket() {
                             key={`detail-${selectedProduct.id}-${tag}`}
                             className="border border-[#d6dfba] bg-[#f2f6e2] px-2 py-1 text-[10px] font-black uppercase tracking-[0.08em] text-[#6a7d35]"
                           >
-                            #{tag}
+                            {tag}
                           </span>
                         ))}
                       </div>

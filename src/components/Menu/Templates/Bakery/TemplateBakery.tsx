@@ -117,7 +117,7 @@ export default function TemplateBakery() {
               <h2 className="mt-2 text-2xl font-black text-[#2d1c16]">Chọn món bạn muốn thử</h2>
             </div>
 
-            <div className="inline-flex rounded-full border border-[#e7d6c4] bg-[#f8eee1] p-1">
+            <div className="inline-flex self-start rounded-full border border-[#e7d6c4] bg-[#f8eee1] p-1">
               {[
                 { id: 'editorial', label: 'Thẻ lớn' },
                 { id: 'compact', label: 'Gọn' },
@@ -208,7 +208,7 @@ export default function TemplateBakery() {
                             key={`${product.id}-${tag}`}
                             className="rounded-full bg-[#f3e4d4] px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.06em] text-[#835134]"
                           >
-                            #{tag}
+                            {tag}
                           </span>
                         ))}
                       </div>
@@ -290,7 +290,7 @@ export default function TemplateBakery() {
                     <div className="flex flex-wrap gap-2">
                       {selectedProduct.hashtags.map((tag) => (
                         <span key={`detail-${selectedProduct.id}-${tag}`} className="rounded-full bg-[#f2e3d2] px-3 py-1 text-xs font-bold text-[#855438]">
-                          #{tag}
+                          {tag}
                         </span>
                       ))}
                     </div>

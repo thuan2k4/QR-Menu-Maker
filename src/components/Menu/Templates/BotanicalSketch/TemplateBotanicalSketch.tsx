@@ -213,7 +213,7 @@ export default function TemplateBotanicalSketch() {
                               key={`${product.id}-${tag}`}
                               className="rounded-full border border-[#cec5ad] bg-[#eee6d0] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-[#8f8a79]"
                             >
-                              #{tag}
+                              {tag}
                             </span>
                           ))}
                         </div>
@@ -301,7 +301,7 @@ export default function TemplateBotanicalSketch() {
                             key={`detail-${selectedProduct.id}-${tag}`}
                             className="rounded-full border border-[#cec5ad] bg-[#eee6d0] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-[#8f8a79]"
                           >
-                            #{tag}
+                            {tag}
                           </span>
                         ))}
                       </div>

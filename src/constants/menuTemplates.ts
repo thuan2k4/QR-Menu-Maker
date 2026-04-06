@@ -256,6 +256,21 @@ export const MENU_TEMPLATES: MenuTemplate[] = [
     navStyle: 'underline',
     backgroundStyle: 'solid',
   },
+  {
+    id: 'fluid_monochrome',
+    name: 'Fluid Monochrome Organic',
+    description: 'Thiết kế có tính chất lỏng dẻo với hình dáng hữu cơ, tông trung tính thanh lịch. Bố cục card stack với animation mịn màng.',
+    badge: 'Organic',
+    primaryColor: '#1A1A1A',
+    secondaryColor: '#F8F7F5',
+    fontFamily: 'Inter',
+    sizePreset: 'normal',
+    currency: 'VND',
+    layout: 'stacked',
+    cardStyle: 'soft',
+    navStyle: 'pill',
+    backgroundStyle: 'paper',
+  },
 ];
 
 export const DEFAULT_MENU_TEMPLATE = MENU_TEMPLATES[0];

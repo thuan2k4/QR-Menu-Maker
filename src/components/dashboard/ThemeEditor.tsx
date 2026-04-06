@@ -16,6 +16,7 @@ const TEMPLATE_OPTIONS = [
   { id: 'coffee_atelier', name: 'Coffee Atelier', description: 'Hero typography, tông cà phê cao cấp và modal sản phẩm đậm chất studio.' },
   { id: 'matcha_signature', name: 'Signature Market', description: 'Soft editorial bo tròn, nhịp trình bày thoáng và nhận diện tách biệt khỏi Coffee Atelier.' },
   { id: 'botanical_sketch', name: 'Botanical Sketchbook', description: 'Monotone sketch với chất giấy mộc, card bo mềm và modal chi tiết đầy đủ.' },
+  { id: 'fluid_monochrome', name: 'Fluid Monochrome', description: 'Monochrome hữu cơ, card stack mềm và modal chi tiết kiểu liquid.' },
 ];
 
 interface ThemeEditorProps {
@@ -142,6 +143,7 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
   const isCoffeeAtelierPreview = theme.templateId === 'coffee_atelier';
   const isSignatureMarketPreview = theme.templateId === 'matcha_signature';
   const isBotanicalSketchPreview = theme.templateId === 'botanical_sketch';
+  const isFluidMonochromePreview = theme.templateId === 'fluid_monochrome';
   const previewCategories = ['Rides', 'Food', 'Quik', 'Pay', 'Hala Taxi', 'Box'];
 
   const renderPreviewLayout = () => {
@@ -382,6 +384,98 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                   </div>
                 );
               })}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Fluid Monochrome Template Preview
+    if (isFluidMonochromePreview) {
+      return (
+        <div className="min-h-[640px] bg-[#f8f7f5] text-[#1a1a1a]">
+          <div className="h-24 overflow-hidden bg-gradient-to-r from-[#4f4f4f] via-[#666] to-[#4a4a4a]">
+            {restaurant?.coverUrl ? (
+              <img
+                src={restaurant.coverUrl}
+                alt="Cover"
+                className="h-full w-full object-cover grayscale"
+                referrerPolicy="no-referrer"
+              />
+            ) : null}
+          </div>
+
+          <div className="-mt-5 px-3">
+            <div className="rounded-[22px] border border-[#d8d4cc] bg-[#fbfaf8] p-3 shadow-[0_12px_28px_-18px_rgba(35,35,35,0.35)]">
+              <div className="flex items-start gap-3">
+                <div className="h-14 w-14 flex-shrink-0 overflow-hidden rounded-[40%_60%_52%_48%/48%_50%_50%_52%] border border-[#bdb8ad] bg-[#e5e2dc]" />
+                <div className="min-w-0 flex-1 space-y-1.5">
+                  <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#777268]">✧ Welcome</p>
+                  <h1 className="truncate text-xl font-black text-[#1f1f1f]">{restaurant?.name || 'Coffee Shop'}</h1>
+                  <div className="space-y-0.5 text-[11px] font-semibold text-[#5e5b55]">
+                    <p>📍 {restaurant?.address || 'Huế'}</p>
+                    <p>☎️ 0123456789</p>
+                  </div>
+                  <p className="text-[11px] text-[#6c6961]">{restaurant?.bio || 'Quán coffee tọa lạc tại thành phố Huế.'}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-4 px-3 pb-4 pt-4">
+            <div className="rounded-[22px] border border-[#ded9cf] bg-[#fbfaf7] p-3 shadow-[0_10px_18px_-15px_rgba(26,26,26,0.34)]">
+              <div className="space-y-3">
+                <div>
+                  <p className="text-[9px] font-black uppercase tracking-[0.16em] text-[#747068]">◆ Danh mục</p>
+                  <h2 className="mt-1 text-2xl font-black leading-[1.05] text-[#1e1e1e]">Chọn món bạn muốn thử</h2>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  <button className="rounded-full border border-[#1f1f1f] bg-[#1f1f1f] px-3 py-1.5 text-xs font-black text-[#f8f7f5]">Cà phê</button>
+                  <button className="rounded-full border border-[#c9c3b8] bg-[#f7f5f1] px-3 py-1.5 text-xs font-black text-[#5f5b54]">Matcha</button>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              {PREVIEW_PRODUCTS.slice(0, 2).map((product, idx) => {
+                const minPrice = product.price;
+                const maxPrice = product.price + (idx + 1) * 9000;
+
+                return (
+                  <div key={product.id} className="rounded-[22px] border border-[#e0dbd1] bg-[#fcfbf8] p-3 shadow-[0_14px_24px_-20px_rgba(28,28,28,0.45)]">
+                    <div className="flex gap-3">
+                      <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-[46%_54%_44%_56%/48%_42%_58%_52%] border border-[#ccc7bd] bg-[#e6e2d9]" />
+
+                      <div className="min-w-0 flex-1 space-y-1.5">
+                        <h4 className="truncate text-base font-black text-[#1f1f1f]">{product.name}</h4>
+                        <p className="line-clamp-2 text-[11px] font-medium text-[#605d56]">{product.description}</p>
+
+                        <div className="flex flex-wrap gap-1">
+                          <span className="rounded-full bg-[#efebe4] px-2 py-0.5 text-[9px] font-black text-[#666259]">#coffee</span>
+                          <span className="rounded-full bg-[#efebe4] px-2 py-0.5 text-[9px] font-black text-[#666259]">#coldbrew</span>
+                          <span className="rounded-full bg-[#efebe4] px-2 py-0.5 text-[9px] font-black text-[#666259]">#ice</span>
+                        </div>
+
+                        <div className="flex items-center justify-between gap-2 pt-1">
+                          <p className="text-[13px] font-black text-[#1f1f1f]">
+                            Từ {new Intl.NumberFormat('vi-VN').format(minPrice)} đ - {new Intl.NumberFormat('vi-VN').format(maxPrice)} đ
+                          </p>
+                          <button className="rounded-full border border-[#1f1f1f] bg-[#1f1f1f] px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.08em] text-[#f8f7f5]">Chi tiết</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="rounded-[20px] border border-[#dfdacf] bg-[#fbfaf6] p-3">
+              <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[#6f6a62]">Chi tiết sản phẩm</p>
+              <p className="mt-1 text-[11px] font-medium text-[#5f5b54]">Ảnh sản phẩm, giá từ đến, mô tả, mô tả chi tiết, giá variants.</p>
+              <button className="mt-2 w-full rounded-xl border border-[#1f1f1f] bg-[#1f1f1f] py-2 text-[11px] font-black uppercase text-[#f8f7f5]">
+                Đóng
+              </button>
             </div>
           </div>
         </div>
@@ -955,10 +1049,18 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                 key={option.id}
                 type="button"
                 onClick={() => updateTheme({ templateId: option.id })}
-                className={`rounded-3xl border p-4 text-left text-sm transition ${theme.templateId === option.id ? 'border-orange-500 bg-orange-50' : 'border-gray-200 bg-white hover:border-gray-300'}`}
+                aria-pressed={theme.templateId === option.id}
+                className={`rounded-3xl border p-4 text-left text-sm transition min-h-[116px] ${theme.templateId === option.id ? 'border-orange-500 bg-orange-50 shadow-sm' : 'border-gray-200 bg-white hover:border-gray-300'}`}
               >
-                <div className="font-semibold text-gray-900">{option.name}</div>
-                <p className="text-gray-500 mt-1">{option.description}</p>
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <div className="font-semibold text-gray-900">{option.name}</div>
+                    <p className="text-gray-500 mt-1">{option.description}</p>
+                  </div>
+                  {theme.templateId === option.id ? (
+                    <span className="inline-flex rounded-full bg-orange-500 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">Đang chọn</span>
+                  ) : null}
+                </div>
               </button>
             ))}
           </div>

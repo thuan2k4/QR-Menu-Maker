@@ -160,7 +160,7 @@ export default function TemplateCoffeeAtelier() {
               <h3 className="mt-2 text-3xl font-black text-white sm:text-[2rem]">Chọn sản phẩm bạn muốn thử</h3>
             </div>
 
-            <div className="inline-flex border border-[#3f3328] bg-[#2b2118] p-1">
+            <div className="inline-flex justify-self-start border border-[#3f3328] bg-[#2b2118] p-1">
               {[
                 { id: 'gallery', label: 'Thẻ lớn' },
                 { id: 'compact', label: 'Thẻ gọn' },
@@ -251,7 +251,7 @@ export default function TemplateCoffeeAtelier() {
                               key={`${product.id}-${tag}`}
                               className="border border-[#e2d0bc] bg-[#f5ebdd] px-2 py-1 text-[10px] font-black uppercase tracking-[0.08em] text-[#825233]"
                             >
-                              #{tag}
+                              {tag}
                             </span>
                           ))}
                         </div>
@@ -339,7 +339,7 @@ export default function TemplateCoffeeAtelier() {
                             key={`detail-${selectedProduct.id}-${tag}`}
                             className="border border-[#e2d0bc] bg-[#f5ebdd] px-2 py-1 text-[10px] font-black uppercase tracking-[0.08em] text-[#825233]"
                           >
-                            #{tag}
+                            {tag}
                           </span>
                         ))}
                       </div>

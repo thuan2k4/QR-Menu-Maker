@@ -193,7 +193,7 @@ export default function TemplateMinimal() {
                             <div className="flex flex-wrap gap-2 mt-3">
                               {product.hashtags.slice(0, 4).map((tag: string, ix: number) => (
                                 <span key={ix} className="text-xs text-indigo-600 font-bold">
-                                  #{tag}
+                                  {tag}
                                 </span>
                               ))}
                             </div>
@@ -338,7 +338,7 @@ export default function TemplateMinimal() {
                     >
                       {selectedProduct.hashtags.map((tag: string, idx: number) => (
                         <span key={idx} className="text-xs text-indigo-600 font-bold bg-indigo-50 px-3 py-1 rounded-full">
-                          #{tag}
+                          {tag}
                         </span>
                       ))}
                     </motion.div>
@@ -375,7 +375,14 @@ export default function TemplateMinimal() {
                       <div className="space-y-2">
                         {selectedProduct.variants.map((variant, idx) => (
                           <div key={idx} className="flex justify-between items-center p-3 bg-slate-50 rounded-lg border border-slate-200">
-                            <span className={`font-medium text-slate-700 ${isMobile ? 'text-xs' : 'text-sm'}`}>{variant.name}</span>
+                            <div className="flex items-center gap-2">
+                              <span className={`font-medium text-slate-700 ${isMobile ? 'text-xs' : 'text-sm'}`}>{variant.name}</span>
+                              {(variant.isDefault || idx === 0) ? (
+                                <span className={`rounded-full bg-indigo-100 px-2 py-0.5 font-black text-indigo-700 ${isMobile ? 'text-[10px]' : 'text-xs'}`}>
+                                  Mặc định
+                                </span>
+                              ) : null}
+                            </div>
                             <span className={`font-black text-indigo-600 ${isMobile ? 'text-xs' : 'text-sm'}`}>
                               {(variant.price || 0).toLocaleString()}đ
                             </span>

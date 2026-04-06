@@ -154,7 +154,7 @@ export default function TemplateMatchaSignature() {
               <h2 className="mt-2 text-3xl font-black leading-tight text-[#2d2016] sm:text-[2rem]">Chọn sản phẩm bạn muốn thử</h2>
             </div>
 
-            <div className="inline-flex rounded-full border border-[#d8c7b0] bg-[#f4ecde] p-1">
+            <div className="inline-flex justify-self-start rounded-full border border-[#d8c7b0] bg-[#f4ecde] p-1">
               {[
                 { id: 'showcase', label: 'Thẻ lớn' },
                 { id: 'compact', label: 'Thẻ gọn' },
@@ -253,7 +253,7 @@ export default function TemplateMatchaSignature() {
                               key={`${product.id}-${tag}`}
                               className="rounded-full bg-[#f4ebdc] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.08em] text-[#825337]"
                             >
-                              #{tag}
+                              {tag}
                             </span>
                           ))}
                         </div>
@@ -342,7 +342,7 @@ export default function TemplateMatchaSignature() {
                             key={`detail-${selectedProduct.id}-${tag}`}
                             className="rounded-full bg-[#f4ebdc] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.08em] text-[#815439]"
                           >
-                            #{tag}
+                            {tag}
                           </span>
                         ))}
                       </div>
