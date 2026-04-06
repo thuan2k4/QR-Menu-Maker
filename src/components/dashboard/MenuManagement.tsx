@@ -24,7 +24,6 @@ import {
   Edit2,
   Trash2,
   FolderPlus,
-  ChevronRight,
   Image as ImageIcon,
   Check,
   X,
@@ -642,8 +641,8 @@ function ProductModal({ user, storeId, categoryId, currency, editing, onClose }:
                 </div>
               )}
               {hasVariants && (
-                <div className="rounded-2xl border border-blue-100 bg-blue-50/60 px-4 py-3 text-xs text-blue-700">
-                  Đang dùng giá theo variants. Giá đơn đã được ẩn.
+                <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-800">
+                  Đang dùng giá theo variants. Giá đơn đã được ẩn để tránh xung đột dữ liệu hiển thị.
                 </div>
               )}
             </div>
@@ -705,6 +704,11 @@ function ProductModal({ user, storeId, categoryId, currency, editing, onClose }:
                 type="text"
                 value={newTag}
                 onChange={(e) => setNewTag(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key !== 'Enter') return;
+                  e.preventDefault();
+                  addHashtag();
+                }}
                 placeholder="#ví dụ"
                 className="flex-1 px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
               />
@@ -730,20 +734,26 @@ function ProductModal({ user, storeId, categoryId, currency, editing, onClose }:
                 <h4 className="font-bold">Variants (tuỳ chọn giá)</h4>
                 <p className="text-xs text-gray-500">Đơn vị tiền tệ đang áp dụng: {currency}</p>
               </div>
-              <button type="button" onClick={addVariant} className="px-3 py-1.5 text-xs text-white bg-blue-500 rounded-lg hover:bg-blue-600">Thêm variant</button>
+              <button
+                type="button"
+                onClick={addVariant}
+                className="px-3 py-1.5 text-xs font-bold text-orange-700 bg-orange-50 border border-orange-200 rounded-lg hover:bg-orange-100 transition-all"
+              >
+                Thêm variant
+              </button>
             </div>
             {formData.variants.length === 0 && <p className="text-xs text-gray-400">Chưa có variant. Tạo variant để hiển thị đoạn giá Từ - Đến.</p>}
-            <div className="space-y-2">
+            <div className="space-y-3">
               {formData.variants.map((variant) => (
-                <div key={variant.id} className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center">
+                <div key={variant.id} className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center rounded-2xl border border-gray-200 bg-gray-50 p-2.5">
                   <input
-                    className="sm:col-span-5 px-3 py-2 border rounded-xl"
+                    className="sm:col-span-5 px-3 py-2.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
                     value={variant.name}
                     onChange={(e) => updateVariant(variant.id, { name: e.target.value })}
                     placeholder="Tên variant, ví dụ: Nhỏ"
                   />
                   <input
-                    className="sm:col-span-4 px-3 py-2 border rounded-xl"
+                    className="sm:col-span-4 px-3 py-2.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
                     type="number"
                     step={currency === 'VND' ? 1 : 0.01}
                     min={0}
@@ -758,17 +768,21 @@ function ProductModal({ user, storeId, categoryId, currency, editing, onClose }:
                     }}
                     placeholder={`Giá (${currency})`}
                   />
-                  <label className="sm:col-span-2 text-xs flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={variant.isDefault || false}
-                      onChange={() => setVariantDefault(variant.id)}
-                    />
-                    Default
-                  </label>
                   <button
                     type="button"
-                    className="sm:col-span-1 text-red-500 font-bold justify-self-end"
+                    aria-pressed={variant.isDefault || false}
+                    className={`sm:col-span-2 inline-flex items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-xs font-bold border transition-all ${(variant.isDefault || false)
+                      ? 'bg-orange-500 text-white border-orange-500'
+                      : 'bg-white text-gray-600 border-gray-200 hover:border-orange-300 hover:text-orange-700'
+                      }`}
+                    onClick={() => setVariantDefault(variant.id)}
+                  >
+                    {variant.isDefault ? <Check size={14} /> : <span className="h-3.5 w-3.5 rounded-full border border-current" />}
+                    Mặc định
+                  </button>
+                  <button
+                    type="button"
+                    className="sm:col-span-1 inline-flex h-9 w-9 items-center justify-center rounded-xl border border-red-100 bg-white text-red-500 font-bold justify-self-end hover:bg-red-50"
                     onClick={() => removeVariant(variant.id)}
                   >×</button>
                 </div>

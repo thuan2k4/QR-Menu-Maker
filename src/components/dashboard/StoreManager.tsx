@@ -124,7 +124,7 @@ export default function StoreManager({ user }: StoreManagerProps) {
             {selectedTemplate.name}
           </span>
           <Link
-            to={`/dashboard/store/${id}/settings`}
+            to={`/dashboard/store/${id}/theme`}
             className="px-3 py-1 rounded-full text-xs font-bold border border-gray-200 text-gray-600 hover:bg-gray-50"
           >
             Đổi template

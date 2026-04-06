@@ -17,6 +17,8 @@ interface SizePresetClasses {
   closeButton: string;
 }
 
+export type MenuSortOption = 'default' | 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc';
+
 interface MenuContextValue {
   store: Store | null;
   categories: Category[];
@@ -43,6 +45,15 @@ interface MenuContextValue {
   showProductImages: boolean;
   rootStyle: React.CSSProperties;
   filteredProducts: Product[];
+  searchKeyword: string;
+  setSearchKeyword: (keyword: string) => void;
+  sortOption: MenuSortOption;
+  setSortOption: (option: MenuSortOption) => void;
+  onlyWithImage: boolean;
+  setOnlyWithImage: (enabled: boolean) => void;
+  onlyWithVariants: boolean;
+  setOnlyWithVariants: (enabled: boolean) => void;
+  resetProductFilters: () => void;
   formatCurrency: (value: number) => string;
   getProductDisplayPrice: (prod: Product) => string;
   getProductDetailDescription: (prod: Product) => string;
@@ -111,6 +122,10 @@ export function MenuProvider({ slug, children }: MenuProviderProps) {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [searchKeyword, setSearchKeyword] = useState('');
+  const [sortOption, setSortOption] = useState<MenuSortOption>('default');
+  const [onlyWithImage, setOnlyWithImage] = useState(false);
+  const [onlyWithVariants, setOnlyWithVariants] = useState(false);
   const lastMenuViewKeyRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -272,11 +287,93 @@ export function MenuProvider({ slug, children }: MenuProviderProps) {
     return longDescription || legacyDescription || shortDescription || 'Không có mô tả cho sản phẩm này.';
   };
 
+  const getComparableProductPrice = (prod: Product) => {
+    const variants = prod.variants || [];
+    const validVariantPrices = variants
+      .map((v) => parseProductPrice(v.price))
+      .filter((price) => Number.isFinite(price));
+
+    if (validVariantPrices.length > 0) {
+      return Math.min(...validVariantPrices);
+    }
+
+    const basePrice = parseProductPrice(prod.price);
+    return Number.isFinite(basePrice) ? basePrice : 0;
+  };
+
+  const normalizeText = (value: string) => value.toLocaleLowerCase('vi-VN').trim();
+
+  const resetProductFilters = () => {
+    setSearchKeyword('');
+    setSortOption('default');
+    setOnlyWithImage(false);
+    setOnlyWithVariants(false);
+  };
+
   const filteredProducts = useMemo(() => {
-    return activeCategory
-      ? products.filter((product) => product.categoryId === activeCategory)
-      : [];
-  }, [activeCategory, products]);
+    if (!activeCategory) {
+      return [];
+    }
+
+    const keyword = normalizeText(searchKeyword);
+
+    const visibleProducts = products.filter((product) => {
+      if (product.categoryId !== activeCategory) {
+        return false;
+      }
+
+      if (onlyWithImage && !product.imageUrl) {
+        return false;
+      }
+
+      if (onlyWithVariants && (!product.variants || product.variants.length === 0)) {
+        return false;
+      }
+
+      if (!keyword) {
+        return true;
+      }
+
+      const searchableText = [
+        product.name,
+        product.shortDescription,
+        product.longDescription,
+        product.description,
+        ...(product.hashtags || []),
+      ]
+        .filter(Boolean)
+        .join(' ');
+
+      return normalizeText(searchableText).includes(keyword);
+    });
+
+    if (sortOption === 'default') {
+      return visibleProducts;
+    }
+
+    const sortedProducts = [...visibleProducts];
+
+    sortedProducts.sort((a, b) => {
+      if (sortOption === 'name_asc') {
+        return a.name.localeCompare(b.name, 'vi');
+      }
+
+      if (sortOption === 'name_desc') {
+        return b.name.localeCompare(a.name, 'vi');
+      }
+
+      const leftPrice = getComparableProductPrice(a);
+      const rightPrice = getComparableProductPrice(b);
+
+      if (sortOption === 'price_asc') {
+        return leftPrice - rightPrice;
+      }
+
+      return rightPrice - leftPrice;
+    });
+
+    return sortedProducts;
+  }, [activeCategory, products, searchKeyword, sortOption, onlyWithImage, onlyWithVariants]);
 
   const isOwner = !!currentUserId && !!store && currentUserId === store.ownerId;
   const menuVisibility = store?.menuVisibility || 'private';
@@ -327,6 +424,15 @@ export function MenuProvider({ slug, children }: MenuProviderProps) {
     showProductImages,
     rootStyle,
     filteredProducts,
+    searchKeyword,
+    setSearchKeyword,
+    sortOption,
+    setSortOption,
+    onlyWithImage,
+    setOnlyWithImage,
+    onlyWithVariants,
+    setOnlyWithVariants,
+    resetProductFilters,
     formatCurrency,
     getProductDisplayPrice,
     getProductDetailDescription,
