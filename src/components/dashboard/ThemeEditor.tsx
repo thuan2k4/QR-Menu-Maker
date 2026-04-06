@@ -12,6 +12,7 @@ const TEMPLATE_OPTIONS = [
   { id: 'vibrant', name: 'Vibrant', description: 'Thiết kế sống động với cam sôi động.' },
   { id: 'minimal', name: 'Minimal', description: 'Thiết kế tối giản, sạch sẽ và chuyên nghiệp.' },
   { id: 'bakery', name: 'Bakery', description: 'Editorial ấm áp, ảnh lớn, phù hợp quán bánh và cà phê.' },
+  { id: 'organic_market', name: 'Organic Market', description: 'Phong cách panel organic góc cạnh, khác biệt rõ với Bakery.' },
 ];
 
 interface ThemeEditorProps {
@@ -74,6 +75,7 @@ function useThemeStore(initialState: ThemeState) {
 export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [organicPreviewCardMode, setOrganicPreviewCardMode] = useState<'showcase' | 'compact'>('showcase');
 
   const initialThemeState = useMemo<ThemeState>(() => {
     if (!restaurant) return DEFAULT_THEME_STATE;
@@ -130,6 +132,7 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
   const isVibrantPreview = theme.templateId === 'vibrant';
   const isMinimalPreview = theme.templateId === 'minimal';
   const isBakeryPreview = theme.templateId === 'bakery';
+  const isOrganicPreview = theme.templateId === 'organic_market';
   const previewCategories = ['Rides', 'Food', 'Quik', 'Pay', 'Hala Taxi', 'Box'];
 
   const renderPreviewLayout = () => {
@@ -339,6 +342,100 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Organic Market Template Preview
+    if (isOrganicPreview) {
+      return (
+        <div className="min-h-[640px] bg-[#edf1df] text-[#1f2a14]">
+          <div className="h-24 border-b border-[#d2dcb9] bg-[radial-gradient(circle_at_top_left,_#b5c676_0%,_#7b9140_62%,_#566928_100%)]" />
+
+          <div className="px-3 pb-4 pt-4 space-y-4">
+            <div className="border border-[#c4cf9f] bg-[#f8faee] p-3 shadow-sm">
+              <div className="flex items-start gap-3">
+                <div className="h-14 w-14 border-2 border-[#90a353] bg-[#d6dfae]" />
+                <div className="min-w-0 flex-1 space-y-1">
+                  <p className="text-[10px] font-black uppercase tracking-[0.15em] text-[#7a8b40]">Organic Daily Picks</p>
+                  <h1 className="truncate text-lg font-black text-[#1f2b14]">{restaurant?.name || 'Coffee Shop'}</h1>
+                  <div className="space-y-0.5 text-[11px] font-semibold text-[#53622d]">
+                    <p>📍 {restaurant?.address || 'Huế'}</p>
+                    <p>☎️ 0123456789</p>
+                  </div>
+                </div>
+                <span className="border border-[#d4ddba] bg-white px-2 py-1 text-[9px] font-black uppercase tracking-[0.08em] text-[#5f712e]">Fresh</span>
+              </div>
+            </div>
+
+            <div className="border border-[#c4cf9f] bg-white p-3 shadow-sm">
+              <div className="space-y-3">
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.13em] text-[#738739]">Danh Mục</p>
+                  <h2 className="mt-1 text-base font-black text-[#1f2b14]">Chọn hương vị bạn muốn thử</h2>
+                </div>
+
+                <div className="inline-flex border border-[#c8d3a3] bg-[#eff3dc] p-0.5">
+                  {[
+                    { id: 'showcase', label: 'Thẻ lớn' },
+                    { id: 'compact', label: 'Gọn' },
+                  ].map((view) => {
+                    const active = organicPreviewCardMode === view.id;
+                    return (
+                      <button
+                        key={view.id}
+                        type="button"
+                        onClick={() => setOrganicPreviewCardMode(view.id as 'showcase' | 'compact')}
+                        className={`px-3 py-1 text-[10px] font-black uppercase transition ${active ? 'bg-[#6a7f34] text-white' : 'text-[#607036]'}`}
+                      >
+                        {view.label}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  <button className="border-2 border-[#6a7f34] bg-[#6a7f34] px-3 py-1.5 text-xs font-black text-white">Cà phê</button>
+                  <button className="border border-[#ccd6a9] bg-[#f9fbed] px-3 py-1.5 text-xs font-black text-[#53622d]">Matcha</button>
+                </div>
+              </div>
+            </div>
+
+            <div className={organicPreviewCardMode === 'showcase' ? 'grid grid-cols-1 gap-3' : 'space-y-3'}>
+              {PREVIEW_PRODUCTS.slice(0, 2).map((product, idx) => {
+                const minPrice = product.price;
+                const maxPrice = product.price + (idx + 1) * 9000;
+
+                return (
+                  <div key={product.id} className={`border border-[#cfd8ae] bg-[#fcfdf7] shadow-sm ${organicPreviewCardMode === 'compact' ? 'flex gap-2 p-2.5' : 'overflow-hidden'}`}>
+                    <div className={`${organicPreviewCardMode === 'compact' ? 'h-20 w-20 flex-shrink-0' : 'h-32 w-full'} border-b border-[#d4ddb8] bg-[#dce5a9]`} />
+                    <div className={`${organicPreviewCardMode === 'compact' ? 'min-w-0 flex-1' : 'p-3'} space-y-1.5`}>
+                      <span className="inline-flex border border-[#d9e2bd] bg-white px-2 py-0.5 text-[9px] font-black uppercase text-[#70823a]">Organic</span>
+                      <h4 className="truncate text-sm font-black text-[#1f2b14]">{product.name}</h4>
+                      <p className="line-clamp-2 text-[11px] font-semibold text-[#5a6a32]">{product.description}</p>
+                      <div className="flex flex-wrap gap-1">
+                        <span className="border border-[#d6dfba] bg-[#f2f6e2] px-1.5 py-0.5 text-[9px] font-black text-[#6a7d35]">#coffee</span>
+                        <span className="border border-[#d6dfba] bg-[#f2f6e2] px-1.5 py-0.5 text-[9px] font-black text-[#6a7d35]">#coldbrew</span>
+                        <span className="border border-[#d6dfba] bg-[#f2f6e2] px-1.5 py-0.5 text-[9px] font-black text-[#6a7d35]">#ice</span>
+                      </div>
+                      <div className="flex items-center justify-between gap-2 pt-1">
+                        <p className="text-sm font-black text-[#6a7f34]">
+                          Từ {new Intl.NumberFormat('vi-VN').format(minPrice)}đ - {new Intl.NumberFormat('vi-VN').format(maxPrice)}đ
+                        </p>
+                        <button className="border-b-2 border-[#6a7f34] pb-0.5 text-[10px] font-black uppercase text-[#4e5f26]">Chi tiết</button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="border border-[#d5ddb8] bg-[#f2f6de] p-3">
+              <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#6f8234]">Chi tiết sản phẩm</p>
+              <p className="mt-1 text-[11px] font-semibold text-[#4f6028]">Mô tả - mô tả chi tiết - giá variants...</p>
+              <button className="mt-2 w-full border border-[#6a7f34] bg-[#6a7f34] py-2 text-[11px] font-black uppercase text-white">Đóng</button>
             </div>
           </div>
         </div>
