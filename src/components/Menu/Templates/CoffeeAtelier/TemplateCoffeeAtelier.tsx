@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { ChevronRight, MapPin, Phone, Sparkles, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useMenuContext } from '../../MenuProvider';
+import PrivatePreviewInlineNotice from '../../PrivatePreviewInlineNotice';
 
 type ProductDisplayMode = 'gallery' | 'compact';
 
@@ -139,6 +140,7 @@ export default function TemplateCoffeeAtelier() {
               )}
 
               {store?.bio ? <p className="pt-1 text-sm font-medium text-[#6a4b34]">{store.bio}</p> : null}
+              <PrivatePreviewInlineNotice className="border-[#d8bda4] bg-[#fdf3e7] text-[#6a3f24]" />
             </div>
 
             <div className="inline-flex h-fit items-center gap-2 border-2 border-[#1f1610] bg-[#1f1610] px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-[#f8e8d6]">

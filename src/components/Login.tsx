@@ -159,7 +159,7 @@ export default function Login() {
         <div className="flex items-center justify-between mb-6">
           <Link
             to="/"
-            className="text-sm text-gray-500 hover:text-orange-500 transition-colors"
+            className="text-sm text-gray-500 hover:text-orange-500 transition-colors rounded-lg focus-visible:ring-2 focus-visible:ring-orange-300"
           >
             ← Quay về trang chủ
           </Link>
@@ -169,19 +169,20 @@ export default function Login() {
             <QrCode className="text-white w-8 h-8" />
           </div>
           <h1 className="text-3xl font-bold tracking-tight">Chào mừng trở lại</h1>
-          <p className="text-gray-500 mt-2">Bắt đầu quản lý menu của bạn ngay hôm nay</p>
+          <p className="text-gray-500 mt-2 leading-relaxed">Bắt đầu quản lý menu của bạn ngay hôm nay</p>
         </div>
 
         {error && (
-          <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6 text-sm font-medium">
+          <div role="alert" className="bg-red-50 text-red-600 p-4 rounded-xl mb-6 text-sm font-medium">
             {error}
           </div>
         )}
 
         <button
+          type="button"
           onClick={handleGoogleLogin}
           disabled={loading}
-          className="w-full flex items-center justify-center gap-3 bg-white border border-gray-200 text-gray-700 font-bold py-4 px-6 rounded-2xl hover:bg-gray-50 transition-all disabled:opacity-50"
+          className="w-full min-h-[44px] flex items-center justify-center gap-3 bg-white border border-gray-200 text-gray-700 font-bold py-4 px-6 rounded-2xl hover:bg-gray-50 transition-all disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-orange-300"
         >
           <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-6 h-6" referrerPolicy="no-referrer" />
           {loading ? 'Đang xử lý...' : 'Đăng nhập với Google'}

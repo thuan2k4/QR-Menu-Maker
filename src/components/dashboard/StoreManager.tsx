@@ -90,14 +90,14 @@ export default function StoreManager({ user }: StoreManagerProps) {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <Link to="/dashboard/stores" className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-400">
+          <Link to="/dashboard/stores" className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-400 focus-visible:ring-2 focus-visible:ring-orange-400" aria-label="Quay lại danh sách cửa hàng">
             <ChevronLeft size={24} />
           </Link>
           <div>
             <h2 className="text-2xl font-bold text-gray-900">{store.name}</h2>
             <div className="flex items-center gap-2 text-sm text-gray-400">
               <span>/m/{store.slug}</span>
-              <a href={`/m/${store.slug}`} target="_blank" rel="noopener noreferrer" className="text-orange-500 hover:underline flex items-center gap-1">
+              <a href={`/m/${store.slug}`} target="_blank" rel="noopener noreferrer" className="text-orange-500 hover:underline flex items-center gap-1 focus-visible:ring-2 focus-visible:ring-orange-300 rounded-md">
                 Xem Menu <ExternalLink size={12} />
               </a>
             </div>
@@ -113,7 +113,7 @@ export default function StoreManager({ user }: StoreManagerProps) {
           <span className="px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700">
             {storeSizePreset}
           </span>
-          <span className="px-3 py-1 rounded-full text-xs font-bold bg-purple-50 text-purple-700">
+          <span className="px-3 py-1 rounded-full text-xs font-bold bg-teal-50 text-teal-700">
             {storeFontFamily}
           </span>
           <span
@@ -125,14 +125,15 @@ export default function StoreManager({ user }: StoreManagerProps) {
           </span>
           <Link
             to={`/dashboard/store/${id}/theme`}
-            className="px-3 py-1 rounded-full text-xs font-bold border border-gray-200 text-gray-600 hover:bg-gray-50"
+            className="inline-flex min-h-[44px] items-center px-3 py-1 rounded-full text-xs font-bold border border-gray-200 text-gray-600 hover:bg-gray-50 focus-visible:ring-2 focus-visible:ring-orange-300"
           >
             Đổi template
           </Link>
           <button
+            type="button"
             onClick={handleVisibilityToggle}
             disabled={!isOwner}
-            className={`px-4 py-2 rounded-2xl font-bold transition-all ${isOwner ? 'bg-orange-500 text-white hover:bg-orange-600' : 'bg-gray-200 text-gray-500 cursor-not-allowed'}`}
+            className={`min-h-[44px] px-4 py-2 rounded-2xl font-bold transition-all focus-visible:ring-2 focus-visible:ring-orange-300 ${isOwner ? 'bg-orange-500 text-white hover:bg-orange-600' : 'bg-gray-200 text-gray-500 cursor-not-allowed'}`}
           >
             {currentVisibility === 'public' ? 'Chuyển về Private' : 'Chuyển Public'}
           </button>
@@ -145,7 +146,7 @@ export default function StoreManager({ user }: StoreManagerProps) {
           <Link
             key={tab.id}
             to={tab.path}
-            className={`flex items-center gap-2 px-6 py-4 text-sm font-bold border-b-2 transition-all whitespace-nowrap ${activeTab === tab.id
+            className={`flex min-h-[44px] items-center gap-2 px-6 py-4 text-sm font-bold border-b-2 transition-all whitespace-nowrap focus-visible:ring-2 focus-visible:ring-orange-300 ${activeTab === tab.id
               ? 'border-orange-500 text-orange-500'
               : 'border-transparent text-gray-400 hover:text-gray-600'
               }`}

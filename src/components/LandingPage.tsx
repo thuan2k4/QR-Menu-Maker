@@ -23,7 +23,7 @@ export default function LandingPage() {
           <span className="text-xl font-bold tracking-tight">MenuQRGenerate</span>
         </div>
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-600">
-          <Link to="/login" className="bg-orange-500 text-white px-5 py-2 rounded-full hover:bg-orange-600 transition-colors">Bắt đầu ngay</Link>
+          <Link to="/login" className="inline-flex min-h-[44px] items-center bg-orange-500 text-white px-5 py-2 rounded-full hover:bg-orange-600 transition-colors focus-visible:ring-2 focus-visible:ring-orange-400">Bắt đầu ngay</Link>
         </nav>
       </header>
 
@@ -32,7 +32,7 @@ export default function LandingPage() {
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-5xl md:text-7xl font-extrabold tracking-tight leading-tight mb-6"
+          className="text-[clamp(2.25rem,7vw,4.75rem)] font-extrabold tracking-tight leading-[1.1] mb-6"
         >
           Menu Kỹ Thuật Số <br />
           <span className="text-orange-500">Chuyên Nghiệp</span> Trong 5 Phút
@@ -41,7 +41,7 @@ export default function LandingPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="text-xl text-gray-500 max-w-2xl mx-auto mb-10"
+          className="text-xl text-gray-500 max-w-[65ch] leading-relaxed mx-auto mb-10"
         >
           Giải pháp tạo QR Menu tối ưu cho cửa hàng, quán cafe, dịch vụ. Giúp khách hàng xem món nhanh chóng, an toàn và hiện đại.
         </motion.p>
@@ -51,10 +51,10 @@ export default function LandingPage() {
           transition={{ delay: 0.2 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
-          <Link to="/login" className="w-full sm:w-auto bg-orange-500 text-white px-8 py-4 rounded-full text-lg font-bold hover:bg-orange-600 transition-all shadow-lg shadow-orange-200">
+          <Link to="/login" className="w-full sm:w-auto inline-flex min-h-[44px] items-center justify-center bg-orange-500 text-white px-8 py-4 rounded-full text-lg font-bold hover:bg-orange-600 transition-all shadow-lg shadow-orange-200 focus-visible:ring-2 focus-visible:ring-orange-400">
             Tạo Menu Miễn Phí
           </Link>
-          <a href="#demo" className="w-full sm:w-auto border border-gray-200 text-gray-600 px-8 py-4 rounded-full text-lg font-bold hover:bg-gray-50 transition-all">
+          <a href="#demo" className="w-full sm:w-auto inline-flex min-h-[44px] items-center justify-center border border-gray-200 text-gray-600 px-8 py-4 rounded-full text-lg font-bold hover:bg-gray-50 transition-all focus-visible:ring-2 focus-visible:ring-orange-300">
             Xem Demo
           </a>
         </motion.div>
@@ -115,7 +115,7 @@ export default function LandingPage() {
               <button
                 type="button"
                 onClick={() => window.open(demoImages[activeDemoIndex].src, '_blank')}
-                className="w-full justify-center inline-flex items-center gap-2 bg-orange-500 text-white py-3 rounded-xl font-semibold hover:bg-orange-600 transition-all"
+                className="w-full justify-center inline-flex min-h-[44px] items-center gap-2 bg-orange-500 text-white py-3 rounded-xl font-semibold hover:bg-orange-600 transition-all focus-visible:ring-2 focus-visible:ring-orange-400"
               >
                 Xem ảnh lớn
               </button>

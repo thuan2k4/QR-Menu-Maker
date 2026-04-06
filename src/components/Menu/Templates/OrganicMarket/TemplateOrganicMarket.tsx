@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { ChevronRight, Leaf, MapPin, Phone, Sparkles, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useMenuContext } from '../../MenuProvider';
+import PrivatePreviewInlineNotice from '../../PrivatePreviewInlineNotice';
 
 function parseNumber(value: unknown): number {
   if (typeof value === 'number' && Number.isFinite(value)) {
@@ -120,6 +121,8 @@ export default function TemplateOrganicMarket() {
                   ) : null}
                 </div>
               )}
+
+              <PrivatePreviewInlineNotice className="border-[#c7d39b] bg-[#f7fbe7] text-[#4e5f26]" />
             </div>
 
             <div className="inline-flex h-fit items-center gap-2 border border-[#d4ddba] bg-white px-3 py-2 text-[11px] font-black uppercase tracking-[0.12em] text-[#5f712e]">

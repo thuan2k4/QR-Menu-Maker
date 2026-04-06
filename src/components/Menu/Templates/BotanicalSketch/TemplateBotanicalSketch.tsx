@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { ChevronRight, Leaf, MapPin, Phone, Sparkles, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useMenuContext } from '../../MenuProvider';
+import PrivatePreviewInlineNotice from '../../PrivatePreviewInlineNotice';
 
 type CardMode = 'atelier' | 'compact';
 
@@ -103,6 +104,7 @@ export default function TemplateBotanicalSketch() {
               )}
 
               {store?.bio ? <p className="mt-3 text-sm font-medium text-[#7f7a69]">{store.bio}</p> : null}
+              <PrivatePreviewInlineNotice className="border-[#c9bea6] bg-[#f2ead8] text-[#7d7768]" />
             </div>
           </div>
 

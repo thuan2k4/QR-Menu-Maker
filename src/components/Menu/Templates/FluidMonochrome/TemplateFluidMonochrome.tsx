@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { useMenuContext } from '../../MenuProvider';
 import ProductFluidCard from './ProductFluidCard';
 import ProductFluidModal from './ProductFluidModal';
+import PrivatePreviewInlineNotice from '../../PrivatePreviewInlineNotice';
 
 export default function TemplateFluidMonochrome() {
   const {
@@ -142,6 +143,7 @@ export default function TemplateFluidMonochrome() {
                       {store.bio}
                     </p>
                   )}
+                  <PrivatePreviewInlineNotice className="border-[#cfc9be] bg-[#f1efea] text-[#3f3f3f]" />
                 </motion.div>
               </div>
             </div>

@@ -156,23 +156,27 @@ export default function DashboardOverview({ user }: DashboardOverviewProps) {
           <p className="text-gray-500 mt-1">Chào mừng quay trở lại, {user.displayName || 'User'}!</p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-2 bg-gray-100 rounded-xl p-1">
+          <div className="flex items-center gap-2 bg-gray-100 rounded-xl p-1" role="group" aria-label="Chọn khoảng thời gian analytics">
             <button
+              type="button"
               onClick={() => setTimeRange(7)}
-              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${timeRange === 7 ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
+              aria-pressed={timeRange === 7}
+              className={`min-h-[44px] px-3 py-2 text-xs font-bold rounded-lg transition-all focus-visible:ring-2 focus-visible:ring-orange-400 ${timeRange === 7 ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
             >
               7 ngày
             </button>
             <button
+              type="button"
               onClick={() => setTimeRange(30)}
-              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${timeRange === 30 ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
+              aria-pressed={timeRange === 30}
+              className={`min-h-[44px] px-3 py-2 text-xs font-bold rounded-lg transition-all focus-visible:ring-2 focus-visible:ring-orange-400 ${timeRange === 30 ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
             >
               30 ngày
             </button>
           </div>
           <Link
             to="/dashboard/stores"
-            className="inline-flex items-center gap-2 bg-orange-500 text-white px-6 py-3 rounded-2xl font-bold hover:bg-orange-600 transition-all shadow-lg shadow-orange-200"
+            className="inline-flex min-h-[44px] items-center gap-2 bg-orange-500 text-white px-6 py-3 rounded-2xl font-bold hover:bg-orange-600 transition-all shadow-lg shadow-orange-200 focus-visible:ring-2 focus-visible:ring-orange-400"
           >
             <Plus size={20} />
             Thêm cửa hàng mới
@@ -203,7 +207,7 @@ export default function DashboardOverview({ user }: DashboardOverviewProps) {
           value={stats.menuViews}
         />
         <StatCard
-          icon={<MousePointerClick className="text-fuchsia-500" size={16} />}
+          icon={<MousePointerClick className="text-teal-500" size={16} />}
           label="Click chi tiết"
           value={stats.productDetailClicks}
         />

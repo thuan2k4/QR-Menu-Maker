@@ -85,7 +85,7 @@ export default function Overview({ user, store }: OverviewProps) {
         </div>
         <h2 className="text-2xl font-bold mb-2">Chào mừng bạn!</h2>
         <p className="text-gray-500 mb-8 max-w-md mx-auto">Bạn chưa thiết lập thông tin cửa hàng. Hãy bắt đầu bằng cách cập nhật thông tin cơ bản để tạo Menu.</p>
-        <a href="/dashboard/settings" className="bg-orange-500 text-white px-8 py-4 rounded-full font-bold hover:bg-orange-600 transition-all shadow-lg shadow-orange-200">
+        <a href="/dashboard/settings" className="inline-flex min-h-[44px] items-center justify-center bg-orange-500 text-white px-8 py-4 rounded-full font-bold hover:bg-orange-600 transition-all shadow-lg shadow-orange-200 focus-visible:ring-2 focus-visible:ring-orange-400">
           Thiết lập ngay
         </a>
       </div>
@@ -119,16 +119,20 @@ export default function Overview({ user, store }: OverviewProps) {
     <div className="space-y-8">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <h3 className="text-lg font-bold text-gray-900">Chỉ số menu</h3>
-        <div className="flex items-center gap-2 bg-gray-100 rounded-xl p-1 w-fit">
+        <div className="flex items-center gap-2 bg-gray-100 rounded-xl p-1 w-fit" role="group" aria-label="Chọn khoảng thời gian thống kê">
           <button
+            type="button"
             onClick={() => setTimeRange(7)}
-            className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${timeRange === 7 ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
+            aria-pressed={timeRange === 7}
+            className={`min-h-[44px] px-3 py-2 text-xs font-bold rounded-lg transition-all focus-visible:ring-2 focus-visible:ring-orange-400 ${timeRange === 7 ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
           >
             7 ngày
           </button>
           <button
+            type="button"
             onClick={() => setTimeRange(30)}
-            className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${timeRange === 30 ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
+            aria-pressed={timeRange === 30}
+            className={`min-h-[44px] px-3 py-2 text-xs font-bold rounded-lg transition-all focus-visible:ring-2 focus-visible:ring-orange-400 ${timeRange === 30 ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
           >
             30 ngày
           </button>
@@ -138,7 +142,7 @@ export default function Overview({ user, store }: OverviewProps) {
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-min">
         <StatCard icon={<Eye className="text-emerald-500" size={16} />} label="Lượt xem menu" value={analyticsStats.menuViews} />
-        <StatCard icon={<MousePointerClick className="text-fuchsia-500" size={16} />} label="Click chi tiết" value={analyticsStats.productDetailClicks} />
+        <StatCard icon={<MousePointerClick className="text-teal-500" size={16} />} label="Click chi tiết" value={analyticsStats.productDetailClicks} />
         <StatCard icon={<Utensils className="text-orange-500" size={16} />} label="Sản phẩm" value={stats.products} />
         <StatCard icon={<LayoutList className="text-blue-500" size={16} />} label="Danh mục" value={stats.categories} />
       </div>
@@ -168,7 +172,7 @@ export default function Overview({ user, store }: OverviewProps) {
           <div className="flex gap-4 w-full">
             <button
               onClick={downloadQR}
-              className="flex-1 flex items-center justify-center gap-2 bg-gray-900 text-white px-6 py-4 rounded-2xl font-bold hover:bg-black transition-all"
+              className="flex-1 flex min-h-[44px] items-center justify-center gap-2 bg-gray-900 text-white px-6 py-4 rounded-2xl font-bold hover:bg-black transition-all focus-visible:ring-2 focus-visible:ring-gray-400"
             >
               <Download size={18} /> Tải mã QR
             </button>
@@ -176,7 +180,7 @@ export default function Overview({ user, store }: OverviewProps) {
               href={menuUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 flex items-center justify-center gap-2 border border-gray-200 text-gray-700 px-6 py-4 rounded-2xl font-bold hover:bg-gray-50 transition-all"
+              className="flex-1 flex min-h-[44px] items-center justify-center gap-2 border border-gray-200 text-gray-700 px-6 py-4 rounded-2xl font-bold hover:bg-gray-50 transition-all focus-visible:ring-2 focus-visible:ring-orange-300"
             >
               <ExternalLink size={18} /> Xem Menu
             </a>

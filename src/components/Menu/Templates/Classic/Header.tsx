@@ -1,13 +1,12 @@
 import { MapPin, Phone, Info, Smartphone } from 'lucide-react';
 import { useMenuContext } from '../../MenuProvider';
+import PrivatePreviewInlineNotice from '../../PrivatePreviewInlineNotice';
 
 export default function Header() {
   const {
     store,
     primaryColor,
     typography,
-    menuVisibility,
-    isOwner,
     rootStyle,
     borderRadius,
     showProductImages,
@@ -47,11 +46,7 @@ export default function Header() {
               )}
             </div>
             <p className="text-sm text-gray-500 line-clamp-2 mt-1">{store.bio}</p>
-            {menuVisibility !== 'public' && isOwner && (
-              <div className="mt-4 rounded-2xl bg-orange-50 border border-orange-100 text-orange-700 text-sm font-medium px-4 py-3">
-                Menu đang ở chế độ Riêng tư (private). Chỉ bạn mới có thể xem xem trước.
-              </div>
-            )}
+            <PrivatePreviewInlineNotice />
           </div>
         </div>
       </div>

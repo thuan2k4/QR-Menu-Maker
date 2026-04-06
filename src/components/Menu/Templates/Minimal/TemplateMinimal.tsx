@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { X, ChevronRight } from 'lucide-react';
 import { useMenuContext } from '../../MenuProvider';
 import { useRef, useState, useEffect } from 'react';
+import PrivatePreviewInlineNotice from '../../PrivatePreviewInlineNotice';
 
 export default function TemplateMinimal() {
   const {
@@ -80,6 +81,7 @@ export default function TemplateMinimal() {
                     {store?.phone && <span>☎️ {store.phone}</span>}
                   </div>
                 )}
+                <PrivatePreviewInlineNotice className="border-slate-300 bg-slate-100 text-slate-700" />
               </div>
             </div>
           </div>

@@ -33,6 +33,7 @@ export default function Dashboard({ user, profile }: DashboardProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const userInitial = (user.displayName || user.email || 'U').charAt(0).toUpperCase();
 
   const handleLogout = () => {
     auth.signOut();
@@ -65,8 +66,9 @@ export default function Dashboard({ user, profile }: DashboardProps) {
 
         <div className="p-4 border-t border-gray-50">
           <button
+            type="button"
             onClick={handleLogout}
-            className="flex items-center gap-3 w-full px-4 py-3 text-sm font-medium text-gray-500 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+            className="flex min-h-[44px] items-center gap-3 w-full px-4 py-3 text-sm font-medium text-gray-500 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all focus-visible:ring-2 focus-visible:ring-orange-300"
           >
             <LogOut size={20} />
             Đăng xuất
@@ -78,7 +80,14 @@ export default function Dashboard({ user, profile }: DashboardProps) {
       <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 flex md:hidden items-center justify-around p-2 z-50">
         <MobileNavLink to="/dashboard" icon={<LayoutDashboard size={20} />} label="Dashboard" active={isDashboardOverview} />
         <MobileNavLink to="/dashboard/stores" icon={<MenuIcon size={20} />} label="Cửa hàng" active={isStoresPage || isStoreDetailPage} />
-        <button onClick={() => setIsMobileMenuOpen(true)} className="flex flex-col items-center gap-1 p-2 text-gray-400">
+        <button
+          type="button"
+          onClick={() => setIsMobileMenuOpen(true)}
+          className="flex min-h-[44px] min-w-[44px] flex-col items-center gap-1 p-2 text-gray-400 focus-visible:ring-2 focus-visible:ring-orange-300 rounded-xl"
+          aria-label="Mở menu điều hướng"
+          aria-expanded={isMobileMenuOpen}
+          aria-controls="dashboard-mobile-sidebar"
+        >
           <MenuIcon size={20} />
           <span className="text-[10px] font-bold">Menu</span>
         </button>
@@ -96,6 +105,7 @@ export default function Dashboard({ user, profile }: DashboardProps) {
               className="fixed inset-0 bg-black/50 z-[60] md:hidden"
             />
             <motion.aside
+              id="dashboard-mobile-sidebar"
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
@@ -109,7 +119,7 @@ export default function Dashboard({ user, profile }: DashboardProps) {
                   </div>
                   <span className="font-bold tracking-tight">MenuQRGenerate</span>
                 </div>
-                <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 hover:bg-gray-100 rounded-full text-gray-400">
+                <button type="button" onClick={() => setIsMobileMenuOpen(false)} className="p-2 hover:bg-gray-100 rounded-full text-gray-400 focus-visible:ring-2 focus-visible:ring-orange-300" aria-label="Đóng menu điều hướng">
                   <X size={20} />
                 </button>
               </div>
@@ -121,8 +131,9 @@ export default function Dashboard({ user, profile }: DashboardProps) {
 
               <div className="p-4 border-t border-gray-50">
                 <button
+                  type="button"
                   onClick={handleLogout}
-                  className="flex items-center gap-3 w-full px-4 py-3 text-sm font-medium text-gray-500 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                  className="flex min-h-[44px] items-center gap-3 w-full px-4 py-3 text-sm font-medium text-gray-500 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all focus-visible:ring-2 focus-visible:ring-orange-300"
                 >
                   <LogOut size={20} />
                   Đăng xuất
@@ -138,8 +149,12 @@ export default function Dashboard({ user, profile }: DashboardProps) {
         <header className="bg-white border-b border-gray-100 px-4 md:px-6 py-4 flex items-center justify-between sticky top-0 z-10">
           <div className="flex items-center gap-3 flex-1 min-w-0">
             <button
+              type="button"
               onClick={() => setIsMobileMenuOpen(true)}
-              className="p-2 -ml-2 hover:bg-gray-100 rounded-full text-gray-400 md:hidden"
+              className="p-2 -ml-2 hover:bg-gray-100 rounded-full text-gray-400 md:hidden focus-visible:ring-2 focus-visible:ring-orange-300"
+              aria-label="Mở menu điều hướng"
+              aria-expanded={isMobileMenuOpen}
+              aria-controls="dashboard-mobile-sidebar"
             >
               <MenuIcon size={20} />
             </button>
@@ -147,7 +162,13 @@ export default function Dashboard({ user, profile }: DashboardProps) {
 
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-3 pl-4 border-l border-gray-100">
-              <img src={user.photoURL || ''} alt="Avatar" className="w-8 h-8 rounded-full border border-gray-100" referrerPolicy="no-referrer" />
+              {user.photoURL ? (
+                <img src={user.photoURL} alt={`Avatar ${user.displayName || 'user'}`} className="w-8 h-8 rounded-full border border-gray-100" referrerPolicy="no-referrer" />
+              ) : (
+                <div className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-100 bg-orange-50 text-xs font-bold text-orange-700" aria-label="Avatar mặc định">
+                  {userInitial}
+                </div>
+              )}
             </div>
           </div>
         </header>
@@ -168,7 +189,8 @@ function SidebarLink({ to, icon, label, active }: { to: string, icon: ReactNode,
   return (
     <Link
       to={to}
-      className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${active
+      aria-current={active ? 'page' : undefined}
+      className={`flex min-h-[44px] items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all focus-visible:ring-2 focus-visible:ring-orange-300 ${active
         ? 'bg-orange-500 text-white shadow-lg shadow-orange-200'
         : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'
         }`}
@@ -183,7 +205,8 @@ function MobileNavLink({ to, icon, label, active }: { to: string, icon: ReactNod
   return (
     <Link
       to={to}
-      className={`flex flex-col items-center gap-1 p-2 transition-all ${active ? 'text-orange-500' : 'text-gray-400'
+      aria-current={active ? 'page' : undefined}
+      className={`flex min-h-[44px] min-w-[44px] flex-col items-center gap-1 p-2 transition-all rounded-xl focus-visible:ring-2 focus-visible:ring-orange-300 ${active ? 'text-orange-500' : 'text-gray-400'
         }`}
     >
       {icon}

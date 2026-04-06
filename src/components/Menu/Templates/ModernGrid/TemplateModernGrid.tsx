@@ -3,6 +3,7 @@ import { X, Smartphone } from 'lucide-react';
 import { useMenuContext } from '../../MenuProvider';
 import CategoryGridBold from './CategoryGridBold';
 import ProductGridCard from './ProductGridCard';
+import PrivatePreviewInlineNotice from '../../PrivatePreviewInlineNotice';
 
 export default function TemplateModernGrid() {
   const {
@@ -54,6 +55,7 @@ export default function TemplateModernGrid() {
                   {store?.phone && <span className="flex items-center gap-2"><span className="text-lg">☎️</span>{store.phone}</span>}
                 </div>
                 {store?.bio && <p className="text-sm text-gray-600 max-w-2xl leading-relaxed font-medium">{store.bio}</p>}
+                <PrivatePreviewInlineNotice className="border-emerald-200 bg-emerald-50 text-emerald-800" />
               </div>
             </div>
           </div>

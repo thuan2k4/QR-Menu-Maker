@@ -3,6 +3,7 @@ import { X } from 'lucide-react';
 import { useMenuContext } from '../../MenuProvider';
 import ProductVibrantCard from './ProductVibrantCard';
 import { useRef } from 'react';
+import PrivatePreviewInlineNotice from '../../PrivatePreviewInlineNotice';
 
 export default function TemplateVibrant() {
   const {
@@ -102,6 +103,7 @@ export default function TemplateVibrant() {
                   {store?.bio && (
                     <p className="text-gray-700 leading-relaxed font-medium text-sm">{store.bio}</p>
                   )}
+                  <PrivatePreviewInlineNotice className="border-orange-200 bg-orange-50 text-orange-700" />
                 </motion.div>
               </div>
             </div>

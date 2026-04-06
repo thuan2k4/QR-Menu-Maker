@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { ChevronRight, MapPin, Phone, Sparkles, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useMenuContext } from '../../MenuProvider';
+import PrivatePreviewInlineNotice from '../../PrivatePreviewInlineNotice';
 
 function parseNumber(value: unknown): number {
   if (typeof value === 'number' && Number.isFinite(value)) {
@@ -100,6 +101,7 @@ export default function TemplateBakery() {
                     {store?.bio && <p className="pt-1 text-[#6c4a39]">{store.bio}</p>}
                   </div>
                 )}
+                <PrivatePreviewInlineNotice className="border-[#e6d4bf] bg-[#fff5e8] text-[#7d4b2f]" />
               </div>
             </div>
           </div>

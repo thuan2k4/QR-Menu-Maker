@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { ChevronRight, MapPin, Phone, Sparkles, Star, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useMenuContext } from '../../MenuProvider';
+import PrivatePreviewInlineNotice from '../../PrivatePreviewInlineNotice';
 
 type ProductViewMode = 'showcase' | 'compact';
 
@@ -131,6 +132,7 @@ export default function TemplateMatchaSignature() {
               ) : null}
 
               {store?.bio ? <p className="text-sm font-medium text-[#655142]">{store.bio}</p> : null}
+              <PrivatePreviewInlineNotice className="border-[#dbc8b1] bg-[#f8eee1] text-[#7a4a2d]" />
             </div>
 
             <div className="inline-flex h-fit items-center gap-1.5 rounded-full bg-[#f1e5d3] px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] text-[#7b4729]">

@@ -70,17 +70,22 @@ export default function App() {
 
   return (
     <Router>
+      <a href="#main-content" className="skip-link">
+        Bỏ qua điều hướng và đến nội dung chính
+      </a>
       {authWarning && user && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] px-4 py-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-sm shadow-sm">
+        <div role="status" aria-live="polite" className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] px-4 py-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-sm shadow-sm">
           {authWarning}
         </div>
       )}
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <Login />} />
-        <Route path="/dashboard/*" element={user ? <Dashboard user={user} profile={profile} /> : <Navigate to="/login" />} />
-        <Route path="/m/:slug" element={<PublicMenu />} />
-      </Routes>
+      <main id="main-content" tabIndex={-1}>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <Login />} />
+          <Route path="/dashboard/*" element={user ? <Dashboard user={user} profile={profile} /> : <Navigate to="/login" />} />
+          <Route path="/m/:slug" element={<PublicMenu />} />
+        </Routes>
+      </main>
     </Router>
   );
 }
