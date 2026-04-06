@@ -10,13 +10,15 @@ import {
   QrCode,
   Menu as MenuIcon,
   ChevronLeft,
-  ExternalLink
+  ExternalLink,
+  Palette
 } from 'lucide-react';
 
 // Components
 import Overview from './Overview';
 import RestaurantSettings from './RestaurantSettings';
 import MenuManagement from './MenuManagement';
+import ThemeEditor from './ThemeEditor';
 
 interface StoreManagerProps {
   user: User;
@@ -75,11 +77,13 @@ export default function StoreManager({ user }: StoreManagerProps) {
   const tabs = [
     { id: 'overview', label: 'Mã QR', icon: <QrCode size={18} />, path: `/dashboard/store/${id}` },
     { id: 'menu', label: 'Quản lý Menu', icon: <MenuIcon size={18} />, path: `/dashboard/store/${id}/menu` },
+    { id: 'theme', label: 'Giao diện', icon: <Palette size={18} />, path: `/dashboard/store/${id}/theme` },
     { id: 'settings', label: 'Thông tin cửa hàng', icon: <Info size={18} />, path: `/dashboard/store/${id}/settings` },
   ];
 
   const activeTab = location.pathname.endsWith('/settings') ? 'settings' :
-    location.pathname.endsWith('/menu') ? 'menu' : 'overview';
+    location.pathname.endsWith('/theme') ? 'theme' :
+      location.pathname.endsWith('/menu') ? 'menu' : 'overview';
 
   return (
     <div className="space-y-6">
@@ -157,6 +161,7 @@ export default function StoreManager({ user }: StoreManagerProps) {
         <Routes>
           <Route index element={<Overview user={user} store={store} />} />
           <Route path="menu" element={<MenuManagement user={user} store={store} />} />
+          <Route path="theme" element={<ThemeEditor user={user} restaurant={store} />} />
           <Route path="settings" element={<RestaurantSettings user={user} restaurant={store} />} />
         </Routes>
       </div>

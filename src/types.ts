@@ -40,6 +40,13 @@ export interface Store {
   currency?: StoreCurrency;
   templateId?: string;
   themeColor?: string; // backward compatibility for existing data
+  layoutType?: 'list' | 'grid';
+  showProductImages?: boolean;
+  qrDotColor?: string;
+  qrBgColor?: string;
+  bgColor?: string;
+  textColor?: string;
+  borderRadius?: string;
   menuVisibility?: 'public' | 'private';
 }
 

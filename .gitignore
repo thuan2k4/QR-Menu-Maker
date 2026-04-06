@@ -10,3 +10,5 @@ coverage/
 .agents
 
 docs
+
+public/template-ref
