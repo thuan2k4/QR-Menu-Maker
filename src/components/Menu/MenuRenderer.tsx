@@ -7,6 +7,7 @@ import TemplateBakery from './Templates/Bakery/TemplateBakery';
 import TemplateOrganicMarket from './Templates/OrganicMarket/TemplateOrganicMarket';
 import TemplateCoffeeAtelier from './Templates/CoffeeAtelier/TemplateCoffeeAtelier';
 import TemplateMatchaSignature from './Templates/MatchaSignature/TemplateMatchaSignature';
+import TemplateBotanicalSketch from './Templates/BotanicalSketch/TemplateBotanicalSketch';
 
 export default function MenuRenderer() {
   const { selectedTemplate } = useMenuContext();
@@ -26,6 +27,8 @@ export default function MenuRenderer() {
       return <TemplateCoffeeAtelier />;
     case 'matcha_signature':
       return <TemplateMatchaSignature />;
+    case 'botanical_sketch':
+      return <TemplateBotanicalSketch />;
     default:
       return <TemplateClassic />;
   }

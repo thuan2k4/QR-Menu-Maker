@@ -15,6 +15,7 @@ const TEMPLATE_OPTIONS = [
   { id: 'organic_market', name: 'Organic Market', description: 'Phong cách panel organic góc cạnh, khác biệt rõ với Bakery.' },
   { id: 'coffee_atelier', name: 'Coffee Atelier', description: 'Hero typography, tông cà phê cao cấp và modal sản phẩm đậm chất studio.' },
   { id: 'matcha_signature', name: 'Signature Market', description: 'Soft editorial bo tròn, nhịp trình bày thoáng và nhận diện tách biệt khỏi Coffee Atelier.' },
+  { id: 'botanical_sketch', name: 'Botanical Sketchbook', description: 'Monotone sketch với chất giấy mộc, card bo mềm và modal chi tiết đầy đủ.' },
 ];
 
 interface ThemeEditorProps {
@@ -80,6 +81,7 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
   const [organicPreviewCardMode, setOrganicPreviewCardMode] = useState<'showcase' | 'compact'>('showcase');
   const [coffeeAtelierPreviewMode, setCoffeeAtelierPreviewMode] = useState<'gallery' | 'compact'>('gallery');
   const [signaturePreviewMode, setSignaturePreviewMode] = useState<'showcase' | 'compact'>('showcase');
+  const [botanicalPreviewMode, setBotanicalPreviewMode] = useState<'atelier' | 'compact'>('atelier');
 
   const initialThemeState = useMemo<ThemeState>(() => {
     if (!restaurant) return DEFAULT_THEME_STATE;
@@ -139,6 +141,7 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
   const isOrganicPreview = theme.templateId === 'organic_market';
   const isCoffeeAtelierPreview = theme.templateId === 'coffee_atelier';
   const isSignatureMarketPreview = theme.templateId === 'matcha_signature';
+  const isBotanicalSketchPreview = theme.templateId === 'botanical_sketch';
   const previewCategories = ['Rides', 'Food', 'Quik', 'Pay', 'Hala Taxi', 'Box'];
 
   const renderPreviewLayout = () => {
@@ -278,6 +281,107 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                 {/* Price Range */}
                 <p className="text-sm font-black text-indigo-600">Từ 25.000đ - 30.000đ</p>
               </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Botanical Sketchbook Template Preview
+    if (isBotanicalSketchPreview) {
+      return (
+        <div className="min-h-[640px] bg-[#908d7b] text-[#807c6d]">
+          <div className="space-y-4 px-3 pb-4 pt-4">
+            <div className="rounded-[26px] border border-[#d4ccb4] bg-[#efe8d2] p-3 shadow-[0_16px_28px_-18px_rgba(39,35,28,0.6)]">
+              <div className="h-16 overflow-hidden rounded-[18px] border border-[#b8af98] bg-[#ddd5bc]">
+                {restaurant?.coverUrl ? (
+                  <img
+                    src={restaurant.coverUrl}
+                    alt="Store cover"
+                    className="h-full w-full object-cover"
+                    referrerPolicy="no-referrer"
+                  />
+                ) : null}
+              </div>
+
+              <div className="mt-3 min-w-0">
+                <p className="text-[9px] font-semibold uppercase tracking-[0.22em] text-[#8f8a79]">La Petite Collection</p>
+                <h1 className="mt-1 truncate text-2xl font-semibold italic text-[#7d7869]">{restaurant?.name || 'Coffee Shop'}</h1>
+                <div className="mt-2 flex flex-wrap gap-1.5 text-[11px] font-semibold text-[#868170]">
+                  <p className="inline-flex items-center gap-1 rounded-full border border-[#cec5ad] bg-[#f2ebd8] px-2.5 py-1">📍 {restaurant?.address || 'Huế'}</p>
+                  <p className="inline-flex items-center gap-1 rounded-full border border-[#cec5ad] bg-[#f2ebd8] px-2.5 py-1">☎️ 0123456789</p>
+                </div>
+                <p className="mt-2 text-sm font-medium text-[#7f7a69]">{restaurant?.bio || 'Quán coffee tọa lạc tại thành phố Huế.'}</p>
+              </div>
+            </div>
+
+            <div className="rounded-[26px] border border-[#d4ccb4] bg-[#f1ead8] p-3 shadow-[0_16px_28px_-18px_rgba(39,35,28,0.55)]">
+              <div className="mb-3 rounded-full border border-[#cdc4ad] bg-[#e8dfc8] px-3 py-1.5">
+                <p className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#857f6f]">Danh mục</p>
+              </div>
+
+              <h2 className="text-3xl font-semibold leading-[1.02] text-[#7b7667]">Chọn món bạn muốn thử</h2>
+
+              <div className="mt-3 inline-flex rounded-full border border-[#c8bea6] bg-[#ece3cb] p-0.5">
+                {[
+                  { id: 'atelier', label: 'Thẻ lớn' },
+                  { id: 'compact', label: 'Thẻ nhỏ' },
+                ].map((view) => {
+                  const active = botanicalPreviewMode === view.id;
+                  return (
+                    <button
+                      key={view.id}
+                      type="button"
+                      onClick={() => setBotanicalPreviewMode(view.id as 'atelier' | 'compact')}
+                      className={`rounded-full px-3 py-1.5 text-[11px] font-semibold transition ${active ? 'bg-[#8d8878] text-[#f7f0df]' : 'text-[#7b7566]'}`}
+                    >
+                      {view.label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="mt-3 flex gap-2">
+                <button className="rounded-full border border-[#8f8a79] bg-[#8f8a79] px-3 py-1.5 text-sm font-semibold text-[#f7f0de]">Cà phê</button>
+                <button className="rounded-full border border-[#cac2ab] bg-[#f6efdd] px-3 py-1.5 text-sm font-semibold text-[#7d7768]">Matcha</button>
+              </div>
+            </div>
+
+            <div className={botanicalPreviewMode === 'atelier' ? 'grid grid-cols-1 gap-3' : 'space-y-3'}>
+              {PREVIEW_PRODUCTS.slice(0, 2).map((product, idx) => {
+                const minPrice = product.price;
+                const maxPrice = product.price + (idx + 1) * 9000;
+                const compact = botanicalPreviewMode === 'compact';
+
+                return (
+                  <div key={product.id} className={`rounded-[22px] border border-[#d4ccb4] bg-[#f4ecd9] p-3 shadow-[0_16px_26px_-20px_rgba(43,35,24,0.7)] ${compact ? 'flex gap-3' : 'space-y-2.5'}`}>
+                    <div className={`${compact ? 'h-24 w-24 flex-shrink-0 rounded-[16px]' : 'h-32 w-full rounded-[20px]'} overflow-hidden border border-[#c4baa2] bg-[#ddd4bc]`}>
+                      {restaurant?.coverUrl ? (
+                        <img
+                          src={restaurant.coverUrl}
+                          alt="Product"
+                          className="h-full w-full object-cover"
+                          referrerPolicy="no-referrer"
+                        />
+                      ) : null}
+                    </div>
+
+                    <div className={`${compact ? 'min-w-0 flex-1' : 'px-1'} space-y-1.5`}>
+                      <h4 className={`truncate font-semibold italic text-[#777263] ${compact ? 'text-lg' : 'text-2xl'}`}>{product.name}</h4>
+                      <p className={`line-clamp-2 font-medium text-[#888372] ${compact ? 'text-xs' : 'text-sm'}`}>{product.description}</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        <span className="rounded-full border border-[#cec5ad] bg-[#eee6d0] px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.08em] text-[#8f8a79]">#coffee</span>
+                        <span className="rounded-full border border-[#cec5ad] bg-[#eee6d0] px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.08em] text-[#8f8a79]">#coldbrew</span>
+                        <span className="rounded-full border border-[#cec5ad] bg-[#eee6d0] px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.08em] text-[#8f8a79]">#ice</span>
+                      </div>
+                      <div className="flex flex-wrap items-end justify-between gap-2 pt-1">
+                        <p className={`font-semibold text-[#857f70] ${compact ? 'text-lg' : 'text-3xl'}`}>Từ {new Intl.NumberFormat('vi-VN').format(minPrice)} đ - {new Intl.NumberFormat('vi-VN').format(maxPrice)} đ</p>
+                        <button className="inline-flex items-center rounded-full border border-[#908a79] bg-[#908a79] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#f8f0de]">Xem chi tiết</button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
