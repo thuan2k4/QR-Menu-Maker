@@ -216,10 +216,6 @@ export default function TemplateOrganicMarket() {
                   )}
 
                   <div className={`${cardView === 'compact' ? 'min-w-0 flex-1' : 'p-4'} space-y-2`}>
-                    <div className="inline-flex items-center gap-1 border border-[#d9e2bd] bg-white px-2 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-[#70823a]">
-                      <Leaf size={10} />
-                      Organic
-                    </div>
 
                     <h3 className="line-clamp-1 text-2xl font-black text-[#1f2b14]">{product.name}</h3>
                     {product.description ? <p className="line-clamp-2 text-sm font-semibold text-[#5a6a32]">{product.description}</p> : null}

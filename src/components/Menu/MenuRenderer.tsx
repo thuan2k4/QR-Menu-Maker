@@ -5,6 +5,7 @@ import TemplateVibrant from './Templates/Vibrant/TemplateVibrant';
 import TemplateMinimal from './Templates/Minimal/TemplateMinimal';
 import TemplateBakery from './Templates/Bakery/TemplateBakery';
 import TemplateOrganicMarket from './Templates/OrganicMarket/TemplateOrganicMarket';
+import TemplateCoffeeAtelier from './Templates/CoffeeAtelier/TemplateCoffeeAtelier';
 
 export default function MenuRenderer() {
   const { selectedTemplate } = useMenuContext();
@@ -20,6 +21,8 @@ export default function MenuRenderer() {
       return <TemplateBakery />;
     case 'organic_market':
       return <TemplateOrganicMarket />;
+    case 'coffee_atelier':
+      return <TemplateCoffeeAtelier />;
     default:
       return <TemplateClassic />;
   }

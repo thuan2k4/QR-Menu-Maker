@@ -13,6 +13,7 @@ const TEMPLATE_OPTIONS = [
   { id: 'minimal', name: 'Minimal', description: 'Thiết kế tối giản, sạch sẽ và chuyên nghiệp.' },
   { id: 'bakery', name: 'Bakery', description: 'Editorial ấm áp, ảnh lớn, phù hợp quán bánh và cà phê.' },
   { id: 'organic_market', name: 'Organic Market', description: 'Phong cách panel organic góc cạnh, khác biệt rõ với Bakery.' },
+  { id: 'coffee_atelier', name: 'Coffee Atelier', description: 'Hero typography, tông cà phê cao cấp và modal sản phẩm đậm chất studio.' },
 ];
 
 interface ThemeEditorProps {
@@ -76,6 +77,7 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [organicPreviewCardMode, setOrganicPreviewCardMode] = useState<'showcase' | 'compact'>('showcase');
+  const [coffeeAtelierPreviewMode, setCoffeeAtelierPreviewMode] = useState<'gallery' | 'compact'>('gallery');
 
   const initialThemeState = useMemo<ThemeState>(() => {
     if (!restaurant) return DEFAULT_THEME_STATE;
@@ -133,6 +135,7 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
   const isMinimalPreview = theme.templateId === 'minimal';
   const isBakeryPreview = theme.templateId === 'bakery';
   const isOrganicPreview = theme.templateId === 'organic_market';
+  const isCoffeeAtelierPreview = theme.templateId === 'coffee_atelier';
   const previewCategories = ['Rides', 'Food', 'Quik', 'Pay', 'Hala Taxi', 'Box'];
 
   const renderPreviewLayout = () => {
@@ -272,6 +275,108 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                 {/* Price Range */}
                 <p className="text-sm font-black text-indigo-600">Từ 25.000đ - 30.000đ</p>
               </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Coffee Atelier Template Preview
+    if (isCoffeeAtelierPreview) {
+      return (
+        <div className="min-h-[640px] bg-[#ece7df] text-[#1b150f]">
+          <div className="relative h-24 overflow-hidden border-b-2 border-[#22190f] bg-[radial-gradient(circle_at_top_left,_#b17f59_0%,_#74472c_56%,_#2d1d12_100%)]">
+            <div className="absolute inset-0 bg-gradient-to-b from-[#2b1a10]/20 to-[#2b1a10]/74" />
+            <div className="absolute inset-x-0 top-2 flex items-center justify-between px-3 text-[9px] font-black uppercase tracking-[0.14em] text-[#f5e2cf]">
+              <span>Coffee Atelier</span>
+              <span>Issue 01</span>
+            </div>
+            <div className="absolute inset-x-0 bottom-2 grid grid-cols-[1fr_auto] items-end gap-2 px-3 text-[#fff4e8]">
+              <p className="text-sm font-black uppercase tracking-[0.08em]">Order Coffee</p>
+              <p className="border-l border-[#f2c69f] pl-2 text-[9px] font-semibold italic">Editorial</p>
+            </div>
+          </div>
+
+          <div className="space-y-4 px-3 pb-4 pt-4">
+            <div className="border-2 border-[#1f150d] bg-[#f7f2e9] p-3 shadow-[6px_6px_0_0_rgba(31,21,13,0.2)]">
+              <div className="flex items-start gap-3">
+                <div className="h-14 w-14 border-2 border-[#1f150d] bg-[#eadccc]" />
+                <div className="min-w-0 flex-1 space-y-1">
+                  <p className="text-[9px] font-black uppercase tracking-[0.13em] text-[#9c6540]">Fresh Batch Daily</p>
+                  <h1 className="truncate text-lg font-black text-[#1f150d]">{restaurant?.name || 'Coffee Shop'}</h1>
+                  <div className="space-y-0.5 text-[11px] font-semibold text-[#5f3f2b]">
+                    <p>📍 {restaurant?.address || 'Huế'}</p>
+                    <p>☎️ 0123456789</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="border-2 border-[#21180f] bg-[#1d1711] p-3 shadow-[6px_6px_0_0_rgba(31,21,13,0.2)]">
+              <div className="space-y-3">
+                <div>
+                  <p className="text-[9px] font-black uppercase tracking-[0.13em] text-[#f0bc8f]">Danh Mục</p>
+                  <h2 className="mt-1 text-base font-black text-white">Chọn sản phẩm bạn muốn thử</h2>
+                </div>
+
+                <div className="inline-flex border border-[#3f3328] bg-[#2b2118] p-0.5">
+                  {[
+                    { id: 'gallery', label: 'Thẻ lớn' },
+                    { id: 'compact', label: 'Thẻ gọn' },
+                  ].map((mode) => {
+                    const active = coffeeAtelierPreviewMode === mode.id;
+                    return (
+                      <button
+                        key={mode.id}
+                        type="button"
+                        onClick={() => setCoffeeAtelierPreviewMode(mode.id as 'gallery' | 'compact')}
+                        className={`px-3 py-1 text-[10px] font-black transition ${active ? 'bg-[#c7773d] text-[#1f130b]' : 'text-[#f2dbc7]'}`}
+                      >
+                        {mode.label}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  <button className="border border-[#c7773d] bg-[#c7773d] px-3 py-1.5 text-xs font-black text-[#1f130b]">Cà phê</button>
+                  <button className="border border-[#58473a] bg-[#241b14] px-3 py-1.5 text-xs font-black text-[#f8e9da]">Matcha</button>
+                </div>
+              </div>
+            </div>
+
+            <div className={coffeeAtelierPreviewMode === 'gallery' ? 'grid grid-cols-2 gap-2.5' : 'space-y-3'}>
+              {PREVIEW_PRODUCTS.slice(0, 2).map((product, idx) => {
+                const minPrice = product.price;
+                const maxPrice = product.price + (idx + 1) * 9000;
+
+                return (
+                  <div
+                    key={product.id}
+                    className={`border-2 border-[#21170f] bg-[#fffaf3] shadow-[5px_5px_0_0_rgba(33,23,15,0.16)] ${coffeeAtelierPreviewMode === 'compact' ? 'flex gap-3 p-3' : 'overflow-hidden'}`}
+                  >
+                    <div className={`${coffeeAtelierPreviewMode === 'compact' ? 'h-20 w-20 flex-shrink-0 border border-[#21170f]' : 'h-24 w-full'} bg-[#ecdcc9]`} />
+                    <div className={`${coffeeAtelierPreviewMode === 'compact' ? 'min-w-0 flex-1' : 'space-y-1.5 p-2.5'} space-y-1.5`}>
+                      <h4 className="truncate text-xs font-black text-[#25190f]">{product.name}</h4>
+                      <p className="line-clamp-2 text-[10px] font-medium text-[#674b37]">{product.description}</p>
+                      <div className="flex flex-wrap gap-1">
+                        <span className="border border-[#e2d0bc] bg-[#f5ebdd] px-2 py-0.5 text-[9px] font-black text-[#825233]">#coffee</span>
+                        <span className="border border-[#e2d0bc] bg-[#f5ebdd] px-2 py-0.5 text-[9px] font-black text-[#825233]">#coldbrew</span>
+                      </div>
+                      <div className="flex items-center justify-between gap-2 pt-1">
+                        <p className="text-[11px] font-black text-[#9e5e35]">Từ {new Intl.NumberFormat('vi-VN').format(minPrice)}đ - {new Intl.NumberFormat('vi-VN').format(maxPrice)}đ</p>
+                        <button className="border border-[#271c12] bg-[#271c12] px-2 py-1 text-[9px] font-black text-[#f5e6d4]">Chi tiết</button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="border-2 border-[#d8c1a8] bg-[#fff2e3] p-3">
+              <p className="text-[10px] font-black uppercase tracking-[0.15em] text-[#8b5a39]">Chi tiết sản phẩm</p>
+              <p className="mt-1 text-[11px] font-medium text-[#5f4331]">Ảnh sản phẩm, giá từ đến, mô tả chi tiết, variants.</p>
+              <button className="mt-2 w-full border border-[#241910] bg-[#241910] py-2 text-[11px] font-black uppercase text-[#f3e2d0]">Đóng</button>
             </div>
           </div>
         </div>
