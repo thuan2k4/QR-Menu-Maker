@@ -4,10 +4,38 @@ import { useMenuContext } from './Menu/MenuProvider';
 import MenuRenderer from './Menu/MenuRenderer';
 import PublicMenuFilterSortControls from './Menu/PublicMenuFilterSortControls';
 import { Info, Smartphone } from 'lucide-react';
+import { useEffect } from 'react';
+import type { CSSProperties } from 'react';
 
 function PublicMenuContent() {
-  const { loading, store, menuVisibility, isOwner } = useMenuContext();
+  const { loading, store, menuVisibility, isOwner, rootStyle, sizePreset, primaryColor, secondaryColor } = useMenuContext();
   const isPrivateMenu = menuVisibility !== 'public';
+
+  useEffect(() => {
+    const rootElement = document.documentElement;
+    const previousFontSize = rootElement.style.fontSize;
+
+    if (sizePreset === 'large') {
+      rootElement.style.fontSize = '17px';
+    } else if (sizePreset === 'compact') {
+      rootElement.style.fontSize = '15px';
+    } else {
+      rootElement.style.fontSize = '16px';
+    }
+
+    return () => {
+      rootElement.style.fontSize = previousFontSize;
+    };
+  }, [sizePreset]);
+
+  const themedStyle: CSSProperties = {
+    fontFamily: rootStyle.fontFamily,
+    color: rootStyle.color,
+    backgroundColor: rootStyle.backgroundColor,
+    backgroundImage: rootStyle.backgroundImage,
+    ['--menu-primary' as string]: primaryColor,
+    ['--menu-secondary' as string]: secondaryColor,
+  };
 
   if (loading) {
     return (
@@ -40,13 +68,13 @@ function PublicMenuContent() {
   }
 
   return (
-    <>
+    <div style={themedStyle}>
       <PublicMenuFilterSortControls
         disabled={isPrivateMenu}
         disabledReason="Filter/Sort tam khoa khi menu dang o che do Private."
       />
       <MenuRenderer />
-    </>
+    </div>
   );
 }
 

@@ -4,7 +4,6 @@ import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { Store } from '../../types';
 import { User } from 'firebase/auth';
-import { getMenuTemplateById } from '../../constants/menuTemplates';
 import {
   Info,
   QrCode,
@@ -58,10 +57,7 @@ export default function StoreManager({ user }: StoreManagerProps) {
   const currentVisibility = store.menuVisibility || 'private';
   const isOwner = user.uid === store.ownerId;
   const storeCurrency = store.currency || 'VND';
-  const storeSizePreset = store.sizePreset || 'normal';
-  const storeFontFamily = store.fontFamily || 'Inter';
   const storePrimaryColor = store.primaryColor || store.themeColor || '#f97316';
-  const selectedTemplate = getMenuTemplateById(store.templateId);
 
   const handleVisibilityToggle = async () => {
     if (!isOwner) return;
@@ -109,19 +105,6 @@ export default function StoreManager({ user }: StoreManagerProps) {
           </span>
           <span className="px-3 py-1 rounded-full text-xs font-bold bg-orange-50 text-orange-700" style={{ border: `1px solid ${storePrimaryColor}` }}>
             {storeCurrency}
-          </span>
-          <span className="px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700">
-            {storeSizePreset}
-          </span>
-          <span className="px-3 py-1 rounded-full text-xs font-bold bg-teal-50 text-teal-700">
-            {storeFontFamily}
-          </span>
-          <span
-            className="px-3 py-1 rounded-full text-xs font-bold"
-            style={{ backgroundColor: `${selectedTemplate.primaryColor}18`, color: selectedTemplate.primaryColor }}
-            title={selectedTemplate.description}
-          >
-            {selectedTemplate.name}
           </span>
           <Link
             to={`/dashboard/store/${id}/theme`}

@@ -31,6 +31,7 @@ export default function PublicMenuFilterSortControls({
     onlyWithVariants,
     setOnlyWithVariants,
     resetProductFilters,
+    primaryColor,
   } = useMenuContext();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -64,6 +65,7 @@ export default function PublicMenuFilterSortControls({
           aria-expanded={isOpen}
           aria-controls="public-menu-filter-panel"
           aria-disabled={disabled}
+          style={disabled ? undefined : { borderColor: primaryColor, color: primaryColor, backgroundColor: 'rgba(255,255,255,0.95)' }}
         >
           <SlidersHorizontal size={16} />
           Filter/Sort
@@ -79,7 +81,11 @@ export default function PublicMenuFilterSortControls({
         )}
 
         {isOpen && !disabled && (
-          <div id="public-menu-filter-panel" className="mt-2 rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-2xl backdrop-blur">
+          <div
+            id="public-menu-filter-panel"
+            className="mt-2 rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-2xl backdrop-blur"
+            style={{ borderColor: primaryColor }}
+          >
             <div className="mb-3 flex items-center justify-between">
               <p className="text-sm font-black uppercase tracking-[0.08em] text-slate-800">Lọc sản phẩm</p>
               <button
@@ -128,6 +134,7 @@ export default function PublicMenuFilterSortControls({
                   type="button"
                   onClick={() => setOnlyWithImage(!onlyWithImage)}
                   className={`inline-flex min-h-[44px] items-center gap-1.5 rounded-full border px-3 text-xs font-black uppercase tracking-[0.06em] transition focus-visible:ring-2 focus-visible:ring-orange-300 ${onlyWithImage ? 'border-slate-900 bg-slate-900 text-white' : 'border-slate-300 bg-white text-slate-700'}`}
+                  style={onlyWithImage ? { borderColor: primaryColor, backgroundColor: primaryColor } : undefined}
                 >
                   <Funnel size={12} />
                   Có ảnh
@@ -136,6 +143,7 @@ export default function PublicMenuFilterSortControls({
                   type="button"
                   onClick={() => setOnlyWithVariants(!onlyWithVariants)}
                   className={`inline-flex min-h-[44px] items-center gap-1.5 rounded-full border px-3 text-xs font-black uppercase tracking-[0.06em] transition focus-visible:ring-2 focus-visible:ring-orange-300 ${onlyWithVariants ? 'border-slate-900 bg-slate-900 text-white' : 'border-slate-300 bg-white text-slate-700'}`}
+                  style={onlyWithVariants ? { borderColor: primaryColor, backgroundColor: primaryColor } : undefined}
                 >
                   <Funnel size={12} />
                   Có biến thể

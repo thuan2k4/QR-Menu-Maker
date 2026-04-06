@@ -209,11 +209,11 @@ export function MenuProvider({ slug, children }: MenuProviderProps) {
   const currency = (store?.currency === 'EUR' || store?.currency === 'USD' || store?.currency === 'VND')
     ? store.currency
     : selectedTemplate.currency;
-  const sizePreset = (store?.sizePreset === 'large' || store?.sizePreset === 'compact')
+  const sizePreset = (store?.sizePreset === 'large' || store?.sizePreset === 'normal' || store?.sizePreset === 'compact')
     ? store.sizePreset
     : selectedTemplate.sizePreset;
   const typography = SIZE_PRESET_CLASSES[sizePreset];
-  const fontFamily = (store?.fontFamily === 'Roboto' || store?.fontFamily === 'Playfair Display' || store?.fontFamily === 'Be Vietnam Pro')
+  const fontFamily = (store?.fontFamily === 'Inter' || store?.fontFamily === 'Roboto' || store?.fontFamily === 'Playfair Display' || store?.fontFamily === 'Be Vietnam Pro')
     ? store.fontFamily
     : selectedTemplate.fontFamily;
   const bgColor = store?.bgColor || secondaryColor;
