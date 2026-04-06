@@ -14,6 +14,7 @@ const TEMPLATE_OPTIONS = [
   { id: 'bakery', name: 'Bakery', description: 'Editorial ấm áp, ảnh lớn, phù hợp quán bánh và cà phê.' },
   { id: 'organic_market', name: 'Organic Market', description: 'Phong cách panel organic góc cạnh, khác biệt rõ với Bakery.' },
   { id: 'coffee_atelier', name: 'Coffee Atelier', description: 'Hero typography, tông cà phê cao cấp và modal sản phẩm đậm chất studio.' },
+  { id: 'matcha_signature', name: 'Signature Market', description: 'Soft editorial bo tròn, nhịp trình bày thoáng và nhận diện tách biệt khỏi Coffee Atelier.' },
 ];
 
 interface ThemeEditorProps {
@@ -78,6 +79,7 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [organicPreviewCardMode, setOrganicPreviewCardMode] = useState<'showcase' | 'compact'>('showcase');
   const [coffeeAtelierPreviewMode, setCoffeeAtelierPreviewMode] = useState<'gallery' | 'compact'>('gallery');
+  const [signaturePreviewMode, setSignaturePreviewMode] = useState<'showcase' | 'compact'>('showcase');
 
   const initialThemeState = useMemo<ThemeState>(() => {
     if (!restaurant) return DEFAULT_THEME_STATE;
@@ -136,6 +138,7 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
   const isBakeryPreview = theme.templateId === 'bakery';
   const isOrganicPreview = theme.templateId === 'organic_market';
   const isCoffeeAtelierPreview = theme.templateId === 'coffee_atelier';
+  const isSignatureMarketPreview = theme.templateId === 'matcha_signature';
   const previewCategories = ['Rides', 'Food', 'Quik', 'Pay', 'Hala Taxi', 'Box'];
 
   const renderPreviewLayout = () => {
@@ -275,6 +278,110 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                 {/* Price Range */}
                 <p className="text-sm font-black text-indigo-600">Từ 25.000đ - 30.000đ</p>
               </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Signature Market Template Preview
+    if (isSignatureMarketPreview) {
+      return (
+        <div className="min-h-[640px] bg-[#f8f3e9] text-[#2c2017]">
+          <div className="relative h-24 overflow-hidden rounded-b-[20px] border-b border-[#d8c7b0] bg-[radial-gradient(circle_at_top_left,_#7f5a40_0%,_#573a28_56%,_#2f1f16_100%)]">
+            <div className="absolute inset-0 bg-gradient-to-b from-[#2e1f15]/34 via-[#2e1f15]/52 to-[#2e1f15]/66" />
+            <div className="absolute inset-x-0 top-2 flex items-center justify-between px-3">
+              <p className="inline-flex rounded-full border border-[#f4d8c0]/75 bg-[#fff3e7]/15 px-2 py-1 text-[9px] font-black uppercase tracking-[0.14em] text-[#fff4ea]">
+                Signature Market
+              </p>
+              <p className="inline-flex rounded-full border border-[#f4d8c0]/75 bg-[#fff3e7]/15 px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-[#fff4ea]">
+                Seasonal Edit
+              </p>
+            </div>
+          </div>
+
+          <div className="-mt-5 px-3">
+            <div className="rounded-[20px] border border-[#d8c7b0] bg-[#fffaf3]/95 p-3 shadow-[0_10px_20px_-14px_rgba(78,49,29,0.5)]">
+              <div className="flex items-start gap-3">
+                <div className="h-14 w-14 rounded-xl border border-[#e6d8c6] bg-[#ece2d4]" />
+                <div className="min-w-0 flex-1 space-y-1">
+                  <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#a66139]">Fresh Batch Daily</p>
+                  <h1 className="truncate text-lg font-black text-[#2d2016]">{restaurant?.name || 'Coffee Shop'}</h1>
+                  <div className="flex flex-wrap gap-1 text-[11px] font-semibold text-[#5d4a3b]">
+                    <p className="rounded-full bg-[#f4ebdc] px-2 py-0.5">📍 {restaurant?.address || 'Huế'}</p>
+                    <p className="rounded-full bg-[#f4ebdc] px-2 py-0.5">☎️ 0123456789</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-4 px-3 pb-4 pt-4">
+            <div className="rounded-[20px] border border-[#d8c7b0] bg-[#fff8ee] p-3 shadow-[0_10px_20px_-14px_rgba(78,49,29,0.32)]">
+              <div className="space-y-3">
+                <div>
+                  <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#a66139]">Danh Mục</p>
+                  <h2 className="mt-1 text-base font-black text-[#2d2016]">Chọn sản phẩm bạn muốn thử</h2>
+                </div>
+
+                <div className="inline-flex rounded-full border border-[#d8c7b0] bg-[#f4ecde] p-0.5">
+                  {[
+                    { id: 'showcase', label: 'Thẻ lớn' },
+                    { id: 'compact', label: 'Thẻ gọn' },
+                  ].map((view) => {
+                    const active = signaturePreviewMode === view.id;
+                    return (
+                      <button
+                        key={view.id}
+                        type="button"
+                        onClick={() => setSignaturePreviewMode(view.id as 'showcase' | 'compact')}
+                        className={`rounded-full px-3 py-1 text-[10px] font-black uppercase transition ${active ? 'bg-[#9e5e38] text-white' : 'text-[#6a503f]'}`}
+                      >
+                        {view.label}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  <button className="rounded-full border border-[#a15f38] bg-[#a15f38] px-3 py-1.5 text-xs font-black text-white">Nổi bật</button>
+                  <button className="rounded-full border border-[#d6c4ac] bg-[#fffdf9] px-3 py-1.5 text-xs font-black text-[#5d4838]">Món mới</button>
+                </div>
+              </div>
+            </div>
+
+            <div className={signaturePreviewMode === 'showcase' ? 'grid grid-cols-1 gap-3' : 'space-y-3'}>
+              {PREVIEW_PRODUCTS.slice(0, 2).map((product, idx) => {
+                const minPrice = product.price;
+                const maxPrice = product.price + (idx + 1) * 9000;
+
+                return (
+                  <div key={product.id} className={`rounded-[18px] border border-[#d8c7b3] bg-[#fffbf4] p-2.5 shadow-[0_10px_20px_-14px_rgba(74,48,30,0.35)] ${signaturePreviewMode === 'compact' ? 'flex gap-2.5' : 'space-y-2.5'}`}>
+                    <div className={`${signaturePreviewMode === 'compact' ? 'h-20 w-20 flex-shrink-0 rounded-xl' : 'h-28 w-full rounded-2xl'} bg-[#ddcfbb]`} />
+                    <div className={`${signaturePreviewMode === 'compact' ? 'min-w-0 flex-1' : 'px-1'} space-y-1.5`}>
+                      <h4 className="truncate text-sm font-black text-[#2d2016]">{product.name}</h4>
+                      <p className="line-clamp-2 text-[11px] font-medium text-[#615040]">{product.description}</p>
+                      <div className="flex flex-wrap gap-1">
+                        <span className="rounded-full bg-[#f4ebdc] px-1.5 py-0.5 text-[9px] font-black text-[#825337]">#signature</span>
+                        <span className="rounded-full bg-[#f4ebdc] px-1.5 py-0.5 text-[9px] font-black text-[#825337]">#bestseller</span>
+                        <span className="rounded-full bg-[#f4ebdc] px-1.5 py-0.5 text-[9px] font-black text-[#825337]">#new</span>
+                      </div>
+                      <div className="flex items-center justify-between gap-2 pt-1">
+                        <p className="text-sm font-black text-[#9a5936]">
+                          Từ {new Intl.NumberFormat('vi-VN').format(minPrice)}đ - {new Intl.NumberFormat('vi-VN').format(maxPrice)}đ
+                        </p>
+                        <button className="rounded-full border border-[#a15f38] bg-[#a15f38] px-2 py-1 text-[9px] font-black uppercase text-white">Chi tiết</button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="rounded-[20px] border border-[#dcccb7] bg-[#fff7ec] p-3">
+              <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#a66139]">Chi tiết sản phẩm</p>
+              <p className="mt-1 text-[11px] font-medium text-[#5f4b3d]">Ảnh sản phẩm, giá từ đến, mô tả, mô tả chi tiết, variants.</p>
+              <button className="mt-2 w-full rounded-full border border-[#a15f38] bg-[#a15f38] py-2 text-[11px] font-black uppercase text-white">Đóng</button>
             </div>
           </div>
         </div>

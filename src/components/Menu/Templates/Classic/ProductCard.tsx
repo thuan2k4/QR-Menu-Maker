@@ -45,7 +45,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       <div className="flex-1 flex flex-col justify-between py-1 min-w-0">
         <div>
           <h3 className={`${typography.productName} font-bold text-gray-900 line-clamp-2 break-words pr-2 leading-snug`}>{product.name}</h3>
-          <p className={`${typography.productDescription} text-gray-400 line-clamp-2 mt-1 leading-relaxed`}>{product.shortDescription || product.longDescription || product.description}</p>
+          <p className={`${typography.productDescription} text-gray-400 line-clamp-2 mt-1 leading-relaxed`}>{product.shortDescription || product.description || ''}</p>
           {product.hashtags && product.hashtags.length > 0 && (
             <div className="flex flex-wrap gap-1 mt-2">
               {product.hashtags.slice(0, 5).map((tag) => (

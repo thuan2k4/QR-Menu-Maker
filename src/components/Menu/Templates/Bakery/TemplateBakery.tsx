@@ -195,9 +195,11 @@ export default function TemplateBakery() {
 
                   <div className={`min-w-0 ${cardView === 'compact' ? 'flex-1' : 'mt-4'}`}>
                     <h3 className="text-xl font-black text-[#2f1f18] line-clamp-1">{product.name}</h3>
-                    {product.description && (
-                      <p className="mt-2 line-clamp-2 text-sm font-medium leading-relaxed text-[#66493a]">{product.description}</p>
-                    )}
+                    {product.shortDescription || product.description ? (
+                      <p className="mt-2 line-clamp-2 text-sm font-medium leading-relaxed text-[#66493a]">
+                        {product.shortDescription?.trim() || product.description?.trim()}
+                      </p>
+                    ) : null}
 
                     {product.hashtags && product.hashtags.length > 0 && (
                       <div className="mt-3 flex flex-wrap gap-2">

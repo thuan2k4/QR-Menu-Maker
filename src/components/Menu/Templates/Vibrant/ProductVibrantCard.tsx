@@ -76,11 +76,11 @@ export default function ProductVibrantCard({ product, index = 0 }: ProductVibran
         </div>
 
         {/* Short Description */}
-        {product.description && (
+        {product.shortDescription || product.description ? (
           <p className="text-xs text-gray-600 line-clamp-2 leading-relaxed font-medium">
-            {product.description}
+            {product.shortDescription?.trim() || product.description?.trim()}
           </p>
-        )}
+        ) : null}
 
         {/* Hashtags */}
         {product.hashtags && product.hashtags.length > 0 && (

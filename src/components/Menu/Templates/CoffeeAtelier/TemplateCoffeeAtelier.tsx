@@ -238,7 +238,11 @@ export default function TemplateCoffeeAtelier() {
 
                     <div className={`${compact ? 'min-w-0 flex-1 space-y-2' : 'space-y-3 p-4'} min-w-0`}>
                       <h4 className="line-clamp-1 text-2xl font-black text-[#1f150d]">{product.name}</h4>
-                      {product.description ? <p className="line-clamp-2 text-sm font-medium text-[#644832]">{product.description}</p> : null}
+                      {product.shortDescription || product.description ? (
+                        <p className="line-clamp-2 text-sm font-medium text-[#644832]">
+                          {product.shortDescription?.trim() || product.description?.trim()}
+                        </p>
+                      ) : null}
 
                       {product.hashtags && product.hashtags.length > 0 ? (
                         <div className="flex flex-wrap gap-1.5">

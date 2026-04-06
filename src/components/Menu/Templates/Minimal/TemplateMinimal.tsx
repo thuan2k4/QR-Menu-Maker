@@ -182,11 +182,11 @@ export default function TemplateMinimal() {
                           <h3 className="text-lg font-black text-gray-900">
                             {product.name}
                           </h3>
-                          {product.description && (
+                          {product.shortDescription || product.description ? (
                             <p className="text-sm text-slate-600 font-medium mt-2 line-clamp-2">
-                              {product.description}
+                              {product.shortDescription?.trim() || product.description?.trim()}
                             </p>
-                          )}
+                          ) : null}
 
                           {/* Hashtags */}
                           {product.hashtags && product.hashtags.length > 0 && (
@@ -281,8 +281,8 @@ export default function TemplateMinimal() {
             >
               <motion.div
                 className={`w-full bg-white shadow-2xl ${isMobile
-                    ? 'rounded-t-3xl max-h-[85vh] overflow-y-auto'
-                    : 'max-w-md max-h-[90vh] overflow-y-auto rounded-2xl'
+                  ? 'rounded-t-3xl max-h-[85vh] overflow-y-auto'
+                  : 'max-w-md max-h-[90vh] overflow-y-auto rounded-2xl'
                   }`}
               >
                 {/* Drag Handle Bar - Mobile Only */}

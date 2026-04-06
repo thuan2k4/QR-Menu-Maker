@@ -6,6 +6,7 @@ import TemplateMinimal from './Templates/Minimal/TemplateMinimal';
 import TemplateBakery from './Templates/Bakery/TemplateBakery';
 import TemplateOrganicMarket from './Templates/OrganicMarket/TemplateOrganicMarket';
 import TemplateCoffeeAtelier from './Templates/CoffeeAtelier/TemplateCoffeeAtelier';
+import TemplateMatchaSignature from './Templates/MatchaSignature/TemplateMatchaSignature';
 
 export default function MenuRenderer() {
   const { selectedTemplate } = useMenuContext();
@@ -23,6 +24,8 @@ export default function MenuRenderer() {
       return <TemplateOrganicMarket />;
     case 'coffee_atelier':
       return <TemplateCoffeeAtelier />;
+    case 'matcha_signature':
+      return <TemplateMatchaSignature />;
     default:
       return <TemplateClassic />;
   }
