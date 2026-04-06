@@ -2,6 +2,7 @@ import { useMenuContext } from './MenuProvider';
 import TemplateClassic from './Templates/Classic/TemplateClassic';
 import TemplateModernGrid from './Templates/ModernGrid/TemplateModernGrid';
 import TemplateVibrant from './Templates/Vibrant/TemplateVibrant';
+import TemplateMinimal from './Templates/Minimal/TemplateMinimal';
 
 export default function MenuRenderer() {
   const { selectedTemplate } = useMenuContext();
@@ -11,6 +12,8 @@ export default function MenuRenderer() {
       return <TemplateModernGrid />;
     case 'vibrant':
       return <TemplateVibrant />;
+    case 'minimal':
+      return <TemplateMinimal />;
     default:
       return <TemplateClassic />;
   }

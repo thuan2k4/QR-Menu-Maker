@@ -10,6 +10,7 @@ const TEMPLATE_OPTIONS = [
   { id: 'classic', name: 'Classic', description: 'Layout danh sách truyền thống.' },
   { id: 'modern_grid', name: 'Modern Grid', description: 'Grid cards, icon categories và banner hiện đại.' },
   { id: 'vibrant', name: 'Vibrant', description: 'Thiết kế sống động với cam sôi động.' },
+  { id: 'minimal', name: 'Minimal', description: 'Thiết kế tối giản, sạch sẽ và chuyên nghiệp.' },
 ];
 
 interface ThemeEditorProps {
@@ -126,6 +127,7 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
   const productGridClass = 'space-y-4';
   const isModernGridPreview = theme.templateId === 'modern_grid';
   const isVibrantPreview = theme.templateId === 'vibrant';
+  const isMinimalPreview = theme.templateId === 'minimal';
   const previewCategories = ['Rides', 'Food', 'Quik', 'Pay', 'Hala Taxi', 'Box'];
 
   const renderPreviewLayout = () => {
@@ -184,6 +186,94 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
       );
     }
 
+    // Minimal Template Preview - CHECK BEFORE CLASSIC!
+    if (isMinimalPreview) {
+      return (
+        <div className="bg-white flex flex-col min-h-[600px]">
+          {/* Cover Banner */}
+          <div className="h-20 bg-gradient-to-r from-indigo-400 via-indigo-300 to-slate-400" />
+
+          {/* Header */}
+          <div className="px-4 py-4 border-b border-slate-200 space-y-2">
+            <div className="flex items-center gap-3">
+              <div className="w-14 h-14 rounded-lg bg-indigo-200 flex items-center justify-center font-black text-indigo-700">
+                C
+              </div>
+              <div>
+                <h1 className="text-base font-black text-gray-900">{restaurant?.name || 'Store'}</h1>
+                <p className="text-xs text-slate-600 font-medium">Quán cf thời thượng</p>
+              </div>
+            </div>
+            <div className="text-xs text-slate-600 font-medium space-y-0.5">
+              <p>📍 Huế</p>
+              <p>☎️ 0123456789</p>
+            </div>
+          </div>
+
+          {/* Categories */}
+          <div className="px-4 py-3 border-b border-slate-200 space-y-2">
+            <p className="text-xs font-black uppercase tracking-[0.1em] text-slate-700">Danh Mục</p>
+            <div className="flex gap-2">
+              <button className="rounded-full bg-indigo-600 text-white font-bold px-4 py-1 text-xs shadow-sm">Cà phê</button>
+              <button className="rounded-full bg-slate-200 text-slate-700 font-bold px-4 py-1 text-xs">Matcha</button>
+            </div>
+          </div>
+
+          {/* Products */}
+          <div className="px-4 py-3 space-y-4 overflow-y-auto flex-1">
+            {/* Product Card 1 */}
+            <div className="flex gap-4 pb-4 border-b border-slate-100">
+              <div className="w-28 h-28 rounded-lg bg-slate-300 flex-shrink-0" />
+              <div className="flex-1 min-w-0 space-y-2">
+                <h3 className="font-black text-sm text-gray-900">Coldbrew</h3>
+                <p className="text-xs text-slate-600">Cà phê Arabica được ủ lạnh trong 8h</p>
+
+                {/* Hashtags */}
+                <div className="flex flex-wrap gap-1">
+                  <span className="text-xs text-indigo-600 font-bold">#coffee</span>
+                  <span className="text-xs text-indigo-600 font-bold">#coldbrew</span>
+                  <span className="text-xs text-indigo-600 font-bold">#ice</span>
+                </div>
+
+                {/* Variants */}
+                <div className="flex flex-wrap gap-1">
+                  <span className="text-xs font-bold bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full border border-indigo-200">M +0đ</span>
+                  <span className="text-xs font-bold bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full border border-indigo-200">L +13,000đ</span>
+                </div>
+
+                {/* Price Range */}
+                <p className="text-sm font-black text-indigo-600">Từ 32.000đ - 45.000đ</p>
+              </div>
+            </div>
+
+            {/* Product Card 2 */}
+            <div className="flex gap-4">
+              <div className="w-28 h-28 rounded-lg bg-slate-300 flex-shrink-0" />
+              <div className="flex-1 min-w-0 space-y-2">
+                <h3 className="font-black text-sm text-gray-900">Americano</h3>
+                <p className="text-xs text-slate-600">Khác với cà phê Việt Nam, cà phê kiểu Mỹ...</p>
+
+                {/* Hashtags */}
+                <div className="flex flex-wrap gap-1">
+                  <span className="text-xs text-indigo-600 font-bold">#cà phê</span>
+                </div>
+
+                {/* Variants */}
+                <div className="flex flex-wrap gap-1">
+                  <span className="text-xs font-bold bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full border border-indigo-200">M +0đ</span>
+                  <span className="text-xs font-bold bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full border border-indigo-200">L +5,000đ</span>
+                </div>
+
+                {/* Price Range */}
+                <p className="text-sm font-black text-indigo-600">Từ 25.000đ - 30.000đ</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Classic Template Preview - DEFAULT FOR NON-SPECIAL TEMPLATES
     if (!isModernGridPreview) {
       return (
         <div className="px-4 py-5">
