@@ -6,17 +6,85 @@ import { Store } from '../../types';
 import * as QRCode from 'qrcode.react';
 import { CheckCircle, LayoutGrid, LayoutList, Palette, QrCode, RefreshCcw, Save } from 'lucide-react';
 
-const TEMPLATE_OPTIONS = [
-  { id: 'classic', name: 'Classic', description: 'Layout danh sách truyền thống.' },
-  { id: 'modern_grid', name: 'Modern Grid', description: 'Grid cards, icon categories và banner hiện đại.' },
-  { id: 'vibrant', name: 'Vibrant', description: 'Thiết kế sống động với cam sôi động.' },
-  { id: 'minimal', name: 'Minimal', description: 'Thiết kế tối giản, sạch sẽ và chuyên nghiệp.' },
-  { id: 'bakery', name: 'Bakery', description: 'Editorial ấm áp, ảnh lớn, phù hợp quán bánh và cà phê.' },
-  { id: 'organic_market', name: 'Organic Market', description: 'Phong cách panel organic góc cạnh, khác biệt rõ với Bakery.' },
-  { id: 'coffee_atelier', name: 'Coffee Atelier', description: 'Hero typography, tông cà phê cao cấp và modal sản phẩm đậm chất studio.' },
-  { id: 'matcha_signature', name: 'Signature Market', description: 'Soft editorial bo tròn, nhịp trình bày thoáng và nhận diện tách biệt khỏi Coffee Atelier.' },
-  { id: 'botanical_sketch', name: 'Botanical Sketchbook', description: 'Monotone sketch với chất giấy mộc, card bo mềm và modal chi tiết đầy đủ.' },
-  { id: 'fluid_monochrome', name: 'Fluid Monochrome', description: 'Monochrome hữu cơ, card stack mềm và modal chi tiết kiểu liquid.' },
+type TemplateOption = {
+  id: string;
+  name: string;
+  description: string;
+  vibe: string;
+  bestFor: string;
+};
+
+const TEMPLATE_OPTIONS: TemplateOption[] = [
+  {
+    id: 'classic',
+    name: 'Classic',
+    description: 'Layout danh sách truyền thống.',
+    vibe: 'Thân thuộc',
+    bestFor: 'Menu nhiều món',
+  },
+  {
+    id: 'modern_grid',
+    name: 'Modern Grid',
+    description: 'Grid cards, icon categories và banner hiện đại.',
+    vibe: 'Hiện đại',
+    bestFor: 'Brand trẻ',
+  },
+  {
+    id: 'vibrant',
+    name: 'Vibrant',
+    description: 'Thiết kế sống động với cam sôi động.',
+    vibe: 'Năng lượng',
+    bestFor: 'Combo nổi bật',
+  },
+  {
+    id: 'minimal',
+    name: 'Minimal',
+    description: 'Thiết kế tối giản, sạch sẽ và chuyên nghiệp.',
+    vibe: 'Tinh gọn',
+    bestFor: 'Tập trung nội dung',
+  },
+  {
+    id: 'bakery',
+    name: 'Bakery',
+    description: 'Editorial ấm áp, ảnh lớn, phù hợp quán bánh và cà phê.',
+    vibe: 'Ấm áp',
+    bestFor: 'Ảnh sản phẩm',
+  },
+  {
+    id: 'organic_market',
+    name: 'Organic Market',
+    description: 'Phong cách panel organic góc cạnh, khác biệt rõ với Bakery.',
+    vibe: 'Mộc mạc',
+    bestFor: 'Brand organic',
+  },
+  {
+    id: 'coffee_atelier',
+    name: 'Coffee Atelier',
+    description: 'Hero typography, tông cà phê cao cấp và modal sản phẩm đậm chất studio.',
+    vibe: 'Studio',
+    bestFor: 'Premium coffee',
+  },
+  {
+    id: 'matcha_signature',
+    name: 'Signature Market',
+    description: 'Soft editorial bo tròn, nhịp trình bày thoáng và nhận diện tách biệt khỏi Coffee Atelier.',
+    vibe: 'Êm dịu',
+    bestFor: 'Menu seasonal',
+  },
+  {
+    id: 'botanical_sketch',
+    name: 'Botanical Sketchbook',
+    description: 'Monotone sketch với chất giấy mộc, card bo mềm và modal chi tiết đầy đủ.',
+    vibe: 'Thủ công',
+    bestFor: 'Storytelling',
+  },
+  {
+    id: 'fluid_monochrome',
+    name: 'Fluid Monochrome',
+    description: 'Monochrome hữu cơ, card stack mềm và modal chi tiết kiểu liquid.',
+    vibe: 'Tối giản đậm nét',
+    bestFor: 'Brand cá tính',
+  },
 ];
 
 interface ThemeEditorProps {
@@ -79,10 +147,6 @@ function useThemeStore(initialState: ThemeState) {
 export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-  const [organicPreviewCardMode, setOrganicPreviewCardMode] = useState<'showcase' | 'compact'>('showcase');
-  const [coffeeAtelierPreviewMode, setCoffeeAtelierPreviewMode] = useState<'gallery' | 'compact'>('gallery');
-  const [signaturePreviewMode, setSignaturePreviewMode] = useState<'showcase' | 'compact'>('showcase');
-  const [botanicalPreviewMode, setBotanicalPreviewMode] = useState<'atelier' | 'compact'>('atelier');
 
   const initialThemeState = useMemo<ThemeState>(() => {
     if (!restaurant) return DEFAULT_THEME_STATE;
@@ -125,7 +189,9 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
     backgroundColor: 'var(--theme-bg)',
     color: 'var(--theme-text)',
     fontFamily: fontFamilyMap[currentFontFamily],
-    minHeight: '720px',
+    fontSize: '14px',
+    lineHeight: 1.5,
+    height: '100%',
   } as React.CSSProperties;
 
   const previewCardStyle = {
@@ -150,7 +216,7 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
     // Vibrant Template Preview
     if (isVibrantPreview) {
       return (
-        <div className="bg-gradient-to-b from-white to-orange-50 min-h-full">
+        <div className="h-full w-full bg-gradient-to-b from-white to-orange-50">
           {/* Cover Image */}
           <div className="h-24 bg-gradient-to-r from-orange-500 to-orange-600" />
 
@@ -205,7 +271,7 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
     // Minimal Template Preview - CHECK BEFORE CLASSIC!
     if (isMinimalPreview) {
       return (
-        <div className="bg-white flex flex-col min-h-[600px]">
+        <div className="h-full w-full flex flex-col bg-white">
           {/* Cover Banner */}
           <div className="h-20 bg-gradient-to-r from-indigo-400 via-indigo-300 to-slate-400" />
 
@@ -292,72 +358,40 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
     // Botanical Sketchbook Template Preview
     if (isBotanicalSketchPreview) {
       return (
-        <div className="min-h-[640px] bg-[#908d7b] text-[#807c6d]">
+        <div className="h-full w-full bg-[#f4efe0] text-[#4d453b]">
           <div className="space-y-4 px-3 pb-4 pt-4">
-            <div className="rounded-[26px] border border-[#d4ccb4] bg-[#efe8d2] p-3 shadow-[0_16px_28px_-18px_rgba(39,35,28,0.6)]">
-              <div className="h-16 overflow-hidden rounded-[18px] border border-[#b8af98] bg-[#ddd5bc]">
-                {restaurant?.coverUrl ? (
-                  <img
-                    src={restaurant.coverUrl}
-                    alt="Store cover"
-                    className="h-full w-full object-cover"
-                    referrerPolicy="no-referrer"
-                  />
-                ) : null}
-              </div>
-
-              <div className="mt-3 min-w-0">
-                <p className="text-[9px] font-semibold uppercase tracking-[0.22em] text-[#8f8a79]">La Petite Collection</p>
-                <h1 className="mt-1 truncate text-2xl font-semibold italic text-[#7d7869]">{restaurant?.name || 'Coffee Shop'}</h1>
-                <div className="mt-2 flex flex-wrap gap-1.5 text-[11px] font-semibold text-[#868170]">
-                  <p className="inline-flex items-center gap-1 rounded-full border border-[#cec5ad] bg-[#f2ebd8] px-2.5 py-1">📍 {restaurant?.address || 'Huế'}</p>
-                  <p className="inline-flex items-center gap-1 rounded-full border border-[#cec5ad] bg-[#f2ebd8] px-2.5 py-1">☎️ 0123456789</p>
+            <div className="rounded-[28px] border border-[#d6c8a6] bg-[#f7f0df] p-4 shadow-sm">
+              <div className="mb-4 flex items-start gap-3">
+                <div className="h-14 w-14 flex-shrink-0 rounded-[20px] border border-[#c2b49a] bg-[#e5ddc5]" />
+                <div className="min-w-0 space-y-2">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#81755f]">La Petite Collection</p>
+                  <h1 className="truncate text-lg font-bold text-[#3f382f]">{restaurant?.name || 'Coffee Shop'}</h1>
+                  <p className="text-sm text-[#6d6457]">{restaurant?.bio || 'Quán coffee tọa lạc tại thành phố Huế.'}</p>
                 </div>
-                <p className="mt-2 text-sm font-medium text-[#7f7a69]">{restaurant?.bio || 'Quán coffee tọa lạc tại thành phố Huế.'}</p>
+              </div>
+              <div className="flex flex-wrap gap-2 text-[11px] font-semibold text-[#6d6457]">
+                <span className="inline-flex items-center gap-1 rounded-full border border-[#cbc1a8] bg-white px-2.5 py-1">📍 {restaurant?.address || 'Huế'}</span>
+                <span className="inline-flex items-center gap-1 rounded-full border border-[#cbc1a8] bg-white px-2.5 py-1">☎️ 0123456789</span>
               </div>
             </div>
 
-            <div className="rounded-[26px] border border-[#d4ccb4] bg-[#f1ead8] p-3 shadow-[0_16px_28px_-18px_rgba(39,35,28,0.55)]">
-              <div className="mb-3 rounded-full border border-[#cdc4ad] bg-[#e8dfc8] px-3 py-1.5">
-                <p className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#857f6f]">Danh mục</p>
-              </div>
-
-              <h2 className="text-3xl font-semibold leading-[1.02] text-[#7b7667]">Chọn món bạn muốn thử</h2>
-
-              <div className="mt-3 inline-flex rounded-full border border-[#c8bea6] bg-[#ece3cb] p-0.5">
-                {[
-                  { id: 'atelier', label: 'Thẻ lớn' },
-                  { id: 'compact', label: 'Thẻ nhỏ' },
-                ].map((view) => {
-                  const active = botanicalPreviewMode === view.id;
-                  return (
-                    <button
-                      key={view.id}
-                      type="button"
-                      onClick={() => setBotanicalPreviewMode(view.id as 'atelier' | 'compact')}
-                      className={`rounded-full px-3 py-1.5 text-[11px] font-semibold transition ${active ? 'bg-[#8d8878] text-[#f7f0df]' : 'text-[#7b7566]'}`}
-                    >
-                      {view.label}
-                    </button>
-                  );
-                })}
-              </div>
-
-              <div className="mt-3 flex gap-2">
-                <button className="rounded-full border border-[#8f8a79] bg-[#8f8a79] px-3 py-1.5 text-sm font-semibold text-[#f7f0de]">Cà phê</button>
-                <button className="rounded-full border border-[#cac2ab] bg-[#f6efdd] px-3 py-1.5 text-sm font-semibold text-[#7d7768]">Matcha</button>
+            <div className="rounded-[28px] border border-[#d6c8a6] bg-[#f7f0df] p-4 shadow-sm">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#81755f]">Danh mục</p>
+              <h2 className="mt-2 text-lg font-bold text-[#3f382f]">Chọn món bạn muốn thử</h2>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <button className="rounded-full border border-[#8f8771] bg-[#8f8771] px-3 py-1.5 text-xs font-semibold text-white">Cà phê</button>
+                <button className="rounded-full border border-[#cac1a4] bg-[#fff9ed] px-3 py-1.5 text-xs font-semibold text-[#6d6457]">Matcha</button>
               </div>
             </div>
 
-            <div className={botanicalPreviewMode === 'atelier' ? 'grid grid-cols-1 gap-3' : 'space-y-3'}>
+            <div className="grid grid-cols-1 gap-3">
               {PREVIEW_PRODUCTS.slice(0, 2).map((product, idx) => {
                 const minPrice = product.price;
                 const maxPrice = product.price + (idx + 1) * 9000;
-                const compact = botanicalPreviewMode === 'compact';
 
                 return (
-                  <div key={product.id} className={`rounded-[22px] border border-[#d4ccb4] bg-[#f4ecd9] p-3 shadow-[0_16px_26px_-20px_rgba(43,35,24,0.7)] ${compact ? 'flex gap-3' : 'space-y-2.5'}`}>
-                    <div className={`${compact ? 'h-24 w-24 flex-shrink-0 rounded-[16px]' : 'h-32 w-full rounded-[20px]'} overflow-hidden border border-[#c4baa2] bg-[#ddd4bc]`}>
+                  <div key={product.id} className="overflow-hidden rounded-[26px] border border-[#d6c8a6] bg-white p-4 shadow-sm">
+                    <div className="mb-4 h-32 overflow-hidden rounded-[22px] bg-[#ddd3ba]">
                       {restaurant?.coverUrl ? (
                         <img
                           src={restaurant.coverUrl}
@@ -367,18 +401,17 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                         />
                       ) : null}
                     </div>
-
-                    <div className={`${compact ? 'min-w-0 flex-1' : 'px-1'} space-y-1.5`}>
-                      <h4 className={`truncate font-semibold italic text-[#777263] ${compact ? 'text-lg' : 'text-2xl'}`}>{product.name}</h4>
-                      <p className={`line-clamp-2 font-medium text-[#888372] ${compact ? 'text-xs' : 'text-sm'}`}>{product.description}</p>
-                      <div className="flex flex-wrap gap-1.5">
-                        <span className="rounded-full border border-[#cec5ad] bg-[#eee6d0] px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.08em] text-[#8f8a79]">#coffee</span>
-                        <span className="rounded-full border border-[#cec5ad] bg-[#eee6d0] px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.08em] text-[#8f8a79]">#coldbrew</span>
-                        <span className="rounded-full border border-[#cec5ad] bg-[#eee6d0] px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.08em] text-[#8f8a79]">#ice</span>
+                    <div className="space-y-3">
+                      <h4 className="text-lg font-semibold text-[#3f382f]">{product.name}</h4>
+                      <p className="text-sm leading-relaxed text-[#6d6457]">{product.description}</p>
+                      <div className="flex flex-wrap gap-2">
+                        <span className="rounded-full border border-[#d2c8a8] bg-[#f5f0df] px-2 py-1 text-[10px] font-semibold text-[#736852]">#coffee</span>
+                        <span className="rounded-full border border-[#d2c8a8] bg-[#f5f0df] px-2 py-1 text-[10px] font-semibold text-[#736852]">#coldbrew</span>
+                        <span className="rounded-full border border-[#d2c8a8] bg-[#f5f0df] px-2 py-1 text-[10px] font-semibold text-[#736852]">#ice</span>
                       </div>
-                      <div className="flex flex-wrap items-end justify-between gap-2 pt-1">
-                        <p className={`font-semibold text-[#857f70] ${compact ? 'text-lg' : 'text-3xl'}`}>Từ {new Intl.NumberFormat('vi-VN').format(minPrice)} đ - {new Intl.NumberFormat('vi-VN').format(maxPrice)} đ</p>
-                        <button className="inline-flex items-center rounded-full border border-[#908a79] bg-[#908a79] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#f8f0de]">Xem chi tiết</button>
+                      <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+                        <p className="text-base font-bold text-[#3f382f]">Từ {new Intl.NumberFormat('vi-VN').format(minPrice)} đ - {new Intl.NumberFormat('vi-VN').format(maxPrice)} đ</p>
+                        <button className="rounded-full border border-[#8f8771] bg-[#8f8771] px-3 py-1.5 text-[11px] font-semibold text-white">Chi tiết</button>
                       </div>
                     </div>
                   </div>
@@ -393,8 +426,8 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
     // Fluid Monochrome Template Preview
     if (isFluidMonochromePreview) {
       return (
-        <div className="min-h-[640px] bg-[#f8f7f5] text-[#1a1a1a]">
-          <div className="h-24 overflow-hidden bg-gradient-to-r from-[#4f4f4f] via-[#666] to-[#4a4a4a]">
+        <div className="h-full w-full bg-[#f8f7f5] text-[#1a1a1a]">
+          <div className="h-24 overflow-hidden rounded-[30px] bg-gradient-to-r from-[#4f4f4f] via-[#666] to-[#4a4a4a]">
             {restaurant?.coverUrl ? (
               <img
                 src={restaurant.coverUrl}
@@ -405,11 +438,11 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
             ) : null}
           </div>
 
-          <div className="-mt-5 px-3">
-            <div className="rounded-[22px] border border-[#d8d4cc] bg-[#fbfaf8] p-3 shadow-[0_12px_28px_-18px_rgba(35,35,35,0.35)]">
+          <div className="space-y-4 px-3 pb-4 pt-4">
+            <div className="rounded-[26px] border border-[#d8d4cc] bg-[#fbfaf8] p-4 shadow-sm">
               <div className="flex items-start gap-3">
-                <div className="h-14 w-14 flex-shrink-0 overflow-hidden rounded-[40%_60%_52%_48%/48%_50%_50%_52%] border border-[#bdb8ad] bg-[#e5e2dc]" />
-                <div className="min-w-0 flex-1 space-y-1.5">
+                <div className="h-14 w-14 flex-shrink-0 rounded-[36px] border border-[#bdb8ad] bg-[#e5e2dc]" />
+                <div className="min-w-0 space-y-1.5">
                   <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#777268]">✧ Welcome</p>
                   <h1 className="truncate text-xl font-black text-[#1f1f1f]">{restaurant?.name || 'Coffee Shop'}</h1>
                   <div className="space-y-0.5 text-[11px] font-semibold text-[#5e5b55]">
@@ -420,62 +453,42 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                 </div>
               </div>
             </div>
-          </div>
 
-          <div className="space-y-4 px-3 pb-4 pt-4">
-            <div className="rounded-[22px] border border-[#ded9cf] bg-[#fbfaf7] p-3 shadow-[0_10px_18px_-15px_rgba(26,26,26,0.34)]">
-              <div className="space-y-3">
-                <div>
-                  <p className="text-[9px] font-black uppercase tracking-[0.16em] text-[#747068]">◆ Danh mục</p>
-                  <h2 className="mt-1 text-2xl font-black leading-[1.05] text-[#1e1e1e]">Chọn món bạn muốn thử</h2>
-                </div>
-
-                <div className="flex flex-wrap gap-2">
-                  <button className="rounded-full border border-[#1f1f1f] bg-[#1f1f1f] px-3 py-1.5 text-xs font-black text-[#f8f7f5]">Cà phê</button>
-                  <button className="rounded-full border border-[#c9c3b8] bg-[#f7f5f1] px-3 py-1.5 text-xs font-black text-[#5f5b54]">Matcha</button>
-                </div>
+            <div className="rounded-[26px] border border-[#ded9cf] bg-white p-4 shadow-sm">
+              <p className="text-[9px] font-black uppercase tracking-[0.16em] text-[#747068]">◆ Danh mục</p>
+              <h2 className="mt-1 text-xl font-black text-[#1e1e1e]">Chọn món bạn muốn thử</h2>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <button className="rounded-full border border-[#1f1f1f] bg-[#1f1f1f] px-3 py-1.5 text-xs font-black text-[#f8f7f5]">Cà phê</button>
+                <button className="rounded-full border border-[#c9c3b8] bg-[#f7f5f1] px-3 py-1.5 text-xs font-black text-[#5f5b54]">Matcha</button>
               </div>
             </div>
 
-            <div className="space-y-3">
+            <div className="grid grid-cols-1 gap-3">
               {PREVIEW_PRODUCTS.slice(0, 2).map((product, idx) => {
                 const minPrice = product.price;
                 const maxPrice = product.price + (idx + 1) * 9000;
 
                 return (
-                  <div key={product.id} className="rounded-[22px] border border-[#e0dbd1] bg-[#fcfbf8] p-3 shadow-[0_14px_24px_-20px_rgba(28,28,28,0.45)]">
-                    <div className="flex gap-3">
-                      <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-[46%_54%_44%_56%/48%_42%_58%_52%] border border-[#ccc7bd] bg-[#e6e2d9]" />
-
-                      <div className="min-w-0 flex-1 space-y-1.5">
+                  <div key={product.id} className="overflow-hidden rounded-[26px] border border-[#e0dbd1] bg-white p-4 shadow-sm">
+                    <div className="grid gap-3 sm:grid-cols-[90px_1fr]">
+                      <div className="h-24 w-full overflow-hidden rounded-[24px] border border-[#ccc7bd] bg-[#e6e2d9]" />
+                      <div className="min-w-0 space-y-2">
                         <h4 className="truncate text-base font-black text-[#1f1f1f]">{product.name}</h4>
                         <p className="line-clamp-2 text-[11px] font-medium text-[#605d56]">{product.description}</p>
-
-                        <div className="flex flex-wrap gap-1">
+                        <div className="mt-3 flex items-center justify-between gap-1">
+                          <p className="text-[9px] font-black text-[#1f1f1f]">Từ {new Intl.NumberFormat('vi-VN').format(minPrice)} đ - {new Intl.NumberFormat('vi-VN').format(maxPrice)} đ</p>
+                          <button className="rounded-full border border-[#1f1f1f] bg-[#1f1f1f] px-3 py-1 text-[5px] font-black text-[#f8f7f5]">Chi tiết</button>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
                           <span className="rounded-full bg-[#efebe4] px-2 py-0.5 text-[9px] font-black text-[#666259]">#coffee</span>
                           <span className="rounded-full bg-[#efebe4] px-2 py-0.5 text-[9px] font-black text-[#666259]">#coldbrew</span>
                           <span className="rounded-full bg-[#efebe4] px-2 py-0.5 text-[9px] font-black text-[#666259]">#ice</span>
-                        </div>
-
-                        <div className="flex items-center justify-between gap-2 pt-1">
-                          <p className="text-[13px] font-black text-[#1f1f1f]">
-                            Từ {new Intl.NumberFormat('vi-VN').format(minPrice)} đ - {new Intl.NumberFormat('vi-VN').format(maxPrice)} đ
-                          </p>
-                          <button className="rounded-full border border-[#1f1f1f] bg-[#1f1f1f] px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.08em] text-[#f8f7f5]">Chi tiết</button>
                         </div>
                       </div>
                     </div>
                   </div>
                 );
               })}
-            </div>
-
-            <div className="rounded-[20px] border border-[#dfdacf] bg-[#fbfaf6] p-3">
-              <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[#6f6a62]">Chi tiết sản phẩm</p>
-              <p className="mt-1 text-[11px] font-medium text-[#5f5b54]">Ảnh sản phẩm, giá từ đến, mô tả, mô tả chi tiết, giá variants.</p>
-              <button className="mt-2 w-full rounded-xl border border-[#1f1f1f] bg-[#1f1f1f] py-2 text-[11px] font-black uppercase text-[#f8f7f5]">
-                Đóng
-              </button>
             </div>
           </div>
         </div>
@@ -485,7 +498,7 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
     // Signature Market Template Preview
     if (isSignatureMarketPreview) {
       return (
-        <div className="min-h-[640px] bg-[#f8f3e9] text-[#2c2017]">
+        <div className="h-full w-full bg-[#f8f3e9] text-[#2c2017]">
           <div className="relative h-24 overflow-hidden rounded-b-[20px] border-b border-[#d8c7b0] bg-[radial-gradient(circle_at_top_left,_#7f5a40_0%,_#573a28_56%,_#2f1f16_100%)]">
             <div className="absolute inset-0 bg-gradient-to-b from-[#2e1f15]/34 via-[#2e1f15]/52 to-[#2e1f15]/66" />
             <div className="absolute inset-x-0 top-2 flex items-center justify-between px-3">
@@ -498,7 +511,7 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
             </div>
           </div>
 
-          <div className="-mt-5 px-3">
+          <div className="-mt-1 px-3">
             <div className="rounded-[20px] border border-[#d8c7b0] bg-[#fffaf3]/95 p-3 shadow-[0_10px_20px_-14px_rgba(78,49,29,0.5)]">
               <div className="flex items-start gap-3">
                 <div className="h-14 w-14 rounded-xl border border-[#e6d8c6] bg-[#ece2d4]" />
@@ -522,25 +535,6 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                   <h2 className="mt-1 text-base font-black text-[#2d2016]">Chọn sản phẩm bạn muốn thử</h2>
                 </div>
 
-                <div className="inline-flex rounded-full border border-[#d8c7b0] bg-[#f4ecde] p-0.5">
-                  {[
-                    { id: 'showcase', label: 'Thẻ lớn' },
-                    { id: 'compact', label: 'Thẻ gọn' },
-                  ].map((view) => {
-                    const active = signaturePreviewMode === view.id;
-                    return (
-                      <button
-                        key={view.id}
-                        type="button"
-                        onClick={() => setSignaturePreviewMode(view.id as 'showcase' | 'compact')}
-                        className={`rounded-full px-3 py-1 text-[10px] font-black uppercase transition ${active ? 'bg-[#9e5e38] text-white' : 'text-[#6a503f]'}`}
-                      >
-                        {view.label}
-                      </button>
-                    );
-                  })}
-                </div>
-
                 <div className="flex flex-wrap gap-2">
                   <button className="rounded-full border border-[#a15f38] bg-[#a15f38] px-3 py-1.5 text-xs font-black text-white">Nổi bật</button>
                   <button className="rounded-full border border-[#d6c4ac] bg-[#fffdf9] px-3 py-1.5 text-xs font-black text-[#5d4838]">Món mới</button>
@@ -548,15 +542,15 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
               </div>
             </div>
 
-            <div className={signaturePreviewMode === 'showcase' ? 'grid grid-cols-1 gap-3' : 'space-y-3'}>
+            <div className="grid grid-cols-1 gap-3">
               {PREVIEW_PRODUCTS.slice(0, 2).map((product, idx) => {
                 const minPrice = product.price;
                 const maxPrice = product.price + (idx + 1) * 9000;
 
                 return (
-                  <div key={product.id} className={`rounded-[18px] border border-[#d8c7b3] bg-[#fffbf4] p-2.5 shadow-[0_10px_20px_-14px_rgba(74,48,30,0.35)] ${signaturePreviewMode === 'compact' ? 'flex gap-2.5' : 'space-y-2.5'}`}>
-                    <div className={`${signaturePreviewMode === 'compact' ? 'h-20 w-20 flex-shrink-0 rounded-xl' : 'h-28 w-full rounded-2xl'} bg-[#ddcfbb]`} />
-                    <div className={`${signaturePreviewMode === 'compact' ? 'min-w-0 flex-1' : 'px-1'} space-y-1.5`}>
+                  <div key={product.id} className="rounded-[18px] border border-[#d8c7b3] bg-[#fffbf4] p-2.5 shadow-[0_10px_20px_-14px_rgba(74,48,30,0.35)] space-y-2.5">
+                    <div className="h-28 w-full rounded-2xl bg-[#ddcfbb]" />
+                    <div className="px-1 space-y-1.5">
                       <h4 className="truncate text-sm font-black text-[#2d2016]">{product.name}</h4>
                       <p className="line-clamp-2 text-[11px] font-medium text-[#615040]">{product.description}</p>
                       <div className="flex flex-wrap gap-1">
@@ -575,12 +569,6 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                 );
               })}
             </div>
-
-            <div className="rounded-[20px] border border-[#dcccb7] bg-[#fff7ec] p-3">
-              <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#a66139]">Chi tiết sản phẩm</p>
-              <p className="mt-1 text-[11px] font-medium text-[#5f4b3d]">Ảnh sản phẩm, giá từ đến, mô tả, mô tả chi tiết, variants.</p>
-              <button className="mt-2 w-full rounded-full border border-[#a15f38] bg-[#a15f38] py-2 text-[11px] font-black uppercase text-white">Đóng</button>
-            </div>
           </div>
         </div>
       );
@@ -589,7 +577,7 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
     // Coffee Atelier Template Preview
     if (isCoffeeAtelierPreview) {
       return (
-        <div className="min-h-[640px] bg-[#ece7df] text-[#1b150f]">
+        <div className="h-full w-full bg-[#ece7df] text-[#1b150f]">
           <div className="relative h-24 overflow-hidden border-b-2 border-[#22190f] bg-[radial-gradient(circle_at_top_left,_#b17f59_0%,_#74472c_56%,_#2d1d12_100%)]">
             <div className="absolute inset-0 bg-gradient-to-b from-[#2b1a10]/20 to-[#2b1a10]/74" />
             <div className="absolute inset-x-0 top-2 flex items-center justify-between px-3 text-[9px] font-black uppercase tracking-[0.14em] text-[#f5e2cf]">
@@ -624,25 +612,6 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                   <h2 className="mt-1 text-base font-black text-white">Chọn sản phẩm bạn muốn thử</h2>
                 </div>
 
-                <div className="inline-flex border border-[#3f3328] bg-[#2b2118] p-0.5">
-                  {[
-                    { id: 'gallery', label: 'Thẻ lớn' },
-                    { id: 'compact', label: 'Thẻ gọn' },
-                  ].map((mode) => {
-                    const active = coffeeAtelierPreviewMode === mode.id;
-                    return (
-                      <button
-                        key={mode.id}
-                        type="button"
-                        onClick={() => setCoffeeAtelierPreviewMode(mode.id as 'gallery' | 'compact')}
-                        className={`px-3 py-1 text-[10px] font-black transition ${active ? 'bg-[#c7773d] text-[#1f130b]' : 'text-[#f2dbc7]'}`}
-                      >
-                        {mode.label}
-                      </button>
-                    );
-                  })}
-                </div>
-
                 <div className="flex flex-wrap gap-2">
                   <button className="border border-[#c7773d] bg-[#c7773d] px-3 py-1.5 text-xs font-black text-[#1f130b]">Cà phê</button>
                   <button className="border border-[#58473a] bg-[#241b14] px-3 py-1.5 text-xs font-black text-[#f8e9da]">Matcha</button>
@@ -650,7 +619,7 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
               </div>
             </div>
 
-            <div className={coffeeAtelierPreviewMode === 'gallery' ? 'grid grid-cols-2 gap-2.5' : 'space-y-3'}>
+            <div className="grid grid-cols-2 gap-2.5">
               {PREVIEW_PRODUCTS.slice(0, 2).map((product, idx) => {
                 const minPrice = product.price;
                 const maxPrice = product.price + (idx + 1) * 9000;
@@ -658,17 +627,17 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                 return (
                   <div
                     key={product.id}
-                    className={`border-2 border-[#21170f] bg-[#fffaf3] shadow-[5px_5px_0_0_rgba(33,23,15,0.16)] ${coffeeAtelierPreviewMode === 'compact' ? 'flex gap-3 p-3' : 'overflow-hidden'}`}
+                    className="border-2 border-[#21170f] bg-[#fffaf3] shadow-[5px_5px_0_0_rgba(33,23,15,0.16)] overflow-hidden"
                   >
-                    <div className={`${coffeeAtelierPreviewMode === 'compact' ? 'h-20 w-20 flex-shrink-0 border border-[#21170f]' : 'h-24 w-full'} bg-[#ecdcc9]`} />
-                    <div className={`${coffeeAtelierPreviewMode === 'compact' ? 'min-w-0 flex-1' : 'space-y-1.5 p-2.5'} space-y-1.5`}>
+                    <div className="h-24 w-full bg-[#ecdcc9]" />
+                    <div className="space-y-1.5 p-2.5">
                       <h4 className="truncate text-xs font-black text-[#25190f]">{product.name}</h4>
                       <p className="line-clamp-2 text-[10px] font-medium text-[#674b37]">{product.description}</p>
                       <div className="flex flex-wrap gap-1">
                         <span className="border border-[#e2d0bc] bg-[#f5ebdd] px-2 py-0.5 text-[9px] font-black text-[#825233]">#coffee</span>
                         <span className="border border-[#e2d0bc] bg-[#f5ebdd] px-2 py-0.5 text-[9px] font-black text-[#825233]">#coldbrew</span>
                       </div>
-                      <div className="flex items-center justify-between gap-2 pt-1">
+                      <div className="flex flex-col items-start justify-between gap-2 pt-1">
                         <p className="text-[11px] font-black text-[#9e5e35]">Từ {new Intl.NumberFormat('vi-VN').format(minPrice)}đ - {new Intl.NumberFormat('vi-VN').format(maxPrice)}đ</p>
                         <button className="border border-[#271c12] bg-[#271c12] px-2 py-1 text-[9px] font-black text-[#f5e6d4]">Chi tiết</button>
                       </div>
@@ -676,12 +645,6 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                   </div>
                 );
               })}
-            </div>
-
-            <div className="border-2 border-[#d8c1a8] bg-[#fff2e3] p-3">
-              <p className="text-[10px] font-black uppercase tracking-[0.15em] text-[#8b5a39]">Chi tiết sản phẩm</p>
-              <p className="mt-1 text-[11px] font-medium text-[#5f4331]">Ảnh sản phẩm, giá từ đến, mô tả chi tiết, variants.</p>
-              <button className="mt-2 w-full border border-[#241910] bg-[#241910] py-2 text-[11px] font-black uppercase text-[#f3e2d0]">Đóng</button>
             </div>
           </div>
         </div>
@@ -691,7 +654,7 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
     // Bakery Template Preview
     if (isBakeryPreview) {
       return (
-        <div className="min-h-[620px] bg-[#f2eadf] text-[#2d1c16]">
+        <div className="h-full w-full bg-[#f2eadf] text-[#2d1c16]">
           <div className="px-3 pb-3 pt-4">
             <div className="overflow-hidden rounded-[30px] border border-[#ead8c3] bg-[#fff7ee] p-4 shadow-sm">
               <div className="space-y-3">
@@ -710,15 +673,9 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
             </div>
 
             <div className="mt-4 rounded-[28px] border border-[#e6d2bf] bg-[#fff6eb] p-4 shadow-sm">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-                <div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.12em] text-[#9c5a30]">Danh Mục</p>
-                  <h2 className="mt-2 text-base font-black text-[#2d1c16]">Chọn món bạn muốn thử</h2>
-                </div>
-                <div className="inline-flex rounded-full border border-[#e4d0bc] bg-[#f7ebdd] p-0.5">
-                  <span className="rounded-full bg-[#8f4f2d] px-3 py-1 text-[10px] font-black text-white">Thẻ lớn</span>
-                  <span className="px-3 py-1 text-[10px] font-black text-[#8f6449]">Gọn</span>
-                </div>
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.12em] text-[#9c5a30]">Danh Mục</p>
+                <h2 className="mt-2 text-base font-black text-[#2d1c16]">Chọn món bạn muốn thử</h2>
               </div>
 
               <div className="mt-4 flex flex-wrap gap-2">
@@ -761,7 +718,7 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
     // Organic Market Template Preview
     if (isOrganicPreview) {
       return (
-        <div className="min-h-[640px] bg-[#edf1df] text-[#1f2a14]">
+        <div className="h-full w-full bg-[#edf1df] text-[#1f2a14]">
           <div className="h-24 border-b border-[#d2dcb9] bg-[radial-gradient(circle_at_top_left,_#b5c676_0%,_#7b9140_62%,_#566928_100%)]" />
 
           <div className="px-3 pb-4 pt-4 space-y-4">
@@ -787,25 +744,6 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                   <h2 className="mt-1 text-base font-black text-[#1f2b14]">Chọn hương vị bạn muốn thử</h2>
                 </div>
 
-                <div className="inline-flex border border-[#c8d3a3] bg-[#eff3dc] p-0.5">
-                  {[
-                    { id: 'showcase', label: 'Thẻ lớn' },
-                    { id: 'compact', label: 'Gọn' },
-                  ].map((view) => {
-                    const active = organicPreviewCardMode === view.id;
-                    return (
-                      <button
-                        key={view.id}
-                        type="button"
-                        onClick={() => setOrganicPreviewCardMode(view.id as 'showcase' | 'compact')}
-                        className={`px-3 py-1 text-[10px] font-black uppercase transition ${active ? 'bg-[#6a7f34] text-white' : 'text-[#607036]'}`}
-                      >
-                        {view.label}
-                      </button>
-                    );
-                  })}
-                </div>
-
                 <div className="flex flex-wrap gap-2">
                   <button className="border-2 border-[#6a7f34] bg-[#6a7f34] px-3 py-1.5 text-xs font-black text-white">Cà phê</button>
                   <button className="border border-[#ccd6a9] bg-[#f9fbed] px-3 py-1.5 text-xs font-black text-[#53622d]">Matcha</button>
@@ -813,15 +751,15 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
               </div>
             </div>
 
-            <div className={organicPreviewCardMode === 'showcase' ? 'grid grid-cols-1 gap-3' : 'space-y-3'}>
+            <div className="grid grid-cols-1 gap-3">
               {PREVIEW_PRODUCTS.slice(0, 2).map((product, idx) => {
                 const minPrice = product.price;
                 const maxPrice = product.price + (idx + 1) * 9000;
 
                 return (
-                  <div key={product.id} className={`border border-[#cfd8ae] bg-[#fcfdf7] shadow-sm ${organicPreviewCardMode === 'compact' ? 'flex gap-2 p-2.5' : 'overflow-hidden'}`}>
-                    <div className={`${organicPreviewCardMode === 'compact' ? 'h-20 w-20 flex-shrink-0' : 'h-32 w-full'} border-b border-[#d4ddb8] bg-[#dce5a9]`} />
-                    <div className={`${organicPreviewCardMode === 'compact' ? 'min-w-0 flex-1' : 'p-3'} space-y-1.5`}>
+                  <div key={product.id} className="border border-[#cfd8ae] bg-[#fcfdf7] shadow-sm overflow-hidden">
+                    <div className="h-32 w-full border-b border-[#d4ddb8] bg-[#dce5a9]" />
+                    <div className="p-3 space-y-1.5">
                       <span className="inline-flex border border-[#d9e2bd] bg-white px-2 py-0.5 text-[9px] font-black uppercase text-[#70823a]">Organic</span>
                       <h4 className="truncate text-sm font-black text-[#1f2b14]">{product.name}</h4>
                       <p className="line-clamp-2 text-[11px] font-semibold text-[#5a6a32]">{product.description}</p>
@@ -841,12 +779,6 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                 );
               })}
             </div>
-
-            <div className="border border-[#d5ddb8] bg-[#f2f6de] p-3">
-              <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#6f8234]">Chi tiết sản phẩm</p>
-              <p className="mt-1 text-[11px] font-semibold text-[#4f6028]">Mô tả - mô tả chi tiết - giá variants...</p>
-              <button className="mt-2 w-full border border-[#6a7f34] bg-[#6a7f34] py-2 text-[11px] font-black uppercase text-white">Đóng</button>
-            </div>
           </div>
         </div>
       );
@@ -855,10 +787,10 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
     // Classic Template Preview - DEFAULT FOR NON-SPECIAL TEMPLATES
     if (!isModernGridPreview) {
       return (
-        <div className="px-4 py-5">
+        <div className="h-full w-full px-4 py-5">
           <div className="mb-4 rounded-[28px] bg-white p-4 shadow-sm" style={{ borderColor: `${theme.primaryColor}16`, borderWidth: 1, borderStyle: 'solid' }}>
             <p className="text-xs uppercase tracking-[0.24em] text-gray-500">MenuQRGenerate</p>
-            <h1 className="mt-3 text-2xl font-bold" style={{ color: 'var(--theme-text)' }}>{restaurant?.name || 'Coffee Shop'}</h1>
+            <h1 className="mt-3 text-xl font-bold" style={{ color: 'var(--theme-text)' }}>{restaurant?.name || 'Coffee Shop'}</h1>
             <p className="mt-2 text-sm text-gray-500">{restaurant?.bio || 'Quán cf thời thượng'}</p>
           </div>
 
@@ -895,7 +827,7 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
 
     // ModernGrid Template Preview - UPDATED
     return (
-      <div className="bg-[#f7fafc] text-gray-900 overflow-hidden">
+      <div className="h-full w-full bg-[#f7fafc] text-gray-900 overflow-hidden">
         {/* Cover Image */}
         <div className="h-28 bg-gradient-to-br from-emerald-600 to-emerald-700" />
 
@@ -997,20 +929,23 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
     setMessage({ type: 'success', text: 'Đã đặt lại giao diện về giá trị hiện tại của cửa hàng.' });
   };
 
+  const activeTemplateOption = TEMPLATE_OPTIONS.find((option) => option.id === theme.templateId) || TEMPLATE_OPTIONS[0];
+  const activeTemplateOrder = TEMPLATE_OPTIONS.findIndex((option) => option.id === activeTemplateOption.id) + 1;
+
   return (
-    <div className="grid grid-cols-1 gap-6 xl:grid-cols-[0.42fr_0.58fr]">
-      <div className="space-y-6">
+    <div className="grid grid-cols-1 gap-6 xl:grid-cols-[0.42fr_0.58fr] xl:items-stretch xl:min-h-[620px]">
+      <div className="space-y-6 xl:flex xl:h-full xl:min-h-[620px] xl:flex-col">
         <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
-          <div className="flex items-start justify-between gap-6">
+          <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between md:gap-6">
             <div>
               <h2 className="text-2xl font-bold text-gray-900">Giao diện Menu</h2>
               <p className="text-sm text-gray-500 mt-1">Tùy chỉnh màu, font, bố cục và QR trong một màn hình.</p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2 md:shrink-0">
               <button
                 type="button"
                 onClick={resetTheme}
-                className="inline-flex items-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition"
+                className="inline-flex items-center gap-2 whitespace-nowrap rounded-2xl border border-gray-200 bg-white px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition"
               >
                 <RefreshCcw size={16} /> Đặt lại
               </button>
@@ -1018,7 +953,7 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                 type="button"
                 onClick={handleSave}
                 disabled={!restaurant || saving}
-                className="inline-flex items-center gap-2 rounded-2xl bg-orange-500 px-4 py-2 text-sm font-bold text-white hover:bg-orange-600 transition disabled:opacity-50"
+                className="inline-flex items-center gap-2 whitespace-nowrap rounded-2xl bg-orange-500 px-4 py-2 text-sm font-bold text-white hover:bg-orange-600 transition disabled:opacity-50"
               >
                 <Save size={16} /> {saving ? 'Đang lưu...' : 'Lưu thay đổi'}
               </button>
@@ -1034,54 +969,104 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
           )}
         </div>
 
-        <section className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
-          <div className="flex items-center gap-3 mb-4 text-gray-900">
-            <Palette size={20} />
-            <div>
-              <h3 className="text-lg font-semibold">Template</h3>
-              <p className="text-sm text-gray-500">Chọn layout menu hiện tại.</p>
+        <section className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 xl:flex-1 xl:min-h-[620px]">
+          <div className="flex items-center justify-between gap-3 text-gray-900">
+            <div className="flex items-center gap-3">
+              <Palette size={20} />
+              <div>
+                <h3 className="text-lg font-semibold">Template</h3>
+                <p className="text-sm text-gray-500">Chọn layout menu hiện tại.</p>
+              </div>
+            </div>
+            <span className="inline-flex rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600">{TEMPLATE_OPTIONS.length} mẫu</span>
+          </div>
+
+          <div className="mt-4 rounded-2xl border border-orange-100 bg-gradient-to-br from-orange-50 via-white to-amber-50 p-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-orange-700">Đang chọn</p>
+                <h4 className="mt-1 text-base font-bold text-gray-900">{activeTemplateOption.name}</h4>
+                <p className="mt-1 text-sm leading-relaxed text-gray-600">{activeTemplateOption.description}</p>
+              </div>
+              <span className="inline-flex h-8 shrink-0 items-center rounded-full bg-white px-3 text-xs font-bold text-orange-700">
+                {activeTemplateOrder}/{TEMPLATE_OPTIONS.length}
+              </span>
+            </div>
+            <div className="mt-3 flex flex-wrap gap-2 text-[11px] font-semibold">
+              <span className="inline-flex items-center rounded-full border border-orange-200 bg-white px-2.5 py-1 text-orange-700">{activeTemplateOption.vibe}</span>
+              <span className="inline-flex items-center rounded-full border border-gray-200 bg-white px-2.5 py-1 text-gray-600">{activeTemplateOption.bestFor}</span>
             </div>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            {TEMPLATE_OPTIONS.map((option) => (
-              <button
-                key={option.id}
-                type="button"
-                onClick={() => updateTheme({ templateId: option.id })}
-                aria-pressed={theme.templateId === option.id}
-                className={`rounded-3xl border p-4 text-left text-sm transition min-h-[116px] ${theme.templateId === option.id ? 'border-orange-500 bg-orange-50 shadow-sm' : 'border-gray-200 bg-white hover:border-gray-300'}`}
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <div className="font-semibold text-gray-900">{option.name}</div>
-                    <p className="text-gray-500 mt-1">{option.description}</p>
+          <div className="mt-4 grid grid-cols-1 gap-4 rounded-2xl bg-slate-50/70 p-3 sm:grid-cols-2 xl:max-h-[440px] xl:overflow-y-auto xl:pr-2 xl:[scrollbar-gutter:stable]">
+            {TEMPLATE_OPTIONS.map((option, optionIndex) => {
+              const isSelected = theme.templateId === option.id;
+              const optionOrder = optionIndex + 1;
+
+              return (
+                <button
+                  key={option.id}
+                  type="button"
+                  onClick={() => updateTheme({ templateId: option.id })}
+                  aria-pressed={isSelected}
+                  className={`group relative overflow-hidden rounded-[30px] border bg-white p-5 text-left shadow-sm transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2 ${isSelected ? 'border-orange-400 bg-orange-50 shadow-md' : 'border-gray-200 hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-md'}`}
+                >
+                  <div className="flex h-full flex-col gap-4">
+                    <div>
+                      <div className="text-lg font-semibold text-gray-900">{option.name}</div>
+                      <p className="mt-2 text-sm leading-relaxed text-gray-500">{option.description}</p>
+                    </div>
+
+                    <div className="mt-auto flex items-center justify-between gap-3 text-[11px] font-semibold text-gray-500">
+                      <span className="rounded-full border border-gray-200 bg-gray-50 px-2 py-1">{optionOrder < 10 ? `0${optionOrder}` : optionOrder}</span>
+                      <span className={isSelected ? 'text-orange-700' : 'text-gray-400'}>{isSelected ? 'Đang áp dụng' : 'Chọn mẫu'}</span>
+                    </div>
                   </div>
-                  {theme.templateId === option.id ? (
-                    <span className="inline-flex rounded-full bg-orange-500 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">Đang chọn</span>
-                  ) : null}
-                </div>
-              </button>
-            ))}
+                </button>
+              );
+            })}
           </div>
         </section>
 
       </div>
 
-      <div className="space-y-6">
-        <div className="rounded-[40px] border border-gray-200 bg-white p-6 shadow-sm">
-          <div className="flex flex-col gap-3">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-gray-500">Xem trước</p>
-                <h3 className="text-xl font-bold text-gray-900">Phone mockup</h3>
-              </div>
-              <span className="inline-flex rounded-full bg-orange-50 px-3 py-1 text-xs font-semibold text-orange-700">Theme tùy chỉnh</span>
+      <div className="space-y-6 xl:sticky xl:top-6 xl:self-start">
+        <div className="rounded-[36px] border border-slate-200 bg-gradient-to-b from-slate-50 to-white p-5 shadow-sm xl:p-6">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Xem trước</p>
+              <h3 className="text-xl font-bold text-gray-900">Phone mockup</h3>
+              <p className="mt-1 text-xs text-slate-500">Mô phỏng realtime theo template đang chọn</p>
             </div>
+            <span className="inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">Live preview</span>
+          </div>
 
-            <div className="mx-auto w-full max-w-[340px] rounded-[42px] border border-gray-200 bg-slate-100 p-4 shadow-lg">
-              <div className="overflow-hidden rounded-[32px] border border-gray-200 shadow-inner" style={previewRootStyle}>
-                {renderPreviewLayout()}
+          <div className="mt-4 flex flex-wrap gap-2">
+            <span className="inline-flex items-center rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-xs font-semibold text-orange-700">
+              {activeTemplateOption.name}
+            </span>
+            <span className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600">
+              Font: {theme.fontFamily}
+            </span>
+            <span className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600">
+              Tiền tệ: {theme.currency}
+            </span>
+          </div>
+
+          <div className="mt-5 flex items-center justify-center">
+            <div className="relative mx-auto w-full max-w-[396px]">
+              <span className="pointer-events-none absolute -left-[3px] top-20 h-10 w-[3px] rounded-r bg-slate-500/70" />
+              <span className="pointer-events-none absolute -right-[3px] top-24 h-14 w-[3px] rounded-l bg-slate-500/80" />
+              <span className="pointer-events-none absolute -right-[3px] top-44 h-11 w-[3px] rounded-l bg-slate-500/80" />
+
+              <div className="relative rounded-[44px] border-[10px] border-slate-900 bg-slate-900 p-2 shadow-[0_26px_60px_-34px_rgba(15,23,42,0.9)]">
+                <div className="pointer-events-none absolute left-1/2 top-0 z-20 h-5 w-36 -translate-x-1/2 rounded-b-2xl bg-slate-900" />
+
+                <div className="overflow-hidden rounded-[30px] border border-slate-200 text-sm" style={previewRootStyle}>
+                  <div className="no-scrollbar h-[clamp(460px,64vh,620px)] overflow-x-hidden overflow-y-auto overscroll-contain [&_button]:whitespace-nowrap [&_img]:block [&_img]:h-full [&_img]:w-full [&_img]:max-w-full [&_img]:object-cover">
+                    <div className="min-h-full">{renderPreviewLayout()}</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

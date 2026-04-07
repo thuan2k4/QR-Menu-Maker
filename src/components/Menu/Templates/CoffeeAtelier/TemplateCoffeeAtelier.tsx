@@ -95,7 +95,7 @@ export default function TemplateCoffeeAtelier() {
         </div>
       </div>
 
-      <div className="relative mx-auto -mt-10 w-full max-w-6xl px-4 pb-16 sm:px-6 lg:px-8">
+      <div className="relative mx-auto -mt-5 w-full max-w-6xl px-4 pb-16 sm:px-6 lg:px-8">
         <motion.section
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}

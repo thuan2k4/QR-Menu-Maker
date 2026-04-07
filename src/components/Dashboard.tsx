@@ -173,7 +173,7 @@ export default function Dashboard({ user, profile }: DashboardProps) {
           </div>
         </header>
 
-        <div className="p-4 md:p-6 max-w-6xl mx-auto w-full">
+        <div className="p-4 md:p-6 xl:px-8 w-full max-w-[1600px] mx-auto">
           <Routes>
             <Route index element={<DashboardOverview user={user} />} />
             <Route path="stores" element={<StoreList user={user} />} />

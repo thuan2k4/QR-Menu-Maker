@@ -11,6 +11,7 @@ export default function LandingPage() {
     { src: '/preview_4.png', alt: 'Trình quản lý sản phẩm và hashtags' },
   ];
   const [activeDemoIndex, setActiveDemoIndex] = useState(0);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-white text-gray-900 font-sans">
@@ -92,12 +93,12 @@ export default function LandingPage() {
         </p>
 
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 items-stretch">
-          <div className="rounded-3xl overflow-hidden border border-gray-100 shadow-lg h-full min-h-[560px] xl:min-h-[700px] bg-black">
-            <div className="w-full h-full">
+          <div className="rounded-3xl overflow-hidden border border-gray-100 shadow-lg h-full min-h-[560px] xl:min-h-[700px] bg-white">
+            <div className="w-full h-full flex items-center justify-center bg-white p-4">
               <img
                 src={demoImages[activeDemoIndex].src}
                 alt={demoImages[activeDemoIndex].alt}
-                className="w-full h-full object-cover"
+                className="max-w-full max-h-full object-contain"
               />
             </div>
           </div>
@@ -114,7 +115,7 @@ export default function LandingPage() {
               </p>
               <button
                 type="button"
-                onClick={() => window.open(demoImages[activeDemoIndex].src, '_blank')}
+                onClick={() => setIsImageModalOpen(true)}
                 className="w-full justify-center inline-flex min-h-[44px] items-center gap-2 bg-orange-500 text-white py-3 rounded-xl font-semibold hover:bg-orange-600 transition-all focus-visible:ring-2 focus-visible:ring-orange-400"
               >
                 Xem ảnh lớn
@@ -144,6 +145,40 @@ export default function LandingPage() {
         </div>
 
       </section>
+
+      {isImageModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-6"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Xem ảnh demo lớn"
+          onClick={() => setIsImageModalOpen(false)}
+        >
+          <div
+            className="relative w-full max-w-6xl rounded-3xl bg-white shadow-2xl overflow-hidden"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="flex items-center justify-between p-4 border-b border-gray-100">
+              <p className="text-base font-semibold text-gray-900">Xem ảnh lớn</p>
+              <button
+                type="button"
+                onClick={() => setIsImageModalOpen(false)}
+                className="text-gray-500 hover:text-gray-900 rounded-full p-2 focus-visible:ring-2 focus-visible:ring-orange-300"
+                aria-label="Đóng xem ảnh"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="bg-white p-4 max-h-[85vh] overflow-auto">
+              <img
+                src={demoImages[activeDemoIndex].src}
+                alt={demoImages[activeDemoIndex].alt}
+                className="w-full h-full max-h-[75vh] object-contain bg-white"
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <footer className="py-12 px-6 border-t border-gray-100 text-center text-gray-400 text-sm">
