@@ -3,6 +3,7 @@ import { User } from 'firebase/auth';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { Store } from '../../types';
+import { getMenuTemplateById } from '../../constants/menuTemplates';
 import * as QRCode from 'qrcode.react';
 import { CheckCircle, LayoutGrid, LayoutList, MapPin, Palette, Phone, QrCode, RefreshCcw, Save, Star } from 'lucide-react';
 
@@ -99,12 +100,14 @@ interface ThemeState {
   showProductImages: boolean;
   primaryColor: string;
   bgColor: string;
+  secondaryColor: string;
   textColor: string;
   fontFamily: Store['fontFamily'];
   borderRadius: string;
   qrDotColor: string;
   qrBgColor: string;
   currency: Store['currency'];
+  sizePreset: Store['sizePreset'];
   templateId: string;
 }
 
@@ -113,12 +116,14 @@ const DEFAULT_THEME_STATE: ThemeState = {
   showProductImages: true,
   primaryColor: '#ff5722',
   bgColor: '#ffffff',
+  secondaryColor: '#ffffff',
   textColor: '#1f2937',
   fontFamily: 'Inter',
   borderRadius: '20px',
   qrDotColor: '#111827',
   qrBgColor: '#ffffff',
   currency: 'VND',
+  sizePreset: 'normal',
   templateId: 'classic',
 };
 
@@ -150,22 +155,40 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
 
   const initialThemeState = useMemo<ThemeState>(() => {
     if (!restaurant) return DEFAULT_THEME_STATE;
+    const selectedTemplate = getMenuTemplateById(restaurant.templateId);
     return {
       layoutType: (restaurant.layoutType as ThemeLayoutType) || 'list',
       showProductImages: restaurant.showProductImages !== false,
-      primaryColor: restaurant.primaryColor || restaurant.themeColor || '#ff5722',
-      bgColor: restaurant.bgColor || restaurant.secondaryColor || '#ffffff',
+      primaryColor: restaurant.primaryColor || restaurant.themeColor || selectedTemplate.primaryColor || '#ff5722',
+      bgColor: restaurant.bgColor || restaurant.secondaryColor || selectedTemplate.secondaryColor || '#ffffff',
+      secondaryColor: restaurant.secondaryColor || restaurant.bgColor || selectedTemplate.secondaryColor || '#ffffff',
       textColor: restaurant.textColor || '#1f2937',
-      fontFamily: restaurant.fontFamily || 'Inter',
+      fontFamily: restaurant.fontFamily || selectedTemplate.fontFamily || 'Inter',
       borderRadius: restaurant.borderRadius || '20px',
-      qrDotColor: restaurant.qrDotColor || restaurant.primaryColor || '#111827',
-      qrBgColor: restaurant.qrBgColor || restaurant.bgColor || '#ffffff',
-      currency: restaurant.currency || 'VND',
-      templateId: restaurant.templateId || 'classic',
+      qrDotColor: restaurant.qrDotColor || restaurant.primaryColor || selectedTemplate.primaryColor || '#111827',
+      qrBgColor: restaurant.qrBgColor || restaurant.bgColor || selectedTemplate.secondaryColor || '#ffffff',
+      currency: restaurant.currency || selectedTemplate.currency || 'VND',
+      sizePreset: restaurant.sizePreset || selectedTemplate.sizePreset || 'normal',
+      templateId: restaurant.templateId || selectedTemplate.id || 'classic',
     };
   }, [restaurant]);
 
   const { theme, updateTheme } = useThemeStore(initialThemeState);
+
+  const applyTemplateDefaults = (templateId: string): Partial<ThemeState> => {
+    const template = getMenuTemplateById(templateId);
+    return {
+      templateId: template.id,
+      primaryColor: template.primaryColor,
+      bgColor: template.secondaryColor,
+      secondaryColor: template.secondaryColor,
+      fontFamily: template.fontFamily,
+      currency: template.currency,
+      sizePreset: template.sizePreset,
+      qrDotColor: template.primaryColor,
+      qrBgColor: template.secondaryColor,
+    };
+  };
 
   const fontFamilyMap: Record<string, string> = {
     Inter: 'Inter, ui-sans-serif, system-ui, sans-serif',
@@ -940,6 +963,7 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
         layoutType: theme.layoutType,
         showProductImages: theme.showProductImages,
         primaryColor: theme.primaryColor,
+        secondaryColor: theme.secondaryColor,
         bgColor: theme.bgColor,
         textColor: theme.textColor,
         fontFamily: theme.fontFamily,
@@ -947,6 +971,7 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
         qrDotColor: theme.qrDotColor,
         qrBgColor: theme.qrBgColor,
         currency: theme.currency,
+        sizePreset: theme.sizePreset,
         templateId: theme.templateId,
         updatedAt: new Date().toISOString(),
       });
@@ -1042,7 +1067,7 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                 <button
                   key={option.id}
                   type="button"
-                  onClick={() => updateTheme({ templateId: option.id })}
+                  onClick={() => updateTheme(applyTemplateDefaults(option.id))}
                   aria-pressed={isSelected}
                   className={`group relative overflow-hidden rounded-[30px] border bg-white p-5 text-left shadow-sm transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2 ${isSelected ? 'border-orange-400 bg-orange-50 shadow-md' : 'border-gray-200 hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-md'}`}
                 >
