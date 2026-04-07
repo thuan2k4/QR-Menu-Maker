@@ -22,8 +22,8 @@ export default function PrivatePreviewInlineNotice({ className = '' }: PrivatePr
       <div className="flex items-start gap-2">
         <Info size={16} className="mt-0.5 shrink-0" />
         <p>
-          Ban dang xem menu o che do Private voi role user. Day la ban xem truoc cho chu cua hang,
-          khach ben ngoai se khong truy cap duoc.
+          Bạn đang xem menu ở chế độ Private. Đây là bản xem trước cho chủ cửa hàng,
+          khách bên ngoài sẽ không truy cập được.
         </p>
       </div>
     </div>

@@ -49,9 +49,9 @@ function PublicMenuContent() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-gray-50">
         <Smartphone className="w-16 h-16 text-gray-300 mb-4" />
-        <h1 className="text-2xl font-bold text-gray-900">Khong tim thay Menu</h1>
-        <p className="text-gray-500 mt-2">Vui long kiem tra lai ma QR hoac duong dan.</p>
-      </div>
+        <h1 className="text-2xl font-bold text-gray-900">Không tìm thấy Menu</h1>
+          <p className="text-gray-500 mt-2">Vui lòng kiểm tra lại mã QR hoặc đường dẫn.</p>
+        </div>
     );
   }
 
@@ -61,8 +61,7 @@ function PublicMenuContent() {
         <div className="w-16 h-16 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center mb-4">
           <Info size={28} />
         </div>
-        <h1 className="text-2xl font-bold text-gray-900">Menu dang trong trang thai cap nhat, vui long quay lai sau.</h1>
-        <p className="text-gray-500 mt-2"></p>
+        <h1 className="text-2xl font-bold text-gray-900">Menu đang trong trạng thái cập nhật, vui lòng quay lại sau.</h1>
       </div>
     );
   }
