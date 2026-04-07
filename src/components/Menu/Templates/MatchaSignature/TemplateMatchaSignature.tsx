@@ -30,6 +30,7 @@ export default function TemplateMatchaSignature() {
     clearSelectedProduct,
     selectProduct,
     store,
+    bgColor,
     getProductDisplayPrice,
     getProductDetailDescription,
     formatCurrency,
@@ -59,7 +60,7 @@ export default function TemplateMatchaSignature() {
   const cardsClassName = productViewMode === 'showcase' ? 'grid gap-5 lg:grid-cols-2' : 'space-y-3';
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden bg-[#f8f3e9] text-[#2c2017]">
+    <div className="relative min-h-screen overflow-x-hidden text-[#2c2017]" style={{ backgroundColor: bgColor }}>
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(161,95,56,0.14)_0%,rgba(248,243,233,0)_44%),radial-gradient(circle_at_84%_84%,rgba(124,90,64,0.13)_0%,rgba(248,243,233,0)_40%)]" />
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(120,89,66,0.07)_1px,transparent_1px),linear-gradient(to_bottom,rgba(120,89,66,0.07)_1px,transparent_1px)] [background-size:52px_52px]" />
 

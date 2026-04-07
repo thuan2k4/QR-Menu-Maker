@@ -28,6 +28,7 @@ export default function TemplateBakery() {
     clearSelectedProduct,
     selectProduct,
     store,
+    bgColor,
     getProductDisplayPrice,
     getProductDetailDescription,
     formatCurrency,
@@ -55,7 +56,7 @@ export default function TemplateBakery() {
     : 'space-y-4';
 
   return (
-    <div className="min-h-screen bg-[#f2eadf] text-[#2b1b16]">
+    <div className="min-h-screen text-[#2b1b16]" style={{ backgroundColor: bgColor }}>
       <div className="absolute inset-x-0 top-0 h-[520px] bg-[radial-gradient(circle_at_top_right,_#d0b089_0%,_#f2eadf_58%)] pointer-events-none" />
 
       <div className="relative mx-auto max-w-6xl px-4 pb-14 pt-6 sm:px-6 lg:px-8">

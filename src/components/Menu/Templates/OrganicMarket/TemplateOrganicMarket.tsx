@@ -28,6 +28,7 @@ export default function TemplateOrganicMarket() {
     clearSelectedProduct,
     selectProduct,
     store,
+    bgColor,
     getProductDisplayPrice,
     getProductDetailDescription,
     formatCurrency,
@@ -53,7 +54,7 @@ export default function TemplateOrganicMarket() {
   const cardsClassName = cardView === 'showcase' ? 'grid gap-4 lg:grid-cols-2' : 'space-y-3';
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden bg-[#edf1df] text-[#1f2a14]">
+    <div className="relative min-h-screen overflow-x-hidden text-[#1f2a14]" style={{ backgroundColor: bgColor }}>
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(120,138,60,0.12)_0%,rgba(237,241,223,0)_45%)]" />
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[320px] bg-[radial-gradient(circle_at_0%_0%,rgba(92,111,41,0.38)_0%,rgba(237,241,223,0)_72%)]" />
 

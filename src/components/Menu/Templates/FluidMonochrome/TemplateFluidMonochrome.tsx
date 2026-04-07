@@ -11,16 +11,17 @@ export default function TemplateFluidMonochrome() {
     activeCategory,
     setActiveCategory,
     store,
+    bgColor,
     selectedProduct,
     clearSelectedProduct,
   } = useMenuContext();
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#F8F7F5' }}>
+    <div className="min-h-screen" style={{ backgroundColor: bgColor }}>
       {/* SVG Background Pattern - subtle texture */}
       <svg
         className="fixed inset-0 w-full h-full pointer-events-none opacity-40"
-        style={{ backgroundColor: '#F8F7F5' }}
+        style={{ backgroundColor: bgColor }}
       >
         <defs>
           <pattern id="noise" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">

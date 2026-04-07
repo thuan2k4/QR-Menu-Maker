@@ -30,6 +30,7 @@ export default function TemplateBotanicalSketch() {
     clearSelectedProduct,
     selectProduct,
     store,
+    bgColor,
     getProductDisplayPrice,
     getProductDetailDescription,
     formatCurrency,
@@ -54,7 +55,7 @@ export default function TemplateBotanicalSketch() {
   const cardsClassName = cardMode === 'atelier' ? 'grid gap-4 lg:grid-cols-2' : 'space-y-3';
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden bg-[#908d7b] text-[#807c6d]">
+    <div className="relative min-h-screen overflow-x-hidden text-[#807c6d]" style={{ backgroundColor: bgColor }}>
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_8%,rgba(255,249,231,0.16)_0%,transparent_28%),radial-gradient(circle_at_82%_96%,rgba(30,25,19,0.2)_0%,transparent_34%)]" />
 
       <div className="relative mx-auto w-full max-w-5xl px-4 pb-16 pt-8 sm:px-6">

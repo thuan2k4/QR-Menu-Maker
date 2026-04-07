@@ -12,6 +12,7 @@ export default function TemplateVibrant() {
     activeCategory,
     setActiveCategory,
     store,
+    bgColor,
     selectedProduct,
     clearSelectedProduct,
     getProductDisplayPrice,
@@ -22,7 +23,7 @@ export default function TemplateVibrant() {
   const scrollContainer = useRef<HTMLDivElement>(null);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-orange-50/30 to-white">
+    <div className="min-h-screen" style={{ backgroundColor: bgColor }}>
       {/* Header with Cover */}
       <div className="relative overflow-hidden">
         {store?.coverUrl ? (

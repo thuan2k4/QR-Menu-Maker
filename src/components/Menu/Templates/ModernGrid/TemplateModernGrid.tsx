@@ -10,6 +10,7 @@ export default function TemplateModernGrid() {
     filteredProducts,
     store,
     primaryColor,
+    bgColor,
     selectedProduct,
     clearSelectedProduct,
     getProductDisplayPrice,
@@ -19,7 +20,7 @@ export default function TemplateModernGrid() {
   } = useMenuContext();
 
   return (
-    <div className="min-h-screen pb-10" style={{ backgroundColor: '#f7fafc' }}>
+    <div className="min-h-screen pb-10" style={{ backgroundColor: bgColor }}>
       <div className="relative overflow-hidden">
         {store?.coverUrl ? (
           <div className="relative h-56 overflow-hidden">

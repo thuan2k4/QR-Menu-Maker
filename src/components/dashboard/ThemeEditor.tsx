@@ -199,7 +199,7 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
 
   const previewCssVars = {
     '--theme-primary': theme.primaryColor,
-    '--theme-bg': theme.bgColor,
+    '--theme-bg': theme.secondaryColor || theme.bgColor,
     '--theme-text': theme.textColor,
     '--theme-radius': theme.borderRadius,
     '--theme-qr-dot': theme.qrDotColor,
@@ -209,7 +209,7 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
   const currentFontFamily = theme.fontFamily || 'Inter';
   const previewRootStyle = {
     ...previewCssVars,
-    backgroundColor: 'var(--theme-bg)',
+    backgroundColor: theme.secondaryColor || theme.bgColor,
     color: 'var(--theme-text)',
     fontFamily: fontFamilyMap[currentFontFamily],
     fontSize: '14px',

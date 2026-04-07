@@ -8,6 +8,7 @@ export default function TemplateMinimal() {
   const {
     filteredProducts,
     store,
+    bgColor,
     activeCategory,
     setActiveCategory,
     selectedProduct,
@@ -30,7 +31,7 @@ export default function TemplateMinimal() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: bgColor }}>
       {/* Cover Image */}
       {store?.coverUrl && (
         <motion.div

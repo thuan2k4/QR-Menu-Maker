@@ -30,6 +30,7 @@ export default function TemplateCoffeeAtelier() {
     clearSelectedProduct,
     selectProduct,
     store,
+    bgColor,
     getProductDisplayPrice,
     getProductDetailDescription,
     formatCurrency,
@@ -55,7 +56,7 @@ export default function TemplateCoffeeAtelier() {
   const cardsClassName = displayMode === 'gallery' ? 'grid gap-5 lg:grid-cols-2' : 'space-y-4';
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden bg-[#ece7df] text-[#1b150f]">
+    <div className="relative min-h-screen overflow-x-hidden text-[#1b150f]" style={{ backgroundColor: bgColor }}>
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(53,44,34,0.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(53,44,34,0.08)_1px,transparent_1px)] [background-size:56px_56px]" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_8%_12%,rgba(199,124,70,0.22)_0%,rgba(236,231,223,0)_34%),radial-gradient(circle_at_92%_82%,rgba(25,20,15,0.24)_0%,rgba(236,231,223,0)_40%)]" />
 
