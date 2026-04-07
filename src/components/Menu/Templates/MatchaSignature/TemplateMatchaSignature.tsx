@@ -156,28 +156,7 @@ export default function TemplateMatchaSignature() {
               <h2 className="mt-2 text-3xl font-black leading-tight text-[#2d2016] sm:text-[2rem]">Chọn sản phẩm bạn muốn thử</h2>
             </div>
 
-            <div className="inline-flex justify-self-start rounded-full border border-[#d8c7b0] bg-[#f4ecde] p-1">
-              {[
-                { id: 'showcase', label: 'Thẻ lớn' },
-                { id: 'compact', label: 'Thẻ gọn' },
-              ].map((view) => {
-                const active = productViewMode === view.id;
-                return (
-                  <button
-                    key={view.id}
-                    type="button"
-                    onClick={() => setProductViewMode(view.id as ProductViewMode)}
-                    aria-pressed={active}
-                    className={`rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.08em] transition ${active
-                      ? 'bg-[#9e5e38] text-[#fffaf5] shadow-[0_8px_16px_-12px_rgba(96,56,32,0.9)]'
-                      : 'text-[#6a503f] hover:bg-[#ebdfcd]'
-                      }`}
-                  >
-                    {view.label}
-                  </button>
-                );
-              })}
-            </div>
+
           </div>
 
           <div className="mt-4 flex flex-wrap gap-2">
@@ -227,14 +206,9 @@ export default function TemplateMatchaSignature() {
                         <img
                           src={product.imageUrl}
                           alt={product.name}
-                          className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                          className="h-full w-full object-contain object-center transition duration-500 group-hover:scale-105"
                           referrerPolicy="no-referrer"
                         />
-                        {!compact ? (
-                          <span className="absolute left-3 top-3 rounded-full bg-[#fff4e5] px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.1em] text-[#8d5332]">
-                            Editor's Pick
-                          </span>
-                        ) : null}
                       </div>
                     ) : (
                       <div className={`${compact ? 'h-24 w-24 flex-shrink-0 rounded-2xl' : 'h-56 rounded-[20px]'} bg-[radial-gradient(circle_at_top_left,_#d8bd9f_0%,_#b1825c_56%,_#7f5339_100%)]`} />
@@ -304,14 +278,21 @@ export default function TemplateMatchaSignature() {
               transition={{ type: 'spring', damping: 24, stiffness: 220 }}
               className="fixed inset-0 z-50 flex items-end justify-center p-3 sm:items-center sm:p-6"
             >
-              <div className="w-full max-w-5xl overflow-hidden rounded-[28px] border border-[#d8c7b3] bg-[#fffbf5] shadow-[0_36px_80px_-32px_rgba(66,42,27,0.6)]">
+              <div className="relative w-full max-w-5xl overflow-hidden rounded-[28px] border border-[#d8c7b3] bg-[#fffbf5] shadow-[0_36px_80px_-32px_rgba(66,42,27,0.6)]">
+                <button
+                  type="button"
+                  onClick={clearSelectedProduct}
+                  className="absolute top-4 right-4 z-50 inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#d8c7b3] bg-white text-[#7a6a56] shadow-lg"
+                >
+                  <X size={18} />
+                </button>
                 <div className="grid max-h-[90vh] overflow-hidden lg:grid-cols-[1.04fr_1fr]">
                   <div className="relative h-64 border-b border-[#d8c7b3] bg-[#d8ccba] lg:h-auto lg:border-b-0 lg:border-r">
                     {selectedProduct.imageUrl ? (
                       <img
                         src={selectedProduct.imageUrl}
                         alt={selectedProduct.name}
-                        className="h-full w-full object-cover"
+                        className="h-full w-full object-contain object-center"
                         referrerPolicy="no-referrer"
                       />
                     ) : (
@@ -327,15 +308,6 @@ export default function TemplateMatchaSignature() {
                   </div>
 
                   <div className="max-h-[60vh] space-y-4 overflow-y-auto p-5 sm:max-h-[90vh] sm:p-6">
-                    <div className="flex items-center justify-end">
-                      <button
-                        type="button"
-                        onClick={clearSelectedProduct}
-                        className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#d7c5ad] bg-[#fff7eb] text-[#815439]"
-                      >
-                        <X size={16} />
-                      </button>
-                    </div>
 
                     {selectedProduct.hashtags && selectedProduct.hashtags.length > 0 ? (
                       <div className="flex flex-wrap gap-1.5">

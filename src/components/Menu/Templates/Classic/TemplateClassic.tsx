@@ -113,7 +113,7 @@ export default function TemplateClassic() {
               <div className="flex flex-col h-full">
                 <div className="relative h-[32vh] md:h-72 lg:h-96 min-h-[220px] flex-shrink-0">
                   {selectedProduct.imageUrl ? (
-                    <img src={selectedProduct.imageUrl} alt={selectedProduct.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                    <img src={selectedProduct.imageUrl} alt={selectedProduct.name} className="w-full h-full object-contain object-center" referrerPolicy="no-referrer" />
                   ) : (
                     <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-300">
                       <Smartphone size={64} />
@@ -158,7 +158,7 @@ export default function TemplateClassic() {
                             <div>
                               <p className="text-sm font-semibold text-gray-900">{variant.name}</p>
                               {variant.isDefault && (
-                                <p className="text-[11px] text-gray-500 mt-1">Mặc định</p>
+                                <p className=" font-bold text-[11px] text-gray-500 mt-1">Mặc định</p>
                               )}
                             </div>
                             <span className="text-sm font-semibold text-gray-900">{formatCurrency(variant.price)}</span>

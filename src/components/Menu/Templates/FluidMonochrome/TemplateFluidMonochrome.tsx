@@ -173,12 +173,12 @@ export default function TemplateFluidMonochrome() {
           </div>
 
           {/* Category Buttons - Horizontal Scroll */}
-          <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap">
+          <div className="mt-4 flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 flex-nowrap">
             {categories.map((cat, idx) => (
               <motion.button
                 key={cat.id}
                 onClick={() => setActiveCategory(cat.id)}
-                className="px-6 py-2.5 min-h-[44px] rounded-full font-bold text-sm whitespace-nowrap flex-shrink-0 transition-all border-2 capitalize"
+                className="px-6 py-2.5 min-h-[44px] rounded-full font-bold text-sm whitespace-nowrap flex-shrink-0 min-w-max transition-all border-2 capitalize"
                 style={{
                   backgroundColor: activeCategory === cat.id ? '#1A1A1A' : 'transparent',
                   color: activeCategory === cat.id ? '#F8F7F5' : '#4A4A4A',

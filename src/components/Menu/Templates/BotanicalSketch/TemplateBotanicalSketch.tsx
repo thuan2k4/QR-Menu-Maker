@@ -125,27 +125,6 @@ export default function TemplateBotanicalSketch() {
 
           <h2 className="text-4xl font-semibold leading-[1.02] text-[#7b7667] sm:text-5xl">Chọn món bạn muốn thử</h2>
 
-          <div className="mt-4 inline-flex rounded-full border border-[#c8bea6] bg-[#ece3cb] p-1">
-            {[
-              { id: 'atelier', label: 'Thẻ lớn' },
-              { id: 'compact', label: 'Thẻ nhỏ' },
-            ].map((mode) => {
-              const active = cardMode === mode.id;
-              return (
-                <button
-                  key={mode.id}
-                  type="button"
-                  onClick={() => setCardMode(mode.id as CardMode)}
-                  className={`rounded-full px-4 py-2 text-xs font-semibold tracking-[0.08em] transition ${active
-                    ? 'bg-[#8d8878] text-[#f7f0df]'
-                    : 'text-[#7b7566] hover:bg-[#e0d7bd]'
-                    }`}
-                >
-                  {mode.label}
-                </button>
-              );
-            })}
-          </div>
 
           <div className="mt-4 flex flex-wrap gap-2">
             {categories.map((cat) => {
@@ -191,7 +170,7 @@ export default function TemplateBotanicalSketch() {
                         <img
                           src={product.imageUrl}
                           alt={product.name}
-                          className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                          className="h-full w-full object-cover object-center transition duration-500 group-hover:scale-105"
                           referrerPolicy="no-referrer"
                         />
                       </div>
@@ -264,14 +243,21 @@ export default function TemplateBotanicalSketch() {
               transition={{ type: 'spring', damping: 22, stiffness: 220 }}
               className="fixed inset-0 z-50 flex items-end justify-center p-3 sm:items-center sm:p-6"
             >
-              <div className="w-full max-w-4xl overflow-hidden rounded-[30px] border border-[#cbc2aa] bg-[#f1e8d4] shadow-[0_24px_40px_-28px_rgba(24,22,18,0.65)]">
+              <div className="relative w-full max-w-4xl overflow-hidden rounded-[30px] border border-[#cbc2aa] bg-[#f1e8d4] shadow-[0_24px_40px_-28px_rgba(24,22,18,0.65)]">
+                <button
+                  type="button"
+                  onClick={clearSelectedProduct}
+                  className="absolute top-4 right-4 z-50 inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#cbc2aa] bg-white text-[#857f70] shadow-lg"
+                >
+                  <X size={18} />
+                </button>
                 <div className="grid max-h-[90vh] overflow-hidden lg:grid-cols-[1fr_1fr]">
                   <div className="relative h-64 border-b border-[#c8bea6] bg-[#ddd4bc] lg:h-auto lg:border-b-0 lg:border-r">
                     {selectedProduct.imageUrl ? (
                       <img
                         src={selectedProduct.imageUrl}
                         alt={selectedProduct.name}
-                        className="h-full w-full object-cover"
+                        className="h-full w-full object-cover object-center"
                         referrerPolicy="no-referrer"
                       />
                     ) : (
@@ -286,15 +272,6 @@ export default function TemplateBotanicalSketch() {
                   </div>
 
                   <div className="max-h-[60vh] space-y-4 overflow-y-auto p-5 sm:max-h-[90vh] sm:p-6">
-                    <div className="flex items-center justify-end">
-                      <button
-                        type="button"
-                        onClick={clearSelectedProduct}
-                        className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#bcb39d] bg-[#f6efde] text-[#857f70]"
-                      >
-                        <X size={16} />
-                      </button>
-                    </div>
 
                     {selectedProduct.hashtags && selectedProduct.hashtags.length > 0 ? (
                       <div className="flex flex-wrap gap-1.5">
@@ -342,7 +319,7 @@ export default function TemplateBotanicalSketch() {
                               >
                                 <div>
                                   <p className="text-sm font-semibold text-[#7a7566]">{variant.name}</p>
-                                  {variant.isDefault ? <p className="text-[11px] font-medium text-[#8e8879]">Mặc định</p> : null}
+                                  {variant.isDefault ? <p className="font-bold text-[11px] font-medium text-[#8e8879]">Mặc định</p> : null}
                                 </div>
                                 <div className="text-right">
                                   <p className="text-sm font-semibold text-[#7f796a]">{formatCurrency(variantPrice)}</p>

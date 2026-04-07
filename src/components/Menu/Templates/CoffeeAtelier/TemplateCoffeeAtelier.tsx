@@ -162,27 +162,7 @@ export default function TemplateCoffeeAtelier() {
               <h3 className="mt-2 text-3xl font-black text-white sm:text-[2rem]">Chọn sản phẩm bạn muốn thử</h3>
             </div>
 
-            <div className="inline-flex justify-self-start border border-[#3f3328] bg-[#2b2118] p-1">
-              {[
-                { id: 'gallery', label: 'Thẻ lớn' },
-                { id: 'compact', label: 'Thẻ gọn' },
-              ].map((mode) => {
-                const active = displayMode === mode.id;
-                return (
-                  <button
-                    key={mode.id}
-                    type="button"
-                    onClick={() => setDisplayMode(mode.id as ProductDisplayMode)}
-                    className={`px-4 py-2 text-xs font-black uppercase tracking-[0.1em] transition ${active
-                      ? 'bg-[#c7773d] text-[#1f130b]'
-                      : 'text-[#f2dbc7] hover:bg-[#3a2d22]'
-                      }`}
-                  >
-                    {mode.label}
-                  </button>
-                );
-              })}
-            </div>
+
           </div>
 
           <div className="mt-4 flex flex-wrap gap-2">
@@ -230,7 +210,7 @@ export default function TemplateCoffeeAtelier() {
                         <img
                           src={product.imageUrl}
                           alt={product.name}
-                          className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                          className="h-full w-full object-contain object-center transition duration-500 group-hover:scale-105"
                           referrerPolicy="no-referrer"
                         />
                       </div>
@@ -309,7 +289,7 @@ export default function TemplateCoffeeAtelier() {
                       <img
                         src={selectedProduct.imageUrl}
                         alt={selectedProduct.name}
-                        className="h-full w-full object-cover"
+                        className="h-full w-full object-contain object-center"
                         referrerPolicy="no-referrer"
                       />
                     ) : (
@@ -380,7 +360,7 @@ export default function TemplateCoffeeAtelier() {
                               >
                                 <div>
                                   <p className="text-sm font-black text-[#2a1a10]">{variant.name}</p>
-                                  {variant.isDefault ? <p className="text-[11px] font-semibold text-[#8f694d]">Mặc định</p> : null}
+                                  {variant.isDefault ? <p className="font-bold text-[11px] font-semibold text-[#8f694d]">Mặc định</p> : null}
                                 </div>
                                 <div className="text-right">
                                   <p className="text-sm font-black text-[#9e5e35]">{formatCurrency(variantPrice)}</p>

@@ -144,27 +144,6 @@ export default function TemplateOrganicMarket() {
               <h2 className="mt-2 text-3xl font-black leading-tight text-[#1f2b14] sm:text-[2rem]">Chọn hương vị bạn muốn thử</h2>
             </div>
 
-            <div className="inline-flex justify-self-start border border-[#c8d3a3] bg-[#eff3dc] p-1">
-              {[
-                { id: 'showcase', label: 'Thẻ lớn' },
-                { id: 'compact', label: 'Gọn' },
-              ].map((view) => {
-                const active = cardView === view.id;
-                return (
-                  <button
-                    key={view.id}
-                    type="button"
-                    onClick={() => setCardView(view.id as 'showcase' | 'compact')}
-                    className={`px-4 py-2 text-xs font-black uppercase tracking-[0.1em] transition ${active
-                      ? 'bg-[#6a7f34] text-white'
-                      : 'text-[#607036] hover:bg-[#dde6ba]'
-                      }`}
-                  >
-                    {view.label}
-                  </button>
-                );
-              })}
-            </div>
           </div>
 
           <div className="mt-4 flex flex-wrap gap-2">
@@ -210,7 +189,7 @@ export default function TemplateOrganicMarket() {
                       <img
                         src={product.imageUrl}
                         alt={product.name}
-                        className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                        className="h-full w-full object-contain object-center transition duration-500 group-hover:scale-105"
                         referrerPolicy="no-referrer"
                       />
                     </div>
@@ -289,7 +268,7 @@ export default function TemplateOrganicMarket() {
                       <img
                         src={selectedProduct.imageUrl}
                         alt={selectedProduct.name}
-                        className="h-full w-full object-cover"
+                        className="h-full w-full object-contain object-center"
                         referrerPolicy="no-referrer"
                       />
                     ) : (
@@ -360,7 +339,7 @@ export default function TemplateOrganicMarket() {
                               >
                                 <div>
                                   <p className="text-sm font-black text-[#293515]">{variant.name}</p>
-                                  {variant.isDefault ? <p className="text-[11px] font-semibold text-[#7a8a3c]">Mặc định</p> : null}
+                                  {variant.isDefault ? <p className="font-bold text-[11px] font-semibold text-[#7a8a3c]">Mặc định</p> : null}
                                 </div>
                                 <div className="text-right">
                                   <p className="text-sm font-black text-[#6a7f34]">{formatCurrency(variantPrice)}</p>

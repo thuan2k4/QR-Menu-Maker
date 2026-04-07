@@ -30,7 +30,7 @@ export default function ProductVibrantCard({ product, index = 0 }: ProductVibran
             <img
               src={product.imageUrl}
               alt={product.name}
-              className="h-full w-full object-cover group-hover:scale-125 transition-transform duration-500"
+              className="h-full w-full object-contain object-center group-hover:scale-125 transition-transform duration-500"
               referrerPolicy="no-referrer"
             />
             {/* Hover Overlay */}

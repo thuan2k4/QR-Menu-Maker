@@ -36,7 +36,7 @@ export default function ProductCard({ product }: ProductCardProps) {
     >
       <div className={`${isSplitLayout ? 'w-full h-40 rounded-2xl' : 'w-24 h-24 rounded-xl flex-shrink-0'} bg-gray-50 overflow-hidden border border-gray-50`} style={{ borderRadius, minWidth: isSplitLayout ? undefined : '96px' }}>
         {showCardImage ? (
-          <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+          <img src={product.imageUrl} alt={product.name} className="w-full h-full object-contain object-center" referrerPolicy="no-referrer" />
         ) : (
           <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: '#f8fafc', color: primaryColor }}>
             <Smartphone size={24} />

@@ -116,7 +116,7 @@ export default function TemplateModernGrid() {
                     <img
                       src={selectedProduct.imageUrl}
                       alt={selectedProduct.name}
-                      className="h-64 w-full object-cover"
+                      className="h-64 w-full object-contain object-center"
                       referrerPolicy="no-referrer"
                     />
                   ) : (
@@ -174,7 +174,7 @@ export default function TemplateModernGrid() {
                             <div key={variant.id} className="flex items-center justify-between rounded-3xl bg-white px-4 py-3 shadow-sm">
                               <div className="space-y-1">
                                 <p className="text-sm font-semibold text-gray-900">{variant.name}</p>
-                                {variant.isDefault && <p className="text-[11px] text-gray-500">Mặc định</p>}
+                                {variant.isDefault && <p className="font-bold text-[11px] text-gray-500">Mặc định</p>}
                               </div>
                               <span className="text-sm font-bold text-gray-900">{formatCurrency(variant.price)}</span>
                             </div>

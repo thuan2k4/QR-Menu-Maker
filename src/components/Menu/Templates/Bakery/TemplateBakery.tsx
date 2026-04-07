@@ -79,7 +79,7 @@ export default function TemplateBakery() {
             <div className="absolute inset-0 bg-gradient-to-b from-[#2b1b16]/25 via-[#2b1b16]/40 to-[#2b1b16]/70" />
 
             <div className="absolute inset-x-0 bottom-0 p-5 sm:p-7">
-              <div className="max-w-2xl rounded-[28px] border border-[#efddcb]/80 bg-[#fff7ef]/92 p-4 backdrop-blur-md sm:p-5">
+              <div className="max-w-2xl w-full rounded-[28px] border border-[#efddcb]/80 bg-[#fff7ef]/92 p-4 backdrop-blur-md sm:p-5">
                 <p className="text-[11px] font-black uppercase tracking-[0.3em] text-[#8d5b35]">Fresh Batch Daily</p>
                 <h1 className="mt-2 text-3xl font-black leading-tight text-[#2b1b16] sm:text-4xl">
                   {store?.name || 'Bakery House'}
@@ -119,30 +119,10 @@ export default function TemplateBakery() {
               <h2 className="mt-2 text-2xl font-black text-[#2d1c16]">Chọn món bạn muốn thử</h2>
             </div>
 
-            <div className="inline-flex self-start rounded-full border border-[#e7d6c4] bg-[#f8eee1] p-1">
-              {[
-                { id: 'editorial', label: 'Thẻ lớn' },
-                { id: 'compact', label: 'Gọn' },
-              ].map((view) => {
-                const active = cardView === view.id;
-                return (
-                  <button
-                    key={view.id}
-                    type="button"
-                    onClick={() => setCardView(view.id as 'editorial' | 'compact')}
-                    className={`rounded-full px-4 py-2 text-xs font-black tracking-[0.08em] transition ${active
-                      ? 'bg-[#8f4f2d] text-white shadow-[0_10px_20px_-12px_rgba(66,35,20,0.8)]'
-                      : 'text-[#8f5f43] hover:text-[#5f3a27]'
-                      }`}
-                  >
-                    {view.label}
-                  </button>
-                );
-              })}
-            </div>
+
           </div>
 
-          <div className="mt-4 flex gap-2 overflow-x-auto pb-2">
+          <div className="mt-4 flex gap-2 overflow-x-auto pb-2 flex-nowrap">
             {categories.map((cat) => {
               const active = activeCategory === cat.id;
               return (
@@ -151,7 +131,7 @@ export default function TemplateBakery() {
                   type="button"
                   onClick={() => setActiveCategory(cat.id)}
                   whileTap={{ scale: 0.97 }}
-                  className={`whitespace-nowrap rounded-full border px-4 py-2.5 text-sm font-bold transition ${active
+                  className={`whitespace-nowrap rounded-full border px-4 py-2.5 text-sm font-bold transition flex-shrink-0 min-w-max ${active
                     ? 'border-[#8f4f2d] bg-[#8f4f2d] text-white shadow-[0_14px_26px_-18px_rgba(66,35,20,0.85)]'
                     : 'border-[#dfcdb8] bg-white text-[#704730] hover:border-[#b78562]'
                     }`}
@@ -186,7 +166,7 @@ export default function TemplateBakery() {
                       <img
                         src={product.imageUrl}
                         alt={product.name}
-                        className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                        className="h-full w-full object-contain object-center transition duration-500 group-hover:scale-105"
                         referrerPolicy="no-referrer"
                       />
                     </div>
@@ -264,7 +244,7 @@ export default function TemplateBakery() {
                     <img
                       src={selectedProduct.imageUrl}
                       alt={selectedProduct.name}
-                      className="h-full w-full object-cover"
+                      className="h-full w-full object-contain object-center"
                       referrerPolicy="no-referrer"
                     />
                   ) : (
@@ -328,7 +308,7 @@ export default function TemplateBakery() {
                             <div key={variant.id || variant.name} className="flex items-center justify-between rounded-2xl border border-[#efdfcf] bg-[#fff8ef] px-3 py-2.5">
                               <div>
                                 <p className="text-sm font-bold text-[#3a2318]">{variant.name}</p>
-                                {variant.isDefault ? <p className="text-[11px] text-[#8c6852]">Mặc định</p> : null}
+                                {variant.isDefault ? <p className="text-[11px] font-bold text-[#8c6852]">Mặc định</p> : null}
                               </div>
                               <div className="text-right">
                                 <p className="text-sm font-black text-[#8f4f2d]">{formatCurrency(variantPrice)}</p>

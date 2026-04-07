@@ -125,12 +125,12 @@ export default function TemplateMinimal() {
             <p className="text-xs font-black uppercase tracking-[0.1em] text-slate-700 mb-3">
               Danh Mục
             </p>
-            <div className="flex gap-2 overflow-x-auto pb-2">
+            <div className="flex gap-2 overflow-x-auto pb-2 flex-nowrap">
               {categories.map((cat) => (
                 <motion.button
                   key={cat.id}
                   onClick={() => setActiveCategory(cat.id)}
-                  className={`px-4 py-2 rounded-full font-bold text-sm whitespace-nowrap transition-all flex-shrink-0 ${activeCategory === cat.id
+                  className={`px-4 py-2 rounded-full font-bold text-sm whitespace-nowrap transition-all flex-shrink-0 min-w-max ${activeCategory === cat.id
                     ? 'bg-indigo-600 text-white shadow-lg'
                     : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
                     }`}
@@ -171,7 +171,7 @@ export default function TemplateMinimal() {
                           <img
                             src={product.imageUrl}
                             alt={product.name}
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                            className="w-full h-full object-contain object-center group-hover:scale-110 transition-transform duration-500"
                             referrerPolicy="no-referrer"
                           />
                         </div>
@@ -205,7 +205,7 @@ export default function TemplateMinimal() {
                           {product.variants && product.variants.length > 0 && (
                             <div className="flex flex-wrap gap-2 mt-3">
                               {product.variants.slice(0, 3).map((variant, vi) => (
-                                <span key={vi} className="text-xs font-bold bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full border border-indigo-200">
+                                <span key={vi} className="text-xs font-bold bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full border border-indigo-200 max-w-full break-words">
                                   {variant.name} <span className="text-indigo-600">+{((variant.price || 0) - (product.price || 0)).toLocaleString()}đ</span>
                                 </span>
                               ))}
@@ -300,7 +300,7 @@ export default function TemplateMinimal() {
                     <img
                       src={selectedProduct.imageUrl}
                       alt={selectedProduct.name}
-                      className="h-full w-full object-cover"
+                      className="h-full w-full object-contain object-center"
                       referrerPolicy="no-referrer"
                     />
                     <motion.button
@@ -377,8 +377,8 @@ export default function TemplateMinimal() {
                       <div className="space-y-2">
                         {selectedProduct.variants.map((variant, idx) => (
                           <div key={idx} className="flex justify-between items-center p-3 bg-slate-50 rounded-lg border border-slate-200">
-                            <div className="flex items-center gap-2">
-                              <span className={`font-medium text-slate-700 ${isMobile ? 'text-xs' : 'text-sm'}`}>{variant.name}</span>
+                            <div className="flex items-center gap-2 min-w-0">
+                              <span className={`font-medium text-slate-700 ${isMobile ? 'text-xs' : 'text-sm'} truncate`}>{variant.name}</span>
                               {(variant.isDefault || idx === 0) ? (
                                 <span className={`rounded-full bg-indigo-100 px-2 py-0.5 font-black text-indigo-700 ${isMobile ? 'text-[10px]' : 'text-xs'}`}>
                                   Mặc định

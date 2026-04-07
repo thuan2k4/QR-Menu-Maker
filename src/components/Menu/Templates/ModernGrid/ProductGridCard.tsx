@@ -18,7 +18,7 @@ export default function ProductGridCard({ product }: ProductGridCardProps) {
     >
       <div className="relative overflow-hidden aspect-[4/3] bg-gray-100">
         {product.imageUrl ? (
-          <img src={product.imageUrl} alt={product.name} className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" referrerPolicy="no-referrer" />
+          <img src={product.imageUrl} alt={product.name} className="absolute inset-0 h-full w-full object-contain object-center transition-transform duration-300 group-hover:scale-105" referrerPolicy="no-referrer" />
         ) : (
           <div className="h-full w-full flex items-center justify-center text-gray-400">
             <Smartphone size={32} />

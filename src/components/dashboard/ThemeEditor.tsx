@@ -4,7 +4,7 @@ import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { Store } from '../../types';
 import * as QRCode from 'qrcode.react';
-import { CheckCircle, LayoutGrid, LayoutList, Palette, QrCode, RefreshCcw, Save } from 'lucide-react';
+import { CheckCircle, LayoutGrid, LayoutList, MapPin, Palette, Phone, QrCode, RefreshCcw, Save, Star } from 'lucide-react';
 
 type TemplateOption = {
   id: string;
@@ -228,10 +228,13 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                   <span className="text-2xl font-black text-orange-600">C</span>
                 </div>
                 <div className="flex-1 space-y-2">
+                  <p className="text-sm font-black text-orange-600 uppercase tracking-[0.2em]">✨ Welcome to</p>
                   <h1 className="text-lg font-black text-gray-900">{restaurant?.name || 'Coffee Shop'}</h1>
                   <div className="space-y-1 text-xs font-semibold text-gray-700">
                     <p className="flex items-center gap-1.5"><span>📍</span>{restaurant?.address || 'Huế'}</p>
                     <p className="flex items-center gap-1.5"><span>☎️</span>0123456789</p>
+                    <p className="flex items-center gap-1.5">Mô tả chi tiết về cửa hàng của bạn</p>
+
                   </div>
                 </div>
               </div>
@@ -281,15 +284,16 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
               <div className="w-14 h-14 rounded-lg bg-indigo-200 flex items-center justify-center font-black text-indigo-700">
                 C
               </div>
-              <div>
+              <div className='flex flex-col gap-2'>
                 <h1 className="text-base font-black text-gray-900">{restaurant?.name || 'Store'}</h1>
                 <p className="text-xs text-slate-600 font-medium">Quán cf thời thượng</p>
+                <div className="flex text-xs text-slate-600 font-medium space-y-0.5">
+                  <p>📍 Huế</p>
+                  <p className='ml-4'>☎️ 0123456789</p>
+                </div>
               </div>
             </div>
-            <div className="text-xs text-slate-600 font-medium space-y-0.5">
-              <p>📍 Huế</p>
-              <p>☎️ 0123456789</p>
-            </div>
+
           </div>
 
           {/* Categories */}
@@ -361,8 +365,8 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
         <div className="h-full w-full bg-[#f4efe0] text-[#4d453b]">
           <div className="space-y-4 px-3 pb-4 pt-4">
             <div className="rounded-[28px] border border-[#d6c8a6] bg-[#f7f0df] p-4 shadow-sm">
-              <div className="mb-4 flex items-start gap-3">
-                <div className="h-14 w-14 flex-shrink-0 rounded-[20px] border border-[#c2b49a] bg-[#e5ddc5]" />
+              <div className="mb-4 flex flex-col items-start gap-3">
+                <div className="h-18 w-full flex-shrink-0 rounded-[20px] border border-[#c2b49a] bg-[#e5ddc5]" />
                 <div className="min-w-0 space-y-2">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#81755f]">La Petite Collection</p>
                   <h1 className="truncate text-lg font-bold text-[#3f382f]">{restaurant?.name || 'Coffee Shop'}</h1>
@@ -440,7 +444,7 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
 
           <div className="space-y-4 px-3 pb-4 pt-4">
             <div className="rounded-[26px] border border-[#d8d4cc] bg-[#fbfaf8] p-4 shadow-sm">
-              <div className="flex items-start gap-3">
+              <div className="flex flex-col items-start gap-3">
                 <div className="h-14 w-14 flex-shrink-0 rounded-[36px] border border-[#bdb8ad] bg-[#e5e2dc]" />
                 <div className="min-w-0 space-y-1.5">
                   <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#777268]">✧ Welcome</p>
@@ -476,8 +480,8 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                         <h4 className="truncate text-base font-black text-[#1f1f1f]">{product.name}</h4>
                         <p className="line-clamp-2 text-[11px] font-medium text-[#605d56]">{product.description}</p>
                         <div className="mt-3 flex items-center justify-between gap-1">
-                          <p className="text-[9px] font-black text-[#1f1f1f]">Từ {new Intl.NumberFormat('vi-VN').format(minPrice)} đ - {new Intl.NumberFormat('vi-VN').format(maxPrice)} đ</p>
-                          <button className="rounded-full border border-[#1f1f1f] bg-[#1f1f1f] px-3 py-1 text-[5px] font-black text-[#f8f7f5]">Chi tiết</button>
+                          <p className="text-[11px] font-black text-[#1f1f1f]">Từ {new Intl.NumberFormat('vi-VN').format(minPrice)}đ - {new Intl.NumberFormat('vi-VN').format(maxPrice)}đ</p>
+                          <button className="rounded-full border border-[#1f1f1f] bg-[#1f1f1f] p-1 text-[5px] text-[#f8f7f5]">Chi tiết</button>
                         </div>
                         <div className="flex flex-wrap gap-2">
                           <span className="rounded-full bg-[#efebe4] px-2 py-0.5 text-[9px] font-black text-[#666259]">#coffee</span>
@@ -513,15 +517,19 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
 
           <div className="-mt-1 px-3">
             <div className="rounded-[20px] border border-[#d8c7b0] bg-[#fffaf3]/95 p-3 shadow-[0_10px_20px_-14px_rgba(78,49,29,0.5)]">
-              <div className="flex items-start gap-3">
+              <div className="flex flex-col items-start gap-3">
                 <div className="h-14 w-14 rounded-xl border border-[#e6d8c6] bg-[#ece2d4]" />
-                <div className="min-w-0 flex-1 space-y-1">
+                <div className="min-w-0 flex-1 space-y-1 w-full">
                   <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#a66139]">Fresh Batch Daily</p>
                   <h1 className="truncate text-lg font-black text-[#2d2016]">{restaurant?.name || 'Coffee Shop'}</h1>
                   <div className="flex flex-wrap gap-1 text-[11px] font-semibold text-[#5d4a3b]">
-                    <p className="rounded-full bg-[#f4ebdc] px-2 py-0.5">📍 {restaurant?.address || 'Huế'}</p>
-                    <p className="rounded-full bg-[#f4ebdc] px-2 py-0.5">☎️ 0123456789</p>
+                    <p className="rounded-full bg-[#f4ebdc] px-2 py-0.5">{restaurant?.address || 'Huế'}</p>
+                    <p className="rounded-full bg-[#f4ebdc] px-2 py-0.5"> 0123456789</p>
                   </div>
+                  <p className="text-[11px] text-[#615040]">{restaurant?.bio || 'Quán coffee tọa lạc tại thành phố Huế.'}</p>
+                  <p className="flex w-full items-center gap-1 rounded-full bg-[#f4ebdc] px-2 py-0.5">
+                    <Star size={12} className="text-[#c17349]" /> Cà phê
+                  </p>
                 </div>
               </div>
             </div>
@@ -592,14 +600,21 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
 
           <div className="space-y-4 px-3 pb-4 pt-4">
             <div className="border-2 border-[#1f150d] bg-[#f7f2e9] p-3 shadow-[6px_6px_0_0_rgba(31,21,13,0.2)]">
-              <div className="flex items-start gap-3">
+              <div className="flex flex-col items-start gap-3">
                 <div className="h-14 w-14 border-2 border-[#1f150d] bg-[#eadccc]" />
-                <div className="min-w-0 flex-1 space-y-1">
+                <div className="min-w-0 flex-1 space-y-1 w-full">
                   <p className="text-[9px] font-black uppercase tracking-[0.13em] text-[#9c6540]">Fresh Batch Daily</p>
                   <h1 className="truncate text-lg font-black text-[#1f150d]">{restaurant?.name || 'Coffee Shop'}</h1>
                   <div className="space-y-0.5 text-[11px] font-semibold text-[#5f3f2b]">
                     <p>📍 {restaurant?.address || 'Huế'}</p>
                     <p>☎️ 0123456789</p>
+                  </div>
+                  <p className="text-[11px] font-semibold text-[#5f3f2b]">
+                    Mô tả về quán cà phê của bạn
+                  </p>
+                  <div className="flex flex-1 h-fit items-center gap-2 border-2 border-[#1f1610] bg-[#1f1610] px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-[#f8e8d6]">
+                    <span className="h-2 w-2 bg-[#f19b58]" />
+                    Open Everyday
                   </div>
                 </div>
               </div>
@@ -656,18 +671,28 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
       return (
         <div className="h-full w-full bg-[#f2eadf] text-[#2d1c16]">
           <div className="px-3 pb-3 pt-4">
-            <div className="overflow-hidden rounded-[30px] border border-[#ead8c3] bg-[#fff7ee] p-4 shadow-sm">
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <div className="h-12 w-12 rounded-xl bg-[#dfc5ac]" />
-                  <div className="min-w-0">
-                    <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[#9f6840]">Fresh Batch Daily</p>
-                    <h1 className="truncate text-base font-black text-[#2d1c16]">{restaurant?.name || 'Bakery House'}</h1>
+            <div className="relative overflow-hidden rounded-[34px] bg-[#f8f0e5] shadow-sm">
+              <div className="relative h-56 sm:h-72 overflow-hidden rounded-[34px] bg-gradient-to-br from-[#d89a63] via-[#b06d3c] to-[#7c4a2a]">
+                {/* <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#f2eadf]/20 to-[#f2eadf]/90" /> */}
+              </div>
+
+              <div className="absolute inset-x-0 bottom-0 p-5">
+                <div className="max-w-2xl rounded-[28px] border border-[#efddcb]/80 bg-[#fff7ef]/92 p-4 backdrop-blur-md sm:p-5">
+                  <p className="text-[11px] font-black uppercase tracking-[0.3em] text-[#8d5b35]">Fresh Batch Daily</p>
+                  <h1 className="mt-2 text-2xl font-black leading-tight text-[#2d1c16] sm:text-3xl">
+                    {restaurant?.name || 'Bakery House'}
+                  </h1>
+                  <div className="mt-3 space-y-1.5 text-sm font-semibold text-[#5f4233]">
+                    <p className="flex items-center gap-2">
+                      <MapPin size={14} className="text-[#9c5a30]" />
+                      <span>{restaurant?.address || 'Huế'}</span>
+                    </p>
+                    <p className="flex items-center gap-2">
+                      <Phone size={14} className="text-[#9c5a30]" />
+                      <span>{restaurant?.phone || '0123456789'}</span>
+                    </p>
+                    {restaurant?.bio ? <p className="pt-1 text-[#6c4a39]">{restaurant.bio}</p> : null}
                   </div>
-                </div>
-                <div className="space-y-0.5 text-[10px] font-semibold text-[#74503b]">
-                  <p>📍 {restaurant?.address || 'Huế'}</p>
-                  <p>☎️ 0123456789</p>
                 </div>
               </div>
             </div>
@@ -723,17 +748,24 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
 
           <div className="px-3 pb-4 pt-4 space-y-4">
             <div className="border border-[#c4cf9f] bg-[#f8faee] p-3 shadow-sm">
-              <div className="flex items-start gap-3">
+              <div className="flex flex-col items-start gap-3">
                 <div className="h-14 w-14 border-2 border-[#90a353] bg-[#d6dfae]" />
-                <div className="min-w-0 flex-1 space-y-1">
+                <div className="min-w-0 flex-1 space-y-1 w-full">
                   <p className="text-[10px] font-black uppercase tracking-[0.15em] text-[#7a8b40]">Organic Daily Picks</p>
                   <h1 className="truncate text-lg font-black text-[#1f2b14]">{restaurant?.name || 'Coffee Shop'}</h1>
                   <div className="space-y-0.5 text-[11px] font-semibold text-[#53622d]">
                     <p>📍 {restaurant?.address || 'Huế'}</p>
                     <p>☎️ 0123456789</p>
                   </div>
+                  <p className="text-[11px] font-semibold text-[#53622d]">
+                    Mô tả về quán cà phê của bạn
+                  </p>
                 </div>
-                <span className="border border-[#d4ddba] bg-white px-2 py-1 text-[9px] font-black uppercase tracking-[0.08em] text-[#5f712e]">Fresh</span>
+
+                <div className="flex w-full h-fit items-center gap-2 border border-[#d4ddba] bg-white px-3 py-2 text-[11px] font-black uppercase tracking-[0.12em] text-[#5f712e]">
+                  <span className="h-2 w-2 bg-[#7d9440]" />
+                  Fresh Today
+                </div>
               </div>
             </div>
 
@@ -835,22 +867,25 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
           {/* Store Header */}
           <div className="rounded-[24px] bg-gradient-to-br from-white via-white to-emerald-50/30 p-5 shadow-lg border border-emerald-100/50 overflow-hidden relative">
             <div className="absolute inset-0 pointer-events-none"><div className="absolute -top-28 -right-28 w-56 h-56 bg-emerald-100 rounded-full blur-3xl opacity-20" /></div>
-            <div className="relative flex gap-3 items-center">
-              <div className="relative flex-shrink-0">
+            <div className="relative flex flex-col gap-3">
+              <div className="relative flex-shrink-0 mb-3">
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-emerald-200 to-emerald-100 blur-lg opacity-70" />
                 <div className="relative h-16 w-16 rounded-2xl overflow-hidden border-2 border-emerald-300 bg-white shadow-md">
                   <div className="flex h-full w-full items-center justify-center text-lg font-black text-emerald-600">C</div>
                 </div>
               </div>
-              <div className="space-y-1 min-w-0">
+              <div className="space-y-1 min-w-0 w-full">
                 <div>
                   <p className="text-xs uppercase tracking-[0.08em] text-emerald-600 font-bold">✨ Welcome to</p>
                   <h1 className="text-lg font-black text-gray-900">{restaurant?.name || 'Coffee Shop'}</h1>
                 </div>
-                <div className="text-xs text-gray-700 font-semibold space-y-0.5">
+                <div className="flex gap-3 items-center text-xs text-gray-700 font-semibold space-y-0.5">
                   <div className="flex items-center gap-1.5"><span>📍</span>{restaurant?.address || 'Huế'}</div>
                   <div className="flex items-center gap-1.5"><span>☎️</span>0123456789</div>
                 </div>
+                <p className="text-sm text-gray-600 text-[12px]">
+                  Mô tả chi tiết về cửa hàng của bạn
+                </p>
               </div>
             </div>
           </div>
@@ -1063,7 +1098,7 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                 <div className="pointer-events-none absolute left-1/2 top-0 z-20 h-5 w-36 -translate-x-1/2 rounded-b-2xl bg-slate-900" />
 
                 <div className="overflow-hidden rounded-[30px] border border-slate-200 text-sm" style={previewRootStyle}>
-                  <div className="no-scrollbar h-[clamp(460px,64vh,620px)] overflow-x-hidden overflow-y-auto overscroll-contain [&_button]:whitespace-nowrap [&_img]:block [&_img]:h-full [&_img]:w-full [&_img]:max-w-full [&_img]:object-cover">
+                  <div className="no-scrollbar h-[clamp(520px,72vh,760px)] overflow-x-hidden overflow-y-auto overscroll-contain [&_button]:whitespace-nowrap [&_img]:block [&_img]:h-full [&_img]:w-full [&_img]:max-w-full [&_img]:object-cover">
                     <div className="min-h-full">{renderPreviewLayout()}</div>
                   </div>
                 </div>

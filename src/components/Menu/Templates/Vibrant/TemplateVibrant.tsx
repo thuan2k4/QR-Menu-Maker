@@ -130,7 +130,7 @@ export default function TemplateVibrant() {
           <div className="relative">
             <div
               ref={scrollContainer}
-              className="flex gap-4 overflow-x-auto pb-3 scroll-smooth"
+              className="flex gap-4 overflow-x-auto pb-3 scroll-smooth flex-nowrap"
               style={{ scrollBehavior: 'smooth' }}
             >
               {categories.map((cat, idx) => (
@@ -225,7 +225,7 @@ export default function TemplateVibrant() {
                     <img
                       src={selectedProduct.imageUrl}
                       alt={selectedProduct.name}
-                      className="h-full w-full object-cover"
+                      className="h-full w-full object-contain object-center"
                       referrerPolicy="no-referrer"
                     />
                   ) : (

@@ -96,7 +96,7 @@ export default function ProductFluidModal({ product, onClose }: ProductFluidModa
             <motion.img
               src={product.imageUrl}
               alt={product.name}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover object-center"
               referrerPolicy="no-referrer"
               initial={{ scale: 0.95 }}
               animate={{ scale: 1 }}
@@ -104,19 +104,6 @@ export default function ProductFluidModal({ product, onClose }: ProductFluidModa
             />
           )}
 
-          {/* Top Info Badge */}
-          <motion.div
-            className="absolute top-6 left-6 px-4 py-2 rounded-full font-bold text-sm backdrop-blur-md border border-black/10"
-            style={{
-              backgroundColor: 'rgba(248, 247, 245, 0.95)',
-              color: '#6B6B6B'
-            }}
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            ◆ {product.category || 'Món trong menu'}
-          </motion.div>
         </motion.div>
 
         {/* Content Section */}
