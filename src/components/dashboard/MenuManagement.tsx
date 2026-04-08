@@ -110,7 +110,7 @@ function DraggableProductItem({ prod, currency, getProductDisplayPrice, onEdit, 
         >
           <GripVertical size={20} />
         </div>
-        
+
         {/* Image Container */}
         <div className="w-full sm:w-28 h-40 sm:h-24 rounded-xl bg-gray-50 overflow-hidden shrink-0 relative border border-gray-100/50">
           {/* Drag Handle (Mobile overlay) */}
@@ -121,7 +121,7 @@ function DraggableProductItem({ prod, currency, getProductDisplayPrice, onEdit, 
           >
             <GripVertical size={16} />
           </div>
-          
+
           {prod.imageUrl ? (
             <img src={prod.imageUrl} alt={prod.name} className="w-full h-full object-cover select-none pointer-events-none" referrerPolicy="no-referrer" />
           ) : (
@@ -132,18 +132,19 @@ function DraggableProductItem({ prod, currency, getProductDisplayPrice, onEdit, 
         </div>
 
         {/* Content */}
-        <div className="flex-1 min-w-0 py-1 flex flex-col justify-center">
+        <div className="flex-1 min-w-0 py-1 flex flex-col justify-center gap-2">
           <div className="flex flex-wrap items-center gap-2 mb-1.5">
             <h4 className="font-bold text-gray-900 truncate text-base sm:text-lg max-w-full leading-tight">{prod.name}</h4>
             <span className="text-orange-600 font-bold whitespace-nowrap bg-orange-50 px-2 py-0.5 rounded-md text-xs sm:text-sm shadow-sm border border-orange-100">{getProductDisplayPrice(prod)}</span>
           </div>
-          <p className="text-xs sm:text-sm text-gray-500 line-clamp-2 leading-relaxed">{prod.shortDescription || prod.longDescription || prod.description || 'Chưa có mô tả'}</p>
+          <p className="text-xs sm:text-sm font-italic text-gray-500 line-clamp-2 leading-relaxed">{prod.shortDescription || ''}</p>
+          <p className="text-lg sm:text-sm text-black-900 font-bold line-clamp-2 leading-relaxed">{prod.longDescription || prod.description || ''}</p>
           {prod.hashtags && prod.hashtags.length > 0 && (
-             <div className="flex flex-wrap gap-1 mt-2">
-               {prod.hashtags.slice(0, 4).map((tag) => (
-                 <span key={tag} className="text-[10px] sm:text-xs px-2 py-0.5 bg-gray-50 text-gray-500 rounded-full border border-gray-100 shadow-sm">{tag}</span>
-               ))}
-             </div>
+            <div className="flex flex-wrap gap-1 mt-2">
+              {prod.hashtags.slice(0, 4).map((tag) => (
+                <span key={tag} className="text-[10px] sm:text-xs px-2 py-0.5 bg-gray-50 text-gray-500 rounded-full border border-gray-100 shadow-sm">{tag}</span>
+              ))}
+            </div>
           )}
         </div>
 
