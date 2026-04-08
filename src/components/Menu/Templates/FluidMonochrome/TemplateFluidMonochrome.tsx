@@ -3,8 +3,10 @@ import { useMenuContext } from '../../MenuProvider';
 import ProductFluidCard from './ProductFluidCard';
 import ProductFluidModal from './ProductFluidModal';
 import PrivatePreviewInlineNotice from '../../PrivatePreviewInlineNotice';
+import { useTranslation } from '../../../../i18n';
 
 export default function TemplateFluidMonochrome() {
+  const { t } = useTranslation();
   const {
     filteredProducts,
     categories,
@@ -114,7 +116,7 @@ export default function TemplateFluidMonochrome() {
                       className="text-xs font-black uppercase tracking-[0.15em]"
                       style={{ color: '#6B6B6B' }}
                     >
-                      ✧ Xin chào
+                      ✧ {t('menuUi.greeting')}
                     </p>
                     <h1 className="text-4xl font-black leading-tight mt-2" style={{ color: '#1A1A1A' }}>
                       {store?.name || 'Menu'}
@@ -166,10 +168,10 @@ export default function TemplateFluidMonochrome() {
               className="text-xs font-black uppercase tracking-[0.15em]"
               style={{ color: '#6B6B6B' }}
             >
-              ◆ Danh mục
+              ◆ {t('menuUi.categoriesLabel')}
             </p>
             <h2 className="text-3xl font-black mt-2" style={{ color: '#1A1A1A' }}>
-              Hôm nay của bạn thế nào?
+              {t('menuUi.cravingPrompt')}
             </h2>
           </div>
 
@@ -222,13 +224,13 @@ export default function TemplateFluidMonochrome() {
               animate={{ opacity: 1, scale: 1 }}
             >
               <p className="font-black text-lg" style={{ color: '#1A1A1A' }}>
-                Khong co san pham trong danh muc nay
+                {t('menuUi.noProductsTitle')}
               </p>
               <p
                 className="mt-2 text-sm"
                 style={{ color: '#6B6B6B' }}
               >
-                Hay chon danh muc khac de xem menu
+                {t('menuUi.noProductsDescription')}
               </p>
             </motion.div>
           )}

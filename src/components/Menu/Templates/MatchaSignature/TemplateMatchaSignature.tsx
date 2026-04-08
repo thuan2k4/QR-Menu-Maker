@@ -3,6 +3,7 @@ import { ChevronRight, MapPin, Phone, Sparkles, Star, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useMenuContext } from '../../MenuProvider';
 import PrivatePreviewInlineNotice from '../../PrivatePreviewInlineNotice';
+import { useTranslation } from '../../../../i18n';
 
 type ProductViewMode = 'showcase' | 'compact';
 
@@ -21,6 +22,7 @@ function parseNumber(value: unknown): number {
 }
 
 export default function TemplateMatchaSignature() {
+  const { t } = useTranslation();
   const {
     filteredProducts,
     categories,
@@ -153,8 +155,8 @@ export default function TemplateMatchaSignature() {
         >
           <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#a66139]">Danh Mục</p>
-              <h2 className="mt-2 text-3xl font-black leading-tight text-[#2d2016] sm:text-[2rem]">Chọn sản phẩm bạn muốn thử</h2>
+              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#a66139]">{t('menuUi.categoriesLabel')}</p>
+              <h2 className="mt-2 text-3xl font-black leading-tight text-[#2d2016] sm:text-[2rem]">{t('menuUi.chooseProductPrompt')}</h2>
             </div>
 
 
@@ -243,7 +245,7 @@ export default function TemplateMatchaSignature() {
                           onClick={() => selectProduct(product)}
                           className="inline-flex items-center gap-1.5 rounded-full border border-[#a15f38] bg-[#a15f38] px-4 py-2 text-xs font-black uppercase tracking-[0.08em] text-white transition hover:bg-[#8f5130]"
                         >
-                          Xem chi tiết
+                          {t('menuUi.viewDetails')}
                           <ChevronRight size={14} />
                         </button>
                       </div>
@@ -254,8 +256,8 @@ export default function TemplateMatchaSignature() {
             </div>
           ) : (
             <div className="rounded-[24px] border border-dashed border-[#cab79f] bg-[#fff8ee] p-10 text-center">
-              <p className="text-lg font-black text-[#2d2016]">Danh mục này chưa có sản phẩm</p>
-              <p className="mt-2 text-sm font-semibold text-[#6b5849]">Hãy chọn danh mục khác để xem thêm món mới.</p>
+              <p className="text-lg font-black text-[#2d2016]">{t('menuUi.noProductsTitle')}</p>
+              <p className="mt-2 text-sm font-semibold text-[#6b5849]">{t('menuUi.noProductsDescription')}</p>
             </div>
           )}
         </motion.section>
@@ -302,7 +304,7 @@ export default function TemplateMatchaSignature() {
 
                     <div className="absolute inset-0 bg-gradient-to-t from-[#2b1e16]/74 to-transparent" />
                     <div className="absolute bottom-4 left-4 right-4">
-                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#ffd7b9]">Chi tiết sản phẩm</p>
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#ffd7b9]">{t('menuUi.productDetailTitle')}</p>
                       <h4 className="mt-1 text-3xl font-black text-white">{selectedProduct.name}</h4>
                       <p className="mt-2 text-2xl font-black text-[#ffe6d4]">{getProductDisplayPrice(selectedProduct)}</p>
                     </div>
@@ -325,7 +327,7 @@ export default function TemplateMatchaSignature() {
 
                     {detailContent.summary ? (
                       <div className="rounded-2xl border border-[#dcccb7] bg-white p-4">
-                        <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#a66139]">Mô tả</p>
+                        <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#a66139]">{t('menuUi.descriptionLabel')}</p>
                         <p className="mt-2 text-sm font-medium leading-relaxed text-[#5f4b3d]">{detailContent.summary}</p>
                       </div>
                     ) : null}
@@ -334,7 +336,7 @@ export default function TemplateMatchaSignature() {
                       <div className="rounded-2xl border border-[#e3d2bc] bg-[#fff7ec] p-4">
                         <p className="inline-flex items-center gap-1 text-[11px] font-black uppercase tracking-[0.2em] text-[#a66139]">
                           <Sparkles size={12} />
-                          Mô tả chi tiết
+                          {t('menuUi.detailedDescriptionLabel')}
                         </p>
                         <p className="mt-2 text-sm font-medium leading-relaxed text-[#5f4b3d]">{detailContent.fullDescription}</p>
                       </div>
@@ -342,7 +344,7 @@ export default function TemplateMatchaSignature() {
 
                     {selectedProduct.variants && selectedProduct.variants.length > 0 ? (
                       <div className="rounded-2xl border border-[#dcccb7] bg-white p-4">
-                        <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#a66139]">Giá variants</p>
+                        <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#a66139]">{t('menuUi.variantPricesLabel')}</p>
                         <div className="mt-3 space-y-2.5">
                           {selectedProduct.variants.map((variant, idx) => {
                             const variantPrice = parseNumber(variant.price);
@@ -356,7 +358,7 @@ export default function TemplateMatchaSignature() {
                               >
                                 <div>
                                   <p className="text-sm font-black text-[#2d2016]">{variant.name}</p>
-                                  {variant.isDefault ? <p className="text-[11px] font-medium text-[#725b4a]">Mặc định</p> : null}
+                                  {variant.isDefault ? <p className="text-[11px] font-medium text-[#725b4a]">{t('menuUi.defaultVariant')}</p> : null}
                                 </div>
                                 <div className="text-right">
                                   <p className="text-sm font-black text-[#8e5534]">{formatCurrency(variantPrice)}</p>
@@ -374,7 +376,7 @@ export default function TemplateMatchaSignature() {
                       onClick={clearSelectedProduct}
                       className="flex w-full items-center justify-center gap-2 rounded-full border border-[#a15f38] bg-[#a15f38] px-5 py-3 text-sm font-black uppercase tracking-[0.12em] text-white transition hover:bg-[#8f5130]"
                     >
-                      Đóng
+                      {t('menuUi.close')}
                     </button>
                   </div>
                 </div>

@@ -3,6 +3,7 @@ import { ChevronRight, MapPin, Phone, Sparkles, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useMenuContext } from '../../MenuProvider';
 import PrivatePreviewInlineNotice from '../../PrivatePreviewInlineNotice';
+import { useTranslation } from '../../../../i18n';
 
 type ProductDisplayMode = 'gallery' | 'compact';
 
@@ -21,6 +22,7 @@ function parseNumber(value: unknown): number {
 }
 
 export default function TemplateCoffeeAtelier() {
+  const { t } = useTranslation();
   const {
     filteredProducts,
     categories,
@@ -120,7 +122,7 @@ export default function TemplateCoffeeAtelier() {
             </div>
 
             <div className="min-w-0 space-y-2">
-              <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#b06d3c]">Fresh Batch Daily</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#b06d3c]">{t('menuUi.freshBatchDaily')}</p>
               <h2 className="line-clamp-2 text-3xl font-black leading-tight text-[#1a130d] sm:text-4xl">{store?.name || 'Coffee Shop'}</h2>
 
               {(store?.address || store?.phone) && (
@@ -146,7 +148,7 @@ export default function TemplateCoffeeAtelier() {
 
             <div className="inline-flex h-fit items-center gap-2 border-2 border-[#1f1610] bg-[#1f1610] px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-[#f8e8d6]">
               <span className="h-2 w-2 bg-[#f19b58]" />
-              Open Everyday
+              {t('menuUi.openEveryday')}
             </div>
           </div>
         </motion.section>
@@ -159,8 +161,8 @@ export default function TemplateCoffeeAtelier() {
         >
           <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#f0bc8f]">Danh Mục</p>
-              <h3 className="mt-2 text-3xl font-black text-white sm:text-[2rem]">Chọn sản phẩm bạn muốn thử</h3>
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#f0bc8f]">{t('menuUi.categoriesLabel')}</p>
+              <h3 className="mt-2 text-3xl font-black text-white sm:text-[2rem]">{t('menuUi.chooseProductPrompt')}</h3>
             </div>
 
 
@@ -247,7 +249,7 @@ export default function TemplateCoffeeAtelier() {
                           onClick={() => selectProduct(product)}
                           className="inline-flex items-center gap-1.5 border-2 border-[#271c12] bg-[#271c12] px-3 py-2 text-xs font-black uppercase tracking-[0.09em] text-[#f5e6d4] transition hover:bg-[#c7773d] hover:text-[#271c12]"
                         >
-                          Xem chi tiết
+                          {t('menuUi.viewDetails')}
                           <ChevronRight size={14} />
                         </button>
                       </div>
@@ -258,8 +260,8 @@ export default function TemplateCoffeeAtelier() {
             </div>
           ) : (
             <div className="border-2 border-dashed border-[#bda288] bg-[#f8f1e7] p-10 text-center">
-              <p className="text-lg font-black text-[#6c452c]">Danh mục này chưa có sản phẩm</p>
-              <p className="mt-2 text-sm font-semibold text-[#8a5b3c]">Hãy chuyển sang danh mục khác để tiếp tục khám phá.</p>
+              <p className="text-lg font-black text-[#6c452c]">{t('menuUi.noProductsTitle')}</p>
+              <p className="mt-2 text-sm font-semibold text-[#8a5b3c]">{t('menuUi.noProductsDescription')}</p>
             </div>
           )}
         </motion.section>
@@ -298,7 +300,7 @@ export default function TemplateCoffeeAtelier() {
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-[#19120d]/74 to-transparent" />
                     <div className="absolute bottom-4 left-4 right-4">
-                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#edcfb0]">Chi tiết sản phẩm</p>
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#edcfb0]">{t('menuUi.productDetailTitle')}</p>
                       <h4 className="mt-1 text-3xl font-black text-white">{selectedProduct.name}</h4>
                       <p className="mt-2 text-2xl font-black text-[#ffd8b2]">{getProductDisplayPrice(selectedProduct)}</p>
                     </div>
@@ -330,7 +332,7 @@ export default function TemplateCoffeeAtelier() {
 
                     {detailContent.primary ? (
                       <div className="border-2 border-[#d8c1a8] bg-white p-4">
-                        <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#8d5b3a]">Mô tả</p>
+                        <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#8d5b3a]">{t('menuUi.descriptionLabel')}</p>
                         <p className="mt-2 text-sm font-medium leading-relaxed text-[#5f4331]">{detailContent.primary}</p>
                       </div>
                     ) : null}
@@ -339,7 +341,7 @@ export default function TemplateCoffeeAtelier() {
                       <div className="border-2 border-[#d8c1a8] bg-[#fff2e3] p-4">
                         <p className="inline-flex items-center gap-1 text-[11px] font-black uppercase tracking-[0.16em] text-[#8d5b3a]">
                           <Sparkles size={12} />
-                          Mô tả chi tiết
+                          {t('menuUi.detailedDescriptionLabel')}
                         </p>
                         <p className="mt-2 text-sm font-medium leading-relaxed text-[#5f4331]">{detailContent.detailed}</p>
                       </div>
@@ -347,7 +349,7 @@ export default function TemplateCoffeeAtelier() {
 
                     {selectedProduct.variants && selectedProduct.variants.length > 0 ? (
                       <div className="border-2 border-[#d8c1a8] bg-white p-4">
-                        <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#8d5b3a]">Giá variants</p>
+                        <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#8d5b3a]">{t('menuUi.variantPricesLabel')}</p>
                         <div className="mt-3 space-y-2.5">
                           {selectedProduct.variants.map((variant, idx) => {
                             const variantPrice = parseNumber(variant.price);
@@ -361,7 +363,7 @@ export default function TemplateCoffeeAtelier() {
                               >
                                 <div>
                                   <p className="text-sm font-black text-[#2a1a10]">{variant.name}</p>
-                                  {variant.isDefault ? <p className="font-bold text-[11px] font-semibold text-[#8f694d]">Mặc định</p> : null}
+                                  {variant.isDefault ? <p className="font-bold text-[11px] font-semibold text-[#8f694d]">{t('menuUi.defaultVariant')}</p> : null}
                                 </div>
                                 <div className="text-right">
                                   <p className="text-sm font-black text-[#9e5e35]">{formatCurrency(variantPrice)}</p>
@@ -379,7 +381,7 @@ export default function TemplateCoffeeAtelier() {
                       onClick={clearSelectedProduct}
                       className="w-full border-2 border-[#241910] bg-[#241910] px-5 py-3 text-sm font-black uppercase tracking-[0.12em] text-[#f3e2d0] transition hover:bg-[#c7773d] hover:text-[#241910]"
                     >
-                      Đóng
+                      {t('menuUi.close')}
                     </button>
                   </div>
                 </div>

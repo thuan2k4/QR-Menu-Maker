@@ -1,12 +1,14 @@
 import { Smartphone } from 'lucide-react';
 import { Product } from '../../../../types';
 import { useMenuContext } from '../../MenuProvider';
+import { useTranslation } from '../../../../i18n';
 
 interface ProductCardProps {
   product: Product;
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
+  const { t } = useTranslation();
   const {
     primaryColor,
     borderRadius,
@@ -32,7 +34,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       onClick={() => selectProduct(product)}
       className={`w-full overflow-hidden bg-white p-4 transition-all text-left focus-visible:ring-2 focus-visible:ring-orange-300 ${shapeClass} ${isSplitLayout ? 'flex flex-col gap-3' : 'flex items-center gap-4'} cursor-pointer active:scale-[0.98]`}
       style={cardStyle}
-      aria-label={`Xem chi tiết sản phẩm ${product.name}`}
+      aria-label={t('menuUi.viewProductDetailsAria', { productName: product.name })}
     >
       <div className={`${isSplitLayout ? 'w-full h-40 rounded-2xl' : 'w-24 h-24 rounded-xl flex-shrink-0'} bg-gray-50 overflow-hidden border border-gray-50`} style={{ borderRadius, minWidth: isSplitLayout ? undefined : '96px' }}>
         {showCardImage ? (

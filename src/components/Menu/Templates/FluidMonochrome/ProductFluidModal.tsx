@@ -2,6 +2,7 @@ import { motion } from 'motion/react';
 import { X } from 'lucide-react';
 import { useMenuContext } from '../../MenuProvider';
 import { useState } from 'react';
+import { useTranslation } from '../../../../i18n';
 
 interface ProductFluidModalProps {
   product: any;
@@ -9,6 +10,7 @@ interface ProductFluidModalProps {
 }
 
 export default function ProductFluidModal({ product, onClose }: ProductFluidModalProps) {
+  const { t } = useTranslation();
   const { getProductDetailDescription, getProductDisplayPrice, formatCurrency } = useMenuContext();
   const [selectedVariant, setSelectedVariant] = useState<string | number | null>(null);
 
@@ -58,7 +60,7 @@ export default function ProductFluidModal({ product, onClose }: ProductFluidModa
             backgroundColor: 'rgba(26, 26, 26, 0.8)',
             borderColor: '#1A1A1A'
           }}
-          aria-label="Chi tiết sản phẩm"
+          aria-label={t('menuUi.close')}
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
         >
@@ -148,7 +150,7 @@ export default function ProductFluidModal({ product, onClose }: ProductFluidModa
                 className="text-sm font-bold uppercase tracking-wider"
                 style={{ color: '#6B6B6B' }}
               >
-                Mô tả sản phẩm
+                {t('menuUi.descriptionLabel')}
               </p>
               <p
                 className="text-base font-medium leading-relaxed"
@@ -198,7 +200,7 @@ export default function ProductFluidModal({ product, onClose }: ProductFluidModa
                 className="text-sm font-bold uppercase tracking-wider"
                 style={{ color: '#6B6B6B' }}
               >
-                ◆ Biến thể và lựa chọn
+                ◆ {t('menuUi.variantOptionsLabel')}
               </p>
 
               <div className="space-y-3">
@@ -233,7 +235,7 @@ export default function ProductFluidModal({ product, onClose }: ProductFluidModa
                                   className="rounded-full bg-black/5 px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.12em]"
                                   style={{ color: '#1A1A1A' }}
                                 >
-                                  Mặc định
+                                  {t('menuUi.defaultVariant')}
                                 </span>
                               )}
                             </div>
@@ -304,7 +306,7 @@ export default function ProductFluidModal({ product, onClose }: ProductFluidModa
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
             >
-              Đóng
+              {t('menuUi.close')}
             </motion.button>
           </motion.div>
         </motion.div>

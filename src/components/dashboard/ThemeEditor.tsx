@@ -6,85 +6,86 @@ import { Store } from '../../types';
 import { getMenuTemplateById } from '../../constants/menuTemplates';
 import * as QRCode from 'qrcode.react';
 import { CheckCircle, LayoutGrid, LayoutList, MapPin, Palette, Phone, QrCode, RefreshCcw, Save, Star } from 'lucide-react';
+import { useTranslation } from '../../i18n';
 
 type TemplateOption = {
   id: string;
-  name: string;
-  description: string;
-  vibe: string;
-  bestFor: string;
+  nameKey: string;
+  descriptionKey: string;
+  vibeKey: string;
+  bestForKey: string;
 };
 
 const TEMPLATE_OPTIONS: TemplateOption[] = [
   {
     id: 'classic',
-    name: 'Classic',
-    description: 'Layout danh sách truyền thống.',
-    vibe: 'Thân thuộc',
-    bestFor: 'Menu nhiều món',
+    nameKey: 'themeEditor.template.classic.name',
+    descriptionKey: 'themeEditor.template.classic.description',
+    vibeKey: 'themeEditor.template.classic.vibe',
+    bestForKey: 'themeEditor.template.classic.bestFor',
   },
   {
     id: 'modern_grid',
-    name: 'Modern Grid',
-    description: 'Grid cards, icon categories và banner hiện đại.',
-    vibe: 'Hiện đại',
-    bestFor: 'Brand trẻ',
+    nameKey: 'themeEditor.template.modernGrid.name',
+    descriptionKey: 'themeEditor.template.modernGrid.description',
+    vibeKey: 'themeEditor.template.modernGrid.vibe',
+    bestForKey: 'themeEditor.template.modernGrid.bestFor',
   },
   {
     id: 'vibrant',
-    name: 'Vibrant',
-    description: 'Thiết kế sống động với cam sôi động.',
-    vibe: 'Năng lượng',
-    bestFor: 'Combo nổi bật',
+    nameKey: 'themeEditor.template.vibrant.name',
+    descriptionKey: 'themeEditor.template.vibrant.description',
+    vibeKey: 'themeEditor.template.vibrant.vibe',
+    bestForKey: 'themeEditor.template.vibrant.bestFor',
   },
   {
     id: 'minimal',
-    name: 'Minimal',
-    description: 'Thiết kế tối giản, sạch sẽ và chuyên nghiệp.',
-    vibe: 'Tinh gọn',
-    bestFor: 'Tập trung nội dung',
+    nameKey: 'themeEditor.template.minimal.name',
+    descriptionKey: 'themeEditor.template.minimal.description',
+    vibeKey: 'themeEditor.template.minimal.vibe',
+    bestForKey: 'themeEditor.template.minimal.bestFor',
   },
   {
     id: 'bakery',
-    name: 'Bakery',
-    description: 'Editorial ấm áp, ảnh lớn, phù hợp quán bánh và cà phê.',
-    vibe: 'Ấm áp',
-    bestFor: 'Ảnh sản phẩm',
+    nameKey: 'themeEditor.template.bakery.name',
+    descriptionKey: 'themeEditor.template.bakery.description',
+    vibeKey: 'themeEditor.template.bakery.vibe',
+    bestForKey: 'themeEditor.template.bakery.bestFor',
   },
   {
     id: 'organic_market',
-    name: 'Organic Market',
-    description: 'Phong cách panel organic góc cạnh, khác biệt rõ với Bakery.',
-    vibe: 'Mộc mạc',
-    bestFor: 'Brand organic',
+    nameKey: 'themeEditor.template.organicMarket.name',
+    descriptionKey: 'themeEditor.template.organicMarket.description',
+    vibeKey: 'themeEditor.template.organicMarket.vibe',
+    bestForKey: 'themeEditor.template.organicMarket.bestFor',
   },
   {
     id: 'coffee_atelier',
-    name: 'Coffee Atelier',
-    description: 'Hero typography, tông cà phê cao cấp và modal sản phẩm đậm chất studio.',
-    vibe: 'Studio',
-    bestFor: 'Premium coffee',
+    nameKey: 'themeEditor.template.coffeeAtelier.name',
+    descriptionKey: 'themeEditor.template.coffeeAtelier.description',
+    vibeKey: 'themeEditor.template.coffeeAtelier.vibe',
+    bestForKey: 'themeEditor.template.coffeeAtelier.bestFor',
   },
   {
     id: 'matcha_signature',
-    name: 'Signature Market',
-    description: 'Soft editorial bo tròn, nhịp trình bày thoáng và nhận diện tách biệt khỏi Coffee Atelier.',
-    vibe: 'Êm dịu',
-    bestFor: 'Menu seasonal',
+    nameKey: 'themeEditor.template.signatureMarket.name',
+    descriptionKey: 'themeEditor.template.signatureMarket.description',
+    vibeKey: 'themeEditor.template.signatureMarket.vibe',
+    bestForKey: 'themeEditor.template.signatureMarket.bestFor',
   },
   {
     id: 'botanical_sketch',
-    name: 'Botanical Sketchbook',
-    description: 'Monotone sketch với chất giấy mộc, card bo mềm và modal chi tiết đầy đủ.',
-    vibe: 'Thủ công',
-    bestFor: 'Storytelling',
+    nameKey: 'themeEditor.template.botanicalSketch.name',
+    descriptionKey: 'themeEditor.template.botanicalSketch.description',
+    vibeKey: 'themeEditor.template.botanicalSketch.vibe',
+    bestForKey: 'themeEditor.template.botanicalSketch.bestFor',
   },
   {
     id: 'fluid_monochrome',
-    name: 'Fluid Monochrome',
-    description: 'Monochrome hữu cơ, card stack mềm và modal chi tiết kiểu liquid.',
-    vibe: 'Tối giản đậm nét',
-    bestFor: 'Brand cá tính',
+    nameKey: 'themeEditor.template.fluidMonochrome.name',
+    descriptionKey: 'themeEditor.template.fluidMonochrome.description',
+    vibeKey: 'themeEditor.template.fluidMonochrome.vibe',
+    bestForKey: 'themeEditor.template.fluidMonochrome.bestFor',
   },
 ];
 
@@ -127,10 +128,10 @@ const DEFAULT_THEME_STATE: ThemeState = {
   templateId: 'classic',
 };
 
-const PREVIEW_PRODUCTS = [
-  { id: 'p1', name: 'Cơm Gà Sốt Mơ', description: 'Cơm trắng mềm, gà xé sốt mơ chua ngọt.', price: 79000 },
-  { id: 'p2', name: 'Salad Rau Củ Miễn Phí', description: 'Tươi mát, kèm sốt mè rang đặc trưng.', price: 45000 },
-  { id: 'p3', name: 'Trà Đá Thơm Lạnh', description: 'Giữ ấm dư vị mùa hè với hương trà tự nhiên.', price: 18000 },
+const PREVIEW_PRODUCT_BASE = [
+  { id: 'p1', price: 79000 },
+  { id: 'p2', price: 45000 },
+  { id: 'p3', price: 18000 },
 ];
 
 const FONT_OPTIONS: Store['fontFamily'][] = ['Inter', 'Roboto', 'Playfair Display', 'Be Vietnam Pro'];
@@ -150,6 +151,7 @@ function useThemeStore(initialState: ThemeState) {
 }
 
 export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
+  const { t } = useTranslation();
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
@@ -235,6 +237,60 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
   const isFluidMonochromePreview = theme.templateId === 'fluid_monochrome';
   const previewCategories = ['Rides', 'Food', 'Quik', 'Pay', 'Hala Taxi', 'Box'];
 
+  const previewText = {
+    cityFallback: t('themeEditor.previewCityFallback'),
+    detailedStoreDescription: t('themeEditor.previewStoreDescriptionDetailed'),
+    trendyCafe: t('themeEditor.previewTrendyCafe'),
+    coffeeShopBio: t('themeEditor.previewCoffeeShopBio'),
+    categories: t('themeEditor.previewCategoriesLabel'),
+    chooseDish: t('themeEditor.previewChooseDish'),
+    chooseProduct: t('themeEditor.previewChooseProduct'),
+    coffee: t('themeEditor.previewCoffee'),
+    matcha: t('themeEditor.previewMatcha'),
+    featured: t('themeEditor.previewFeatured'),
+    newDish: t('themeEditor.previewNewDish'),
+    detail: t('themeEditor.previewDetail')
+  };
+
+  const formatPreviewCurrency = (value: number) => (
+    new Intl.NumberFormat(
+      theme.currency === 'VND' ? 'vi-VN' : theme.currency === 'EUR' ? 'de-DE' : 'en-US',
+      {
+        style: 'currency',
+        currency: theme.currency,
+        maximumFractionDigits: theme.currency === 'VND' ? 0 : 2
+      }
+    ).format(value)
+  );
+
+  const formatPreviewRange = (min: number, max: number) => (
+    t('themeEditor.previewFromRange', {
+      min: formatPreviewCurrency(min),
+      max: formatPreviewCurrency(max)
+    })
+  );
+
+  const previewProducts = useMemo(() => [
+    {
+      id: PREVIEW_PRODUCT_BASE[0].id,
+      name: t('themeEditor.previewProduct1Name'),
+      description: t('themeEditor.previewProduct1Description'),
+      price: PREVIEW_PRODUCT_BASE[0].price
+    },
+    {
+      id: PREVIEW_PRODUCT_BASE[1].id,
+      name: t('themeEditor.previewProduct2Name'),
+      description: t('themeEditor.previewProduct2Description'),
+      price: PREVIEW_PRODUCT_BASE[1].price
+    },
+    {
+      id: PREVIEW_PRODUCT_BASE[2].id,
+      name: t('themeEditor.previewProduct3Name'),
+      description: t('themeEditor.previewProduct3Description'),
+      price: PREVIEW_PRODUCT_BASE[2].price
+    }
+  ], [t]);
+
   const renderPreviewLayout = () => {
     // Vibrant Template Preview
     if (isVibrantPreview) {
@@ -254,9 +310,9 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                   <p className="text-sm font-black text-orange-600 uppercase tracking-[0.2em]">✨ Welcome to</p>
                   <h1 className="text-lg font-black text-gray-900">{restaurant?.name || 'Coffee Shop'}</h1>
                   <div className="space-y-1 text-xs font-semibold text-gray-700">
-                    <p className="flex items-center gap-1.5"><span>📍</span>{restaurant?.address || 'Huế'}</p>
+                    <p className="flex items-center gap-1.5"><span>📍</span>{restaurant?.address || previewText.cityFallback}</p>
                     <p className="flex items-center gap-1.5"><span>☎️</span>0123456789</p>
-                    <p className="flex items-center gap-1.5">Mô tả chi tiết về cửa hàng của bạn</p>
+                    <p className="flex items-center gap-1.5">{previewText.detailedStoreDescription}</p>
 
                   </div>
                 </div>
@@ -267,7 +323,7 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
             <div className="space-y-2">
               <p className="text-xs font-bold text-orange-600 uppercase tracking-wider">📋 Our Menu</p>
               <div className="flex gap-2 flex-wrap">
-                {['Cà phê', 'Matcha'].map((cat) => (
+                {[previewText.coffee, previewText.matcha].map((cat) => (
                   <button key={cat} type="button" className="px-4 py-2 rounded-full font-bold text-sm whitespace-nowrap bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md text-xs">
                     {cat}
                   </button>
@@ -277,7 +333,7 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
 
             {/* Product Grid */}
             <div className="grid gap-3 grid-cols-2">
-              {PREVIEW_PRODUCTS.map((product) => (
+              {previewProducts.map((product) => (
                 <div key={product.id} className="rounded-2xl bg-white border-2 border-orange-200 shadow-md overflow-hidden">
                   <div className="h-20 bg-orange-50" />
                   <div className="p-3 space-y-1.5">
@@ -309,9 +365,9 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
               </div>
               <div className='flex flex-col gap-2'>
                 <h1 className="text-base font-black text-gray-900">{restaurant?.name || 'Store'}</h1>
-                <p className="text-xs text-slate-600 font-medium">Quán cf thời thượng</p>
+                <p className="text-xs text-slate-600 font-medium">{previewText.trendyCafe}</p>
                 <div className="flex text-xs text-slate-600 font-medium space-y-0.5">
-                  <p>📍 Huế</p>
+                  <p>📍 {previewText.cityFallback}</p>
                   <p className='ml-4'>☎️ 0123456789</p>
                 </div>
               </div>
@@ -321,10 +377,10 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
 
           {/* Categories */}
           <div className="px-4 py-3 border-b border-slate-200 space-y-2">
-            <p className="text-xs font-black uppercase tracking-[0.1em] text-slate-700">Danh Mục</p>
+            <p className="text-xs font-black uppercase tracking-[0.1em] text-slate-700">{previewText.categories}</p>
             <div className="flex gap-2">
-              <button className="rounded-full bg-indigo-600 text-white font-bold px-4 py-1 text-xs shadow-sm">Cà phê</button>
-              <button className="rounded-full bg-slate-200 text-slate-700 font-bold px-4 py-1 text-xs">Matcha</button>
+              <button className="rounded-full bg-indigo-600 text-white font-bold px-4 py-1 text-xs shadow-sm">{previewText.coffee}</button>
+              <button className="rounded-full bg-slate-200 text-slate-700 font-bold px-4 py-1 text-xs">{previewText.matcha}</button>
             </div>
           </div>
 
@@ -335,7 +391,7 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
               <div className="w-28 h-28 rounded-lg bg-slate-300 flex-shrink-0" />
               <div className="flex-1 min-w-0 space-y-2">
                 <h3 className="font-black text-sm text-gray-900">Coldbrew</h3>
-                <p className="text-xs text-slate-600">Cà phê Arabica được ủ lạnh trong 8h</p>
+                <p className="text-xs text-slate-600">{t('themeEditor.previewColdBrewDescription')}</p>
 
                 {/* Hashtags */}
                 <div className="flex flex-wrap gap-1">
@@ -351,7 +407,7 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                 </div>
 
                 {/* Price Range */}
-                <p className="text-sm font-black text-indigo-600">Từ 32.000đ - 45.000đ</p>
+                <p className="text-sm font-black text-indigo-600">{formatPreviewRange(32000, 45000)}</p>
               </div>
             </div>
 
@@ -360,11 +416,11 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
               <div className="w-28 h-28 rounded-lg bg-slate-300 flex-shrink-0" />
               <div className="flex-1 min-w-0 space-y-2">
                 <h3 className="font-black text-sm text-gray-900">Americano</h3>
-                <p className="text-xs text-slate-600">Khác với cà phê Việt Nam, cà phê kiểu Mỹ...</p>
+                <p className="text-xs text-slate-600">{t('themeEditor.previewAmericanoDescription')}</p>
 
                 {/* Hashtags */}
                 <div className="flex flex-wrap gap-1">
-                  <span className="text-xs text-indigo-600 font-bold">#cà phê</span>
+                  <span className="text-xs text-indigo-600 font-bold">{t('themeEditor.previewCoffeeTag')}</span>
                 </div>
 
                 {/* Variants */}
@@ -374,7 +430,7 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                 </div>
 
                 {/* Price Range */}
-                <p className="text-sm font-black text-indigo-600">Từ 25.000đ - 30.000đ</p>
+                <p className="text-sm font-black text-indigo-600">{formatPreviewRange(25000, 30000)}</p>
               </div>
             </div>
           </div>
@@ -393,26 +449,26 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                 <div className="min-w-0 space-y-2">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#81755f]">La Petite Collection</p>
                   <h1 className="truncate text-lg font-bold text-[#3f382f]">{restaurant?.name || 'Coffee Shop'}</h1>
-                  <p className="text-sm text-[#6d6457]">{restaurant?.bio || 'Quán coffee tọa lạc tại thành phố Huế.'}</p>
+                  <p className="text-sm text-[#6d6457]">{restaurant?.bio || previewText.coffeeShopBio}</p>
                 </div>
               </div>
               <div className="flex flex-wrap gap-2 text-[11px] font-semibold text-[#6d6457]">
-                <span className="inline-flex items-center gap-1 rounded-full border border-[#cbc1a8] bg-white px-2.5 py-1">📍 {restaurant?.address || 'Huế'}</span>
+                <span className="inline-flex items-center gap-1 rounded-full border border-[#cbc1a8] bg-white px-2.5 py-1">📍 {restaurant?.address || previewText.cityFallback}</span>
                 <span className="inline-flex items-center gap-1 rounded-full border border-[#cbc1a8] bg-white px-2.5 py-1">☎️ 0123456789</span>
               </div>
             </div>
 
             <div className="rounded-[28px] border border-[#d6c8a6] bg-[#f7f0df] p-4 shadow-sm">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#81755f]">Danh mục</p>
-              <h2 className="mt-2 text-lg font-bold text-[#3f382f]">Chọn món bạn muốn thử</h2>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#81755f]">{previewText.categories}</p>
+              <h2 className="mt-2 text-lg font-bold text-[#3f382f]">{previewText.chooseDish}</h2>
               <div className="mt-3 flex flex-wrap gap-2">
-                <button className="rounded-full border border-[#8f8771] bg-[#8f8771] px-3 py-1.5 text-xs font-semibold text-white">Cà phê</button>
-                <button className="rounded-full border border-[#cac1a4] bg-[#fff9ed] px-3 py-1.5 text-xs font-semibold text-[#6d6457]">Matcha</button>
+                <button className="rounded-full border border-[#8f8771] bg-[#8f8771] px-3 py-1.5 text-xs font-semibold text-white">{previewText.coffee}</button>
+                <button className="rounded-full border border-[#cac1a4] bg-[#fff9ed] px-3 py-1.5 text-xs font-semibold text-[#6d6457]">{previewText.matcha}</button>
               </div>
             </div>
 
             <div className="grid grid-cols-1 gap-3">
-              {PREVIEW_PRODUCTS.slice(0, 2).map((product, idx) => {
+              {previewProducts.slice(0, 2).map((product, idx) => {
                 const minPrice = product.price;
                 const maxPrice = product.price + (idx + 1) * 9000;
 
@@ -437,8 +493,8 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                         <span className="rounded-full border border-[#d2c8a8] bg-[#f5f0df] px-2 py-1 text-[10px] font-semibold text-[#736852]">#ice</span>
                       </div>
                       <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-                        <p className="text-base font-bold text-[#3f382f]">Từ {new Intl.NumberFormat('vi-VN').format(minPrice)} đ - {new Intl.NumberFormat('vi-VN').format(maxPrice)} đ</p>
-                        <button className="rounded-full border border-[#8f8771] bg-[#8f8771] px-3 py-1.5 text-[11px] font-semibold text-white">Chi tiết</button>
+                        <p className="text-base font-bold text-[#3f382f]">{formatPreviewRange(minPrice, maxPrice)}</p>
+                        <button className="rounded-full border border-[#8f8771] bg-[#8f8771] px-3 py-1.5 text-[11px] font-semibold text-white">{previewText.detail}</button>
                       </div>
                     </div>
                   </div>
@@ -473,25 +529,25 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                   <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#777268]">✧ Welcome</p>
                   <h1 className="truncate text-xl font-black text-[#1f1f1f]">{restaurant?.name || 'Coffee Shop'}</h1>
                   <div className="space-y-0.5 text-[11px] font-semibold text-[#5e5b55]">
-                    <p>📍 {restaurant?.address || 'Huế'}</p>
+                    <p>📍 {restaurant?.address || previewText.cityFallback}</p>
                     <p>☎️ 0123456789</p>
                   </div>
-                  <p className="text-[11px] text-[#6c6961]">{restaurant?.bio || 'Quán coffee tọa lạc tại thành phố Huế.'}</p>
+                  <p className="text-[11px] text-[#6c6961]">{restaurant?.bio || previewText.coffeeShopBio}</p>
                 </div>
               </div>
             </div>
 
             <div className="rounded-[26px] border border-[#ded9cf] bg-white p-4 shadow-sm">
-              <p className="text-[9px] font-black uppercase tracking-[0.16em] text-[#747068]">◆ Danh mục</p>
-              <h2 className="mt-1 text-xl font-black text-[#1e1e1e]">Chọn món bạn muốn thử</h2>
+              <p className="text-[9px] font-black uppercase tracking-[0.16em] text-[#747068]">◆ {previewText.categories}</p>
+              <h2 className="mt-1 text-xl font-black text-[#1e1e1e]">{previewText.chooseDish}</h2>
               <div className="mt-3 flex flex-wrap gap-2">
-                <button className="rounded-full border border-[#1f1f1f] bg-[#1f1f1f] px-3 py-1.5 text-xs font-black text-[#f8f7f5]">Cà phê</button>
-                <button className="rounded-full border border-[#c9c3b8] bg-[#f7f5f1] px-3 py-1.5 text-xs font-black text-[#5f5b54]">Matcha</button>
+                <button className="rounded-full border border-[#1f1f1f] bg-[#1f1f1f] px-3 py-1.5 text-xs font-black text-[#f8f7f5]">{previewText.coffee}</button>
+                <button className="rounded-full border border-[#c9c3b8] bg-[#f7f5f1] px-3 py-1.5 text-xs font-black text-[#5f5b54]">{previewText.matcha}</button>
               </div>
             </div>
 
             <div className="grid grid-cols-1 gap-3">
-              {PREVIEW_PRODUCTS.slice(0, 2).map((product, idx) => {
+              {previewProducts.slice(0, 2).map((product, idx) => {
                 const minPrice = product.price;
                 const maxPrice = product.price + (idx + 1) * 9000;
 
@@ -503,8 +559,8 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                         <h4 className="truncate text-base font-black text-[#1f1f1f]">{product.name}</h4>
                         <p className="line-clamp-2 text-[11px] font-medium text-[#605d56]">{product.description}</p>
                         <div className="mt-3 flex items-center justify-between gap-1">
-                          <p className="text-[11px] font-black text-[#1f1f1f]">Từ {new Intl.NumberFormat('vi-VN').format(minPrice)}đ - {new Intl.NumberFormat('vi-VN').format(maxPrice)}đ</p>
-                          <button className="rounded-full border border-[#1f1f1f] bg-[#1f1f1f] p-1 text-[5px] text-[#f8f7f5]">Chi tiết</button>
+                          <p className="text-[10px] font-black text-[#1f1f1f]">{formatPreviewRange(minPrice, maxPrice)}</p>
+                          <button className="rounded-full border border-[#1f1f1f] bg-[#1f1f1f] p-1 text-[5px] text-[#f8f7f5]">{previewText.detail}</button>
                         </div>
                         <div className="flex flex-wrap gap-2">
                           <span className="rounded-full bg-[#efebe4] px-2 py-0.5 text-[9px] font-black text-[#666259]">#coffee</span>
@@ -546,12 +602,12 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                   <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#a66139]">Fresh Batch Daily</p>
                   <h1 className="truncate text-lg font-black text-[#2d2016]">{restaurant?.name || 'Coffee Shop'}</h1>
                   <div className="flex flex-wrap gap-1 text-[11px] font-semibold text-[#5d4a3b]">
-                    <p className="rounded-full bg-[#f4ebdc] px-2 py-0.5">{restaurant?.address || 'Huế'}</p>
+                    <p className="rounded-full bg-[#f4ebdc] px-2 py-0.5">{restaurant?.address || previewText.cityFallback}</p>
                     <p className="rounded-full bg-[#f4ebdc] px-2 py-0.5"> 0123456789</p>
                   </div>
-                  <p className="text-[11px] text-[#615040]">{restaurant?.bio || 'Quán coffee tọa lạc tại thành phố Huế.'}</p>
+                  <p className="text-[11px] text-[#615040]">{restaurant?.bio || previewText.coffeeShopBio}</p>
                   <p className="flex w-full items-center gap-1 rounded-full bg-[#f4ebdc] px-2 py-0.5">
-                    <Star size={12} className="text-[#c17349]" /> Cà phê
+                    <Star size={12} className="text-[#c17349]" /> {previewText.coffee}
                   </p>
                 </div>
               </div>
@@ -562,19 +618,19 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
             <div className="rounded-[20px] border border-[#d8c7b0] bg-[#fff8ee] p-3 shadow-[0_10px_20px_-14px_rgba(78,49,29,0.32)]">
               <div className="space-y-3">
                 <div>
-                  <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#a66139]">Danh Mục</p>
-                  <h2 className="mt-1 text-base font-black text-[#2d2016]">Chọn sản phẩm bạn muốn thử</h2>
+                  <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#a66139]">{previewText.categories}</p>
+                  <h2 className="mt-1 text-base font-black text-[#2d2016]">{previewText.chooseProduct}</h2>
                 </div>
 
                 <div className="flex flex-wrap gap-2">
-                  <button className="rounded-full border border-[#a15f38] bg-[#a15f38] px-3 py-1.5 text-xs font-black text-white">Nổi bật</button>
-                  <button className="rounded-full border border-[#d6c4ac] bg-[#fffdf9] px-3 py-1.5 text-xs font-black text-[#5d4838]">Món mới</button>
+                  <button className="rounded-full border border-[#a15f38] bg-[#a15f38] px-3 py-1.5 text-xs font-black text-white">{previewText.featured}</button>
+                  <button className="rounded-full border border-[#d6c4ac] bg-[#fffdf9] px-3 py-1.5 text-xs font-black text-[#5d4838]">{previewText.newDish}</button>
                 </div>
               </div>
             </div>
 
             <div className="grid grid-cols-1 gap-3">
-              {PREVIEW_PRODUCTS.slice(0, 2).map((product, idx) => {
+              {previewProducts.slice(0, 2).map((product, idx) => {
                 const minPrice = product.price;
                 const maxPrice = product.price + (idx + 1) * 9000;
 
@@ -591,9 +647,9 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                       </div>
                       <div className="flex items-center justify-between gap-2 pt-1">
                         <p className="text-sm font-black text-[#9a5936]">
-                          Từ {new Intl.NumberFormat('vi-VN').format(minPrice)}đ - {new Intl.NumberFormat('vi-VN').format(maxPrice)}đ
+                          {formatPreviewRange(minPrice, maxPrice)}
                         </p>
-                        <button className="rounded-full border border-[#a15f38] bg-[#a15f38] px-2 py-1 text-[9px] font-black uppercase text-white">Chi tiết</button>
+                        <button className="rounded-full border border-[#a15f38] bg-[#a15f38] px-2 py-1 text-[9px] font-black uppercase text-white">{previewText.detail}</button>
                       </div>
                     </div>
                   </div>
@@ -629,11 +685,11 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                   <p className="text-[9px] font-black uppercase tracking-[0.13em] text-[#9c6540]">Fresh Batch Daily</p>
                   <h1 className="truncate text-lg font-black text-[#1f150d]">{restaurant?.name || 'Coffee Shop'}</h1>
                   <div className="space-y-0.5 text-[11px] font-semibold text-[#5f3f2b]">
-                    <p>📍 {restaurant?.address || 'Huế'}</p>
+                    <p>📍 {restaurant?.address || previewText.cityFallback}</p>
                     <p>☎️ 0123456789</p>
                   </div>
                   <p className="text-[11px] font-semibold text-[#5f3f2b]">
-                    Mô tả về quán cà phê của bạn
+                    {previewText.coffeeShopBio}
                   </p>
                   <div className="flex flex-1 h-fit items-center gap-2 border-2 border-[#1f1610] bg-[#1f1610] px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-[#f8e8d6]">
                     <span className="h-2 w-2 bg-[#f19b58]" />
@@ -646,19 +702,19 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
             <div className="border-2 border-[#21180f] bg-[#1d1711] p-3 shadow-[6px_6px_0_0_rgba(31,21,13,0.2)]">
               <div className="space-y-3">
                 <div>
-                  <p className="text-[9px] font-black uppercase tracking-[0.13em] text-[#f0bc8f]">Danh Mục</p>
-                  <h2 className="mt-1 text-base font-black text-white">Chọn sản phẩm bạn muốn thử</h2>
+                  <p className="text-[9px] font-black uppercase tracking-[0.13em] text-[#f0bc8f]">{previewText.categories}</p>
+                  <h2 className="mt-1 text-base font-black text-white">{previewText.chooseProduct}</h2>
                 </div>
 
                 <div className="flex flex-wrap gap-2">
-                  <button className="border border-[#c7773d] bg-[#c7773d] px-3 py-1.5 text-xs font-black text-[#1f130b]">Cà phê</button>
-                  <button className="border border-[#58473a] bg-[#241b14] px-3 py-1.5 text-xs font-black text-[#f8e9da]">Matcha</button>
+                  <button className="border border-[#c7773d] bg-[#c7773d] px-3 py-1.5 text-xs font-black text-[#1f130b]">{previewText.coffee}</button>
+                  <button className="border border-[#58473a] bg-[#241b14] px-3 py-1.5 text-xs font-black text-[#f8e9da]">{previewText.matcha}</button>
                 </div>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-2.5">
-              {PREVIEW_PRODUCTS.slice(0, 2).map((product, idx) => {
+              {previewProducts.slice(0, 2).map((product, idx) => {
                 const minPrice = product.price;
                 const maxPrice = product.price + (idx + 1) * 9000;
 
@@ -676,8 +732,8 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                         <span className="border border-[#e2d0bc] bg-[#f5ebdd] px-2 py-0.5 text-[9px] font-black text-[#825233]">#coldbrew</span>
                       </div>
                       <div className="flex flex-col items-start justify-between gap-2 pt-1">
-                        <p className="text-[11px] font-black text-[#9e5e35]">Từ {new Intl.NumberFormat('vi-VN').format(minPrice)}đ - {new Intl.NumberFormat('vi-VN').format(maxPrice)}đ</p>
-                        <button className="border border-[#271c12] bg-[#271c12] px-2 py-1 text-[9px] font-black text-[#f5e6d4]">Chi tiết</button>
+                        <p className="text-[11px] font-black text-[#9e5e35]">{formatPreviewRange(minPrice, maxPrice)}</p>
+                        <button className="border border-[#271c12] bg-[#271c12] px-2 py-1 text-[9px] font-black text-[#f5e6d4]">{previewText.detail}</button>
                       </div>
                     </div>
                   </div>
@@ -695,11 +751,11 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
         <div className="h-full w-full bg-[#f2eadf] text-[#2d1c16]">
           <div className="px-3 pb-3 pt-4">
             <div className="relative overflow-hidden rounded-[34px] bg-[#f8f0e5] shadow-sm">
-              <div className="relative h-56 sm:h-72 overflow-hidden rounded-[34px] bg-gradient-to-br from-[#d89a63] via-[#b06d3c] to-[#7c4a2a]">
+              <div className="relative h-58 w-auto overflow-hidden rounded-[34px] bg-gradient-to-br from-[#d89a63] via-[#b06d3c] to-[#7c4a2a]">
                 {/* <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#f2eadf]/20 to-[#f2eadf]/90" /> */}
               </div>
 
-              <div className="absolute inset-x-0 bottom-0 p-5">
+              <div className="absolute inset-x-0 bottom-3 p-3">
                 <div className="max-w-2xl rounded-[28px] border border-[#efddcb]/80 bg-[#fff7ef]/92 p-4 backdrop-blur-md sm:p-5">
                   <p className="text-[11px] font-black uppercase tracking-[0.3em] text-[#8d5b35]">Fresh Batch Daily</p>
                   <h1 className="mt-2 text-2xl font-black leading-tight text-[#2d1c16] sm:text-3xl">
@@ -708,7 +764,7 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                   <div className="mt-3 space-y-1.5 text-sm font-semibold text-[#5f4233]">
                     <p className="flex items-center gap-2">
                       <MapPin size={14} className="text-[#9c5a30]" />
-                      <span>{restaurant?.address || 'Huế'}</span>
+                      <span>{restaurant?.address || previewText.cityFallback}</span>
                     </p>
                     <p className="flex items-center gap-2">
                       <Phone size={14} className="text-[#9c5a30]" />
@@ -722,18 +778,18 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
 
             <div className="mt-4 rounded-[28px] border border-[#e6d2bf] bg-[#fff6eb] p-4 shadow-sm">
               <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.12em] text-[#9c5a30]">Danh Mục</p>
-                <h2 className="mt-2 text-base font-black text-[#2d1c16]">Chọn món bạn muốn thử</h2>
+                <p className="text-[10px] font-black uppercase tracking-[0.12em] text-[#9c5a30]">{previewText.categories}</p>
+                <h2 className="mt-2 text-base font-black text-[#2d1c16]">{previewText.chooseDish}</h2>
               </div>
 
               <div className="mt-4 flex flex-wrap gap-2">
-                <button className="rounded-full bg-[#8f4f2d] px-4 py-2 text-xs font-black text-white">Cà phê</button>
-                <button className="rounded-full border border-[#dcc5af] bg-white px-4 py-2 text-xs font-black text-[#744a33]">Matcha</button>
+                <button className="rounded-full bg-[#8f4f2d] px-4 py-2 text-xs font-black text-white">{previewText.coffee}</button>
+                <button className="rounded-full border border-[#dcc5af] bg-white px-4 py-2 text-xs font-black text-[#744a33]">{previewText.matcha}</button>
               </div>
             </div>
 
             <div className="mt-4 space-y-3">
-              {[PREVIEW_PRODUCTS[0], PREVIEW_PRODUCTS[1]].map((product) => (
+              {[previewProducts[0], previewProducts[1]].map((product) => (
                 <div key={product.id} className="rounded-[28px] border border-[#e2d0bc] bg-[#fff9f2] p-4 shadow-sm">
                   <div className="flex items-center gap-4">
                     <div className="h-20 w-20 flex-shrink-0 rounded-[22px] bg-[#dcc4ad]" />
@@ -745,13 +801,13 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                         <span className="rounded-full bg-[#f0dfce] px-2 py-1 text-[10px] font-bold text-[#7f5135]">#hot</span>
                       </div>
                       <div className="mt-3 flex items-center justify-between gap-3">
-                        <p className="text-sm font-black text-[#8f4f2d]">
+                        <p className="text-[12px] font-black text-[#8f4f2d]">
                           {new Intl.NumberFormat(
                             theme.currency === 'VND' ? 'vi-VN' : theme.currency === 'EUR' ? 'de-DE' : 'en-US',
                             { style: 'currency', currency: theme.currency, maximumFractionDigits: theme.currency === 'VND' ? 0 : 2 },
                           ).format(product.price)}
                         </p>
-                        <button className="rounded-full border border-[#d4b69d] bg-white px-3 py-1 text-[10px] font-black text-[#774a31]">Chi tiết</button>
+                        <button className="rounded-full border border-[#d4b69d] bg-white px-3 py-1 text-[10px] font-black text-[#774a31]">{previewText.detail}</button>
                       </div>
                     </div>
                   </div>
@@ -777,11 +833,11 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                   <p className="text-[10px] font-black uppercase tracking-[0.15em] text-[#7a8b40]">Organic Daily Picks</p>
                   <h1 className="truncate text-lg font-black text-[#1f2b14]">{restaurant?.name || 'Coffee Shop'}</h1>
                   <div className="space-y-0.5 text-[11px] font-semibold text-[#53622d]">
-                    <p>📍 {restaurant?.address || 'Huế'}</p>
+                    <p>📍 {restaurant?.address || previewText.cityFallback}</p>
                     <p>☎️ 0123456789</p>
                   </div>
                   <p className="text-[11px] font-semibold text-[#53622d]">
-                    Mô tả về quán cà phê của bạn
+                    {previewText.coffeeShopBio}
                   </p>
                 </div>
 
@@ -795,19 +851,19 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
             <div className="border border-[#c4cf9f] bg-white p-3 shadow-sm">
               <div className="space-y-3">
                 <div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.13em] text-[#738739]">Danh Mục</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.13em] text-[#738739]">{previewText.categories}</p>
                   <h2 className="mt-1 text-base font-black text-[#1f2b14]">Chọn hương vị bạn muốn thử</h2>
                 </div>
 
                 <div className="flex flex-wrap gap-2">
-                  <button className="border-2 border-[#6a7f34] bg-[#6a7f34] px-3 py-1.5 text-xs font-black text-white">Cà phê</button>
-                  <button className="border border-[#ccd6a9] bg-[#f9fbed] px-3 py-1.5 text-xs font-black text-[#53622d]">Matcha</button>
+                  <button className="border-2 border-[#6a7f34] bg-[#6a7f34] px-3 py-1.5 text-xs font-black text-white">{previewText.coffee}</button>
+                  <button className="border border-[#ccd6a9] bg-[#f9fbed] px-3 py-1.5 text-xs font-black text-[#53622d]">{previewText.matcha}</button>
                 </div>
               </div>
             </div>
 
             <div className="grid grid-cols-1 gap-3">
-              {PREVIEW_PRODUCTS.slice(0, 2).map((product, idx) => {
+              {previewProducts.slice(0, 2).map((product, idx) => {
                 const minPrice = product.price;
                 const maxPrice = product.price + (idx + 1) * 9000;
 
@@ -825,9 +881,9 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                       </div>
                       <div className="flex items-center justify-between gap-2 pt-1">
                         <p className="text-sm font-black text-[#6a7f34]">
-                          Từ {new Intl.NumberFormat('vi-VN').format(minPrice)}đ - {new Intl.NumberFormat('vi-VN').format(maxPrice)}đ
+                          {formatPreviewRange(minPrice, maxPrice)}
                         </p>
-                        <button className="border-b-2 border-[#6a7f34] pb-0.5 text-[10px] font-black uppercase text-[#4e5f26]">Chi tiết</button>
+                        <button className="border-b-2 border-[#6a7f34] pb-0.5 text-[10px] font-black uppercase text-[#4e5f26]">{previewText.detail}</button>
                       </div>
                     </div>
                   </div>
@@ -846,16 +902,16 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
           <div className="mb-4 rounded-[28px] bg-white p-4 shadow-sm" style={{ borderColor: `${theme.primaryColor}16`, borderWidth: 1, borderStyle: 'solid' }}>
             <p className="text-xs uppercase tracking-[0.24em] text-gray-500">MenuQRGenerate</p>
             <h1 className="mt-3 text-xl font-bold" style={{ color: 'var(--theme-text)' }}>{restaurant?.name || 'Coffee Shop'}</h1>
-            <p className="mt-2 text-sm text-gray-500">{restaurant?.bio || 'Quán cf thời thượng'}</p>
+            <p className="mt-2 text-sm text-gray-500">{restaurant?.bio || previewText.trendyCafe}</p>
           </div>
 
           <div className="flex flex-wrap gap-2 mb-4">
-            <span className="inline-flex items-center rounded-full bg-white px-3 py-2 text-xs font-semibold text-gray-700 shadow-sm">Cà phê</span>
-            <span className="inline-flex items-center rounded-full bg-white/90 px-3 py-2 text-xs font-semibold text-gray-500 shadow-sm">Matcha</span>
+            <span className="inline-flex items-center rounded-full bg-white px-3 py-2 text-xs font-semibold text-gray-700 shadow-sm">{previewText.coffee}</span>
+            <span className="inline-flex items-center rounded-full bg-white/90 px-3 py-2 text-xs font-semibold text-gray-500 shadow-sm">{previewText.matcha}</span>
           </div>
 
           <div className={productGridClass}>
-            {PREVIEW_PRODUCTS.map((product) => (
+            {previewProducts.map((product) => (
               <div
                 key={product.id}
                 className="overflow-hidden rounded-[24px] border bg-white p-4 shadow-sm transition hover:-translate-y-0.5"
@@ -903,11 +959,11 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                   <h1 className="text-lg font-black text-gray-900">{restaurant?.name || 'Coffee Shop'}</h1>
                 </div>
                 <div className="flex gap-3 items-center text-xs text-gray-700 font-semibold space-y-0.5">
-                  <div className="flex items-center gap-1.5"><span>📍</span>{restaurant?.address || 'Huế'}</div>
+                  <div className="flex items-center gap-1.5"><span>📍</span>{restaurant?.address || previewText.cityFallback}</div>
                   <div className="flex items-center gap-1.5"><span>☎️</span>0123456789</div>
                 </div>
                 <p className="text-sm text-gray-600 text-[12px]">
-                  Mô tả chi tiết về cửa hàng của bạn
+                  {previewText.detailedStoreDescription}
                 </p>
               </div>
             </div>
@@ -922,7 +978,7 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                 <h2 className="text-base font-black text-white mt-1">What are you craving?</h2>
               </div>
               <div className="flex gap-1.5 flex-wrap">
-                {['Cà phê', 'Matcha'].map((cat) => (
+                {[previewText.coffee, previewText.matcha].map((cat) => (
                   <button key={cat} type="button" className="rounded-full bg-white/20 backdrop-blur-sm text-white font-bold py-1.5 px-3 text-xs transition-all border border-white/30 hover:bg-white/30">
                     {cat}
                   </button>
@@ -933,7 +989,7 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
 
           {/* Product Grid */}
           <div className="grid gap-3 grid-cols-2">
-            {PREVIEW_PRODUCTS.map((product) => (
+            {previewProducts.map((product) => (
               <div key={product.id} className="rounded-[20px] border border-gray-200 bg-white shadow-sm overflow-hidden hover:shadow-md transition">
                 <div className="h-20 bg-gray-100" />
                 <div className="p-3 space-y-1.5">
@@ -975,10 +1031,10 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
         templateId: theme.templateId,
         updatedAt: new Date().toISOString(),
       });
-      setMessage({ type: 'success', text: 'Đã lưu tùy chỉnh giao diện thành công.' });
+      setMessage({ type: 'success', text: t('themeEditor.saveSuccess') });
     } catch (error) {
       console.error(error);
-      setMessage({ type: 'error', text: 'Không thể lưu giao diện. Vui lòng thử lại.' });
+      setMessage({ type: 'error', text: t('themeEditor.saveError') });
     } finally {
       setSaving(false);
     }
@@ -986,7 +1042,7 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
 
   const resetTheme = () => {
     updateTheme(initialThemeState);
-    setMessage({ type: 'success', text: 'Đã đặt lại giao diện về giá trị hiện tại của cửa hàng.' });
+    setMessage({ type: 'success', text: t('themeEditor.resetSuccess') });
   };
 
   const activeTemplateOption = TEMPLATE_OPTIONS.find((option) => option.id === theme.templateId) || TEMPLATE_OPTIONS[0];
@@ -998,8 +1054,8 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
         <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
           <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between md:gap-6">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">Giao diện Menu</h2>
-              <p className="text-sm text-gray-500 mt-1">Tùy chỉnh màu, font, bố cục và QR trong một màn hình.</p>
+              <h2 className="text-2xl font-bold text-gray-900">{t('themeEditor.title')}</h2>
+              <p className="text-sm text-gray-500 mt-1">{t('themeEditor.subtitle')}</p>
             </div>
             <div className="flex flex-wrap items-center gap-2 md:shrink-0">
               <button
@@ -1007,7 +1063,7 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                 onClick={resetTheme}
                 className="inline-flex items-center gap-2 whitespace-nowrap rounded-2xl border border-gray-200 bg-white px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition"
               >
-                <RefreshCcw size={16} /> Đặt lại
+                <RefreshCcw size={16} /> {t('themeEditor.reset')}
               </button>
               <button
                 type="button"
@@ -1015,7 +1071,7 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                 disabled={!restaurant || saving}
                 className="inline-flex items-center gap-2 whitespace-nowrap rounded-2xl bg-orange-500 px-4 py-2 text-sm font-bold text-white hover:bg-orange-600 transition disabled:opacity-50"
               >
-                <Save size={16} /> {saving ? 'Đang lưu...' : 'Lưu thay đổi'}
+                <Save size={16} /> {saving ? t('themeEditor.saving') : t('themeEditor.saveChanges')}
               </button>
             </div>
           </div>
@@ -1029,36 +1085,36 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
           )}
         </div>
 
-        <section className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 xl:flex-1 xl:min-h-[620px]">
+        <section className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 xl:flex-1">
           <div className="flex items-center justify-between gap-3 text-gray-900">
             <div className="flex items-center gap-3">
               <Palette size={20} />
               <div>
-                <h3 className="text-lg font-semibold">Template</h3>
-                <p className="text-sm text-gray-500">Chọn layout menu hiện tại.</p>
+                <h3 className="text-lg font-semibold">{t('themeEditor.templateSectionTitle')}</h3>
+                <p className="text-sm text-gray-500">{t('themeEditor.templateSectionSubtitle')}</p>
               </div>
             </div>
-            <span className="inline-flex rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600">{TEMPLATE_OPTIONS.length} mẫu</span>
+            <span className="inline-flex rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600">{t('themeEditor.templateCount', { count: String(TEMPLATE_OPTIONS.length) })}</span>
           </div>
 
           <div className="mt-4 rounded-2xl border border-orange-100 bg-gradient-to-br from-orange-50 via-white to-amber-50 p-4">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-orange-700">Đang chọn</p>
-                <h4 className="mt-1 text-base font-bold text-gray-900">{activeTemplateOption.name}</h4>
-                <p className="mt-1 text-sm leading-relaxed text-gray-600">{activeTemplateOption.description}</p>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-orange-700">{t('themeEditor.currentlySelected')}</p>
+                <h4 className="mt-1 text-base font-bold text-gray-900">{t(activeTemplateOption.nameKey)}</h4>
+                <p className="mt-1 text-sm leading-relaxed text-gray-600">{t(activeTemplateOption.descriptionKey)}</p>
               </div>
               <span className="inline-flex h-8 shrink-0 items-center rounded-full bg-white px-3 text-xs font-bold text-orange-700">
                 {activeTemplateOrder}/{TEMPLATE_OPTIONS.length}
               </span>
             </div>
-            <div className="mt-3 flex flex-wrap gap-2 text-[11px] font-semibold">
-              <span className="inline-flex items-center rounded-full border border-orange-200 bg-white px-2.5 py-1 text-orange-700">{activeTemplateOption.vibe}</span>
-              <span className="inline-flex items-center rounded-full border border-gray-200 bg-white px-2.5 py-1 text-gray-600">{activeTemplateOption.bestFor}</span>
+            <div className="mt-3 flex flex-1 flex-wrap gap-2 text-[11px] font-semibold">
+              <span className="inline-flex items-center rounded-full border border-orange-200 bg-white px-2.5 py-1 text-orange-700">{t(activeTemplateOption.vibeKey)}</span>
+              <span className="inline-flex items-center rounded-full border border-gray-200 bg-white px-2.5 py-1 text-gray-600">{t(activeTemplateOption.bestForKey)}</span>
             </div>
           </div>
 
-          <div className="mt-4 grid grid-cols-1 gap-4 rounded-2xl bg-slate-50/70 p-3 sm:grid-cols-2 xl:max-h-[440px] xl:overflow-y-auto xl:pr-2 xl:[scrollbar-gutter:stable]">
+          <div className="mt-4 min-h-0 grid grid-cols-1 gap-4 rounded-2xl bg-slate-50/70 p-3 sm:grid-cols-2 xl:max-h-[36rem] xl:min-h-0 xl:overflow-y-auto xl:overflow-x-hidden xl:pr-2 xl:pb-2 xl:[scrollbar-gutter:stable]">
             {TEMPLATE_OPTIONS.map((option, optionIndex) => {
               const isSelected = theme.templateId === option.id;
               const optionOrder = optionIndex + 1;
@@ -1069,17 +1125,17 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                   type="button"
                   onClick={() => updateTheme(applyTemplateDefaults(option.id))}
                   aria-pressed={isSelected}
-                  className={`group relative overflow-hidden rounded-[30px] border bg-white p-5 text-left shadow-sm transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2 ${isSelected ? 'border-orange-400 bg-orange-50 shadow-md' : 'border-gray-200 hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-md'}`}
+                  className={`group relative overflow-hidden rounded-[30px] border bg-white p-4 text-left shadow-sm transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2 ${isSelected ? 'border-orange-400 bg-orange-50 shadow-md' : 'border-gray-200 hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-md'}`}
                 >
                   <div className="flex h-full flex-col gap-4">
                     <div>
-                      <div className="text-lg font-semibold text-gray-900">{option.name}</div>
-                      <p className="mt-2 text-sm leading-relaxed text-gray-500">{option.description}</p>
+                      <div className="text-lg font-semibold text-gray-900">{t(option.nameKey)}</div>
+                      <p className="mt-2 text-sm leading-relaxed text-gray-500">{t(option.descriptionKey)}</p>
                     </div>
 
                     <div className="mt-auto flex items-center justify-between gap-3 text-[11px] font-semibold text-gray-500">
                       <span className="rounded-full border border-gray-200 bg-gray-50 px-2 py-1">{optionOrder < 10 ? `0${optionOrder}` : optionOrder}</span>
-                      <span className={isSelected ? 'text-orange-700' : 'text-gray-400'}>{isSelected ? 'Đang áp dụng' : 'Chọn mẫu'}</span>
+                      <span className={isSelected ? 'text-orange-700' : 'text-gray-400'}>{isSelected ? t('themeEditor.applying') : t('themeEditor.chooseTemplate')}</span>
                     </div>
                   </div>
                 </button>
@@ -1094,22 +1150,22 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
         <div className="rounded-[36px] border border-slate-200 bg-gradient-to-b from-slate-50 to-white p-5 shadow-sm xl:p-6">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Xem trước</p>
-              <h3 className="text-xl font-bold text-gray-900">Phone mockup</h3>
-              <p className="mt-1 text-xs text-slate-500">Mô phỏng realtime theo template đang chọn</p>
+              <p className="text-xs uppercase tracking-[0.2em] text-slate-500">{t('themeEditor.preview')}</p>
+              <h3 className="text-xl font-bold text-gray-900">{t('themeEditor.phoneMockup')}</h3>
+              <p className="mt-1 text-xs text-slate-500">{t('themeEditor.previewDescription')}</p>
             </div>
-            <span className="inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">Live preview</span>
+            <span className="inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">{t('themeEditor.livePreview')}</span>
           </div>
 
           <div className="mt-4 flex flex-wrap gap-2">
             <span className="inline-flex items-center rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-xs font-semibold text-orange-700">
-              {activeTemplateOption.name}
+              {t(activeTemplateOption.nameKey)}
             </span>
             <span className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600">
-              Font: {theme.fontFamily}
+              {t('themeEditor.font')}: {theme.fontFamily}
             </span>
             <span className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600">
-              Tiền tệ: {theme.currency}
+              {t('themeEditor.currency')}: {theme.currency}
             </span>
           </div>
 

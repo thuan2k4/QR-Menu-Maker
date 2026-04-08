@@ -4,8 +4,10 @@ import Header from './Header';
 import CategoryList from './CategoryList';
 import ProductCard from './ProductCard';
 import { Smartphone, X, Info } from 'lucide-react';
+import { useTranslation } from '../../../../i18n';
 
 export default function TemplateClassic() {
+  const { t } = useTranslation();
   const {
     store,
     categories,
@@ -39,8 +41,8 @@ export default function TemplateClassic() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-gray-50">
         <Smartphone className="w-16 h-16 text-gray-300 mb-4" />
-        <h1 className="text-2xl font-bold text-gray-900">Không tìm thấy Menu</h1>
-        <p className="text-gray-500 mt-2">Vui lòng kiểm tra lại mã QR hoặc đường dẫn.</p>
+        <h1 className="text-2xl font-bold text-gray-900">{t('publicMenu.notFoundTitle')}</h1>
+        <p className="text-gray-500 mt-2">{t('publicMenu.notFoundDescription')}</p>
       </div>
     );
   }
@@ -51,7 +53,7 @@ export default function TemplateClassic() {
         <div className="w-16 h-16 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center mb-4">
           <Info size={28} />
         </div>
-        <h1 className="text-2xl font-bold text-gray-900">Menu đang trong trạng thái cập nhật, vui lòng quay lại sau.</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{t('publicMenu.privateNotice')}</h1>
       </div>
     );
   }
@@ -86,7 +88,7 @@ export default function TemplateClassic() {
               ))
             ) : (
               <div className="text-center py-20 text-gray-400">
-                <p>Chưa có món ăn nào trong danh mục này</p>
+                <p>{t('menuUi.noProductsTitle')}</p>
               </div>
             )}
           </motion.div>
@@ -135,7 +137,7 @@ export default function TemplateClassic() {
                       ) : null}
                     </div>
                     <div className="inline-flex w-full md:w-auto flex-col rounded-2xl border border-gray-100 px-4 py-3 bg-gray-50">
-                      <span className="text-[10px] uppercase tracking-wider font-bold text-gray-500">Mức giá</span>
+                      <span className="text-[10px] uppercase tracking-wider font-bold text-gray-500">{t('menuUi.priceLabel')}</span>
                       <span className={`${typography.modalPrice} font-bold break-words leading-tight mt-1`} style={{ color: primaryColor }}>
                         {getProductDisplayPrice(selectedProduct)}
                       </span>
@@ -151,14 +153,14 @@ export default function TemplateClassic() {
                   )}
                   {selectedProduct.variants && selectedProduct.variants.length > 0 && (
                     <div className="mb-6">
-                      <h4 className="text-xs uppercase tracking-widest font-bold text-gray-400 mb-3">Variants</h4>
+                      <h4 className="text-xs uppercase tracking-widest font-bold text-gray-400 mb-3">{t('menuUi.variantsLabel')}</h4>
                       <div className="space-y-2 rounded-3xl border border-gray-100 bg-gray-50 p-3">
                         {selectedProduct.variants.map((variant) => (
                           <div key={variant.id} className="flex items-center justify-between gap-4 rounded-2xl bg-white px-4 py-3 shadow-sm">
                             <div>
                               <p className="text-sm font-semibold text-gray-900">{variant.name}</p>
                               {variant.isDefault && (
-                                <p className=" font-bold text-[11px] text-gray-500 mt-1">Mặc định</p>
+                                <p className=" font-bold text-[11px] text-gray-500 mt-1">{t('menuUi.defaultVariant')}</p>
                               )}
                             </div>
                             <span className="text-sm font-semibold text-gray-900">{formatCurrency(variant.price)}</span>
@@ -168,7 +170,7 @@ export default function TemplateClassic() {
                     </div>
                   )}
                   <div className="space-y-4 mb-4">
-                    <h4 className="text-xs uppercase tracking-widest font-bold text-gray-400">Mô tả</h4>
+                    <h4 className="text-xs uppercase tracking-widest font-bold text-gray-400">{t('menuUi.descriptionLabel')}</h4>
                     <p className={`${typography.modalDescription} text-gray-600 leading-relaxed`}>{getProductDetailDescription(selectedProduct)}</p>
                   </div>
                   <button
@@ -179,7 +181,7 @@ export default function TemplateClassic() {
                       boxShadow: `0 10px 20px -5px ${primaryColor}40`,
                     }}
                   >
-                    Đóng
+                    {t('menuUi.close')}
                   </button>
                 </div>
               </div>
@@ -190,7 +192,7 @@ export default function TemplateClassic() {
 
       <div className="max-w-2xl mx-auto px-4 mt-12 text-center">
         <div className="h-px bg-gray-200 w-24 mx-auto mb-6" />
-        <p className="text-gray-400 text-xs uppercase tracking-widest font-bold">Cung cấp bởi MenuQRGenerate</p>
+        <p className="text-gray-400 text-xs uppercase tracking-widest font-bold">{t('menuUi.poweredBy')}</p>
       </div>
     </div>
   );

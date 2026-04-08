@@ -20,6 +20,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import DashboardOverview from './dashboard/DashboardOverview';
 import RestaurantSettings from './dashboard/RestaurantSettings';
 import MenuManagement from './dashboard/MenuManagement';
+import { useTranslation } from '../i18n';
+import GlobalLanguageSwitcher from './GlobalLanguageSwitcher';
 
 interface DashboardProps {
   user: User;
@@ -30,6 +32,7 @@ import StoreList from './dashboard/StoreList';
 import StoreManager from './dashboard/StoreManager';
 
 export default function Dashboard({ user, profile }: DashboardProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -56,12 +59,12 @@ export default function Dashboard({ user, profile }: DashboardProps) {
           <div className="bg-orange-500 p-1.5 rounded-lg">
             <QrCode className="text-white w-5 h-5" />
           </div>
-          <span className="font-bold tracking-tight">MenuQRGenerate</span>
+          <span className="font-bold tracking-tight">{t('landing.brand')}</span>
         </div>
 
         <nav className="flex-1 p-4 space-y-1">
-          <SidebarLink to="/dashboard" icon={<LayoutDashboard size={20} />} label="Dashboard" active={isDashboardOverview} />
-          <SidebarLink to="/dashboard/stores" icon={<MenuIcon size={20} />} label="Cửa hàng của tôi" active={isStoresPage || isStoreDetailPage} />
+          <SidebarLink to="/dashboard" icon={<LayoutDashboard size={20} />} label={t('dashboard.navDashboard')} active={isDashboardOverview} />
+          <SidebarLink to="/dashboard/stores" icon={<MenuIcon size={20} />} label={t('dashboard.navMyStores')} active={isStoresPage || isStoreDetailPage} />
         </nav>
 
         <div className="p-4 border-t border-gray-50">
@@ -71,25 +74,25 @@ export default function Dashboard({ user, profile }: DashboardProps) {
             className="flex min-h-[44px] items-center gap-3 w-full px-4 py-3 text-sm font-medium text-gray-500 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all focus-visible:ring-2 focus-visible:ring-orange-300"
           >
             <LogOut size={20} />
-            Đăng xuất
+            {t('dashboard.logout')}
           </button>
         </div>
       </aside>
 
       {/* Mobile Navigation Bar */}
       <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 flex md:hidden items-center justify-around p-2 z-50">
-        <MobileNavLink to="/dashboard" icon={<LayoutDashboard size={20} />} label="Dashboard" active={isDashboardOverview} />
-        <MobileNavLink to="/dashboard/stores" icon={<MenuIcon size={20} />} label="Cửa hàng" active={isStoresPage || isStoreDetailPage} />
+        <MobileNavLink to="/dashboard" icon={<LayoutDashboard size={20} />} label={t('dashboard.navDashboard')} active={isDashboardOverview} />
+        <MobileNavLink to="/dashboard/stores" icon={<MenuIcon size={20} />} label={t('dashboard.navStore')} active={isStoresPage || isStoreDetailPage} />
         <button
           type="button"
           onClick={() => setIsMobileMenuOpen(true)}
           className="flex min-h-[44px] min-w-[44px] flex-col items-center gap-1 p-2 text-gray-400 focus-visible:ring-2 focus-visible:ring-orange-300 rounded-xl"
-          aria-label="Mở menu điều hướng"
+          aria-label={t('dashboard.openNavigationMenu')}
           aria-expanded={isMobileMenuOpen}
           aria-controls="dashboard-mobile-sidebar"
         >
           <MenuIcon size={20} />
-          <span className="text-[10px] font-bold">Menu</span>
+          <span className="text-[10px] font-bold">{t('dashboard.menu')}</span>
         </button>
       </nav>
 
@@ -117,16 +120,16 @@ export default function Dashboard({ user, profile }: DashboardProps) {
                   <div className="bg-orange-500 p-1.5 rounded-lg">
                     <QrCode className="text-white w-5 h-5" />
                   </div>
-                  <span className="font-bold tracking-tight">MenuQRGenerate</span>
+                  <span className="font-bold tracking-tight">{t('landing.brand')}</span>
                 </div>
-                <button type="button" onClick={() => setIsMobileMenuOpen(false)} className="p-2 hover:bg-gray-100 rounded-full text-gray-400 focus-visible:ring-2 focus-visible:ring-orange-300" aria-label="Đóng menu điều hướng">
+                <button type="button" onClick={() => setIsMobileMenuOpen(false)} className="p-2 hover:bg-gray-100 rounded-full text-gray-400 focus-visible:ring-2 focus-visible:ring-orange-300" aria-label={t('dashboard.closeNavigationMenu')}>
                   <X size={20} />
                 </button>
               </div>
 
               <nav className="flex-1 p-4 space-y-1">
-                <SidebarLink to="/dashboard" icon={<LayoutDashboard size={20} />} label="Dashboard" active={isDashboardOverview} />
-                <SidebarLink to="/dashboard/stores" icon={<MenuIcon size={20} />} label="Cửa hàng của tôi" active={isStoresPage || isStoreDetailPage} />
+                <SidebarLink to="/dashboard" icon={<LayoutDashboard size={20} />} label={t('dashboard.navDashboard')} active={isDashboardOverview} />
+                <SidebarLink to="/dashboard/stores" icon={<MenuIcon size={20} />} label={t('dashboard.navMyStores')} active={isStoresPage || isStoreDetailPage} />
               </nav>
 
               <div className="p-4 border-t border-gray-50">
@@ -136,7 +139,7 @@ export default function Dashboard({ user, profile }: DashboardProps) {
                   className="flex min-h-[44px] items-center gap-3 w-full px-4 py-3 text-sm font-medium text-gray-500 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all focus-visible:ring-2 focus-visible:ring-orange-300"
                 >
                   <LogOut size={20} />
-                  Đăng xuất
+                  {t('dashboard.logout')}
                 </button>
               </div>
             </motion.aside>
@@ -152,7 +155,7 @@ export default function Dashboard({ user, profile }: DashboardProps) {
               type="button"
               onClick={() => setIsMobileMenuOpen(true)}
               className="p-2 -ml-2 hover:bg-gray-100 rounded-full text-gray-400 md:hidden focus-visible:ring-2 focus-visible:ring-orange-300"
-              aria-label="Mở menu điều hướng"
+              aria-label={t('dashboard.openNavigationMenu')}
               aria-expanded={isMobileMenuOpen}
               aria-controls="dashboard-mobile-sidebar"
             >
@@ -161,11 +164,12 @@ export default function Dashboard({ user, profile }: DashboardProps) {
           </div>
 
           <div className="flex items-center gap-4">
+            <GlobalLanguageSwitcher />
             <div className="flex items-center gap-3 pl-4 border-l border-gray-100">
               {user.photoURL ? (
                 <img src={user.photoURL} alt={`Avatar ${user.displayName || 'user'}`} className="w-8 h-8 rounded-full border border-gray-100" referrerPolicy="no-referrer" />
               ) : (
-                <div className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-100 bg-orange-50 text-xs font-bold text-orange-700" aria-label="Avatar mặc định">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-100 bg-orange-50 text-xs font-bold text-orange-700" aria-label={t('dashboard.defaultAvatar')}>
                   {userInitial}
                 </div>
               )}

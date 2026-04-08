@@ -3,6 +3,7 @@ import { ChevronRight, Leaf, MapPin, Phone, Sparkles, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useMenuContext } from '../../MenuProvider';
 import PrivatePreviewInlineNotice from '../../PrivatePreviewInlineNotice';
+import { useTranslation } from '../../../../i18n';
 
 type CardMode = 'atelier' | 'compact';
 
@@ -21,6 +22,7 @@ function parseNumber(value: unknown): number {
 }
 
 export default function TemplateBotanicalSketch() {
+  const { t } = useTranslation();
   const {
     filteredProducts,
     categories,
@@ -120,11 +122,11 @@ export default function TemplateBotanicalSketch() {
           <div className="mb-4 rounded-full border border-[#cdc4ad] bg-[#e8dfc8] px-4 py-2">
             <p className="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#857f6f]">
               <Leaf size={12} />
-              Danh mục
+              {t('menuUi.categoriesLabel')}
             </p>
           </div>
 
-          <h2 className="text-4xl font-semibold leading-[1.02] text-[#7b7667] sm:text-5xl">Chọn món bạn muốn thử</h2>
+          <h2 className="text-4xl font-semibold leading-[1.02] text-[#7b7667] sm:text-5xl">{t('menuUi.chooseProductPrompt')}</h2>
 
 
           <div className="mt-4 flex flex-wrap gap-2">
@@ -208,7 +210,7 @@ export default function TemplateBotanicalSketch() {
                           onClick={() => selectProduct(product)}
                           className="inline-flex items-center gap-1 rounded-full border border-[#908a79] bg-[#908a79] px-3 py-2 text-xs font-semibold uppercase tracking-[0.1em] text-[#f8f0de] transition hover:bg-[#7f796a]"
                         >
-                          Xem chi tiết
+                          {t('menuUi.viewDetails')}
                           <ChevronRight size={14} />
                         </button>
                       </div>
@@ -219,8 +221,8 @@ export default function TemplateBotanicalSketch() {
             </div>
           ) : (
             <div className="rounded-[28px] border border-dashed border-[#c2b8a1] bg-[#f2e9d5] p-10 text-center">
-              <p className="text-xl font-semibold text-[#7e7969]">Danh mục này chưa có sản phẩm</p>
-              <p className="mt-2 text-sm font-medium text-[#908a79]">Hãy chọn danh mục khác để xem thêm món phù hợp.</p>
+              <p className="text-xl font-semibold text-[#7e7969]">{t('menuUi.noProductsTitle')}</p>
+              <p className="mt-2 text-sm font-medium text-[#908a79]">{t('menuUi.noProductsDescription')}</p>
             </div>
           )}
         </motion.section>
@@ -266,7 +268,7 @@ export default function TemplateBotanicalSketch() {
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-[#5a5446]/62 to-transparent" />
                     <div className="absolute bottom-4 left-4 right-4">
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#f4ecda]">Chi tiết sản phẩm</p>
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#f4ecda]">{t('menuUi.productDetailTitle')}</p>
                       <h4 className="mt-1 text-4xl font-semibold italic text-[#f8f1e0]">{selectedProduct.name}</h4>
                       <p className="mt-2 text-xl font-semibold text-[#efe8d6]">{getProductDisplayPrice(selectedProduct)}</p>
                     </div>
@@ -289,7 +291,7 @@ export default function TemplateBotanicalSketch() {
 
                     {detailContent.primary ? (
                       <div className="rounded-[20px] border border-[#cbc2ab] bg-[#faf4e4] p-4">
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8d8778]">Mô tả</p>
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8d8778]">{t('menuUi.descriptionLabel')}</p>
                         <p className="mt-2 text-sm font-medium leading-relaxed text-[#7e7969]">{detailContent.primary}</p>
                       </div>
                     ) : null}
@@ -298,7 +300,7 @@ export default function TemplateBotanicalSketch() {
                       <div className="rounded-[20px] border border-[#cbc2ab] bg-[#f3ecd9] p-4">
                         <p className="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#8d8778]">
                           <Sparkles size={12} />
-                          Mô tả chi tiết
+                          {t('menuUi.detailedDescriptionLabel')}
                         </p>
                         <p className="mt-2 text-sm font-medium leading-relaxed text-[#7e7969]">{detailContent.detailed}</p>
                       </div>
@@ -306,7 +308,7 @@ export default function TemplateBotanicalSketch() {
 
                     {selectedProduct.variants && selectedProduct.variants.length > 0 ? (
                       <div className="rounded-[20px] border border-[#cbc2ab] bg-[#faf4e4] p-4">
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8d8778]">Giá variants</p>
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8d8778]">{t('menuUi.variantPricesLabel')}</p>
                         <div className="mt-3 space-y-2.5">
                           {selectedProduct.variants.map((variant, idx) => {
                             const variantPrice = parseNumber(variant.price);
@@ -320,7 +322,7 @@ export default function TemplateBotanicalSketch() {
                               >
                                 <div>
                                   <p className="text-sm font-semibold text-[#7a7566]">{variant.name}</p>
-                                  {variant.isDefault ? <p className="font-bold text-[11px] font-medium text-[#8e8879]">Mặc định</p> : null}
+                                  {variant.isDefault ? <p className="font-bold text-[11px] font-medium text-[#8e8879]">{t('menuUi.defaultVariant')}</p> : null}
                                 </div>
                                 <div className="text-right">
                                   <p className="text-sm font-semibold text-[#7f796a]">{formatCurrency(variantPrice)}</p>
@@ -338,7 +340,7 @@ export default function TemplateBotanicalSketch() {
                       onClick={clearSelectedProduct}
                       className="w-full rounded-full border border-[#8f8a79] bg-[#8f8a79] px-5 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-[#f7f0de] transition hover:bg-[#7e796a]"
                     >
-                      Đóng
+                      {t('menuUi.close')}
                     </button>
                   </div>
                 </div>

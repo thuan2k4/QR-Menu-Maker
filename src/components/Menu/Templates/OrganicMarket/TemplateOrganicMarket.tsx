@@ -3,6 +3,7 @@ import { ChevronRight, Leaf, MapPin, Phone, Sparkles, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useMenuContext } from '../../MenuProvider';
 import PrivatePreviewInlineNotice from '../../PrivatePreviewInlineNotice';
+import { useTranslation } from '../../../../i18n';
 
 function parseNumber(value: unknown): number {
   if (typeof value === 'number' && Number.isFinite(value)) {
@@ -19,6 +20,7 @@ function parseNumber(value: unknown): number {
 }
 
 export default function TemplateOrganicMarket() {
+  const { t } = useTranslation();
   const {
     filteredProducts,
     categories,
@@ -128,7 +130,7 @@ export default function TemplateOrganicMarket() {
 
             <div className="inline-flex h-fit items-center gap-2 border border-[#d4ddba] bg-white px-3 py-2 text-[11px] font-black uppercase tracking-[0.12em] text-[#5f712e]">
               <span className="h-2 w-2 bg-[#7d9440]" />
-              Fresh Today
+              {t('menuUi.freshToday')}
             </div>
           </div>
         </motion.section>
@@ -141,8 +143,8 @@ export default function TemplateOrganicMarket() {
         >
           <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#738739]">Danh Mục</p>
-              <h2 className="mt-2 text-3xl font-black leading-tight text-[#1f2b14] sm:text-[2rem]">Chọn hương vị bạn muốn thử</h2>
+              <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#738739]">{t('menuUi.categoriesLabel')}</p>
+              <h2 className="mt-2 text-3xl font-black leading-tight text-[#1f2b14] sm:text-[2rem]">{t('menuUi.chooseProductPrompt')}</h2>
             </div>
 
           </div>
@@ -227,7 +229,7 @@ export default function TemplateOrganicMarket() {
                         onClick={() => selectProduct(product)}
                         className="inline-flex items-center gap-1.5 border-b-2 border-[#6a7f34] pb-1 text-xs font-black uppercase tracking-[0.12em] text-[#4e5f26] transition hover:text-[#233015]"
                       >
-                        Xem chi tiết
+                        {t('menuUi.viewDetails')}
                         <ChevronRight size={14} />
                       </button>
                     </div>
@@ -237,8 +239,8 @@ export default function TemplateOrganicMarket() {
             </div>
           ) : (
             <div className="border border-dashed border-[#c5ce9c] bg-[#f7faeb] p-10 text-center">
-              <p className="text-lg font-black text-[#5e6f31]">Danh mục này chưa có sản phẩm</p>
-              <p className="mt-2 text-sm font-semibold text-[#778741]">Hãy chọn danh mục khác để xem thêm món mới.</p>
+              <p className="text-lg font-black text-[#5e6f31]">{t('menuUi.noProductsTitle')}</p>
+              <p className="mt-2 text-sm font-semibold text-[#778741]">{t('menuUi.noProductsDescription')}</p>
             </div>
           )}
         </motion.section>
@@ -277,7 +279,7 @@ export default function TemplateOrganicMarket() {
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-[#1f260f]/66 to-transparent" />
                     <div className="absolute bottom-4 left-4 right-4">
-                      <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#deeaac]">Chi tiết sản phẩm</p>
+                      <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#deeaac]">{t('menuUi.productDetailTitle')}</p>
                       <h3 className="mt-1 text-2xl font-black text-white">{selectedProduct.name}</h3>
                       <p className="mt-2 text-2xl font-black text-[#edf7c1]">{getProductDisplayPrice(selectedProduct)}</p>
                     </div>
@@ -309,7 +311,7 @@ export default function TemplateOrganicMarket() {
 
                     {detailContent.primary ? (
                       <div className="border border-[#d5ddb8] bg-white p-4">
-                        <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#6f8234]">Mô tả</p>
+                        <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#6f8234]">{t('menuUi.descriptionLabel')}</p>
                         <p className="mt-2 text-sm font-semibold leading-relaxed text-[#4f6028]">{detailContent.primary}</p>
                       </div>
                     ) : null}
@@ -318,7 +320,7 @@ export default function TemplateOrganicMarket() {
                       <div className="border border-[#d5ddb8] bg-[#f2f6de] p-4">
                         <p className="inline-flex items-center gap-1 text-[11px] font-black uppercase tracking-[0.18em] text-[#6f8234]">
                           <Sparkles size={12} />
-                          Mô tả chi tiết
+                          {t('menuUi.detailedDescriptionLabel')}
                         </p>
                         <p className="mt-2 text-sm font-semibold leading-relaxed text-[#4f6028]">{detailContent.detailed}</p>
                       </div>
@@ -326,7 +328,7 @@ export default function TemplateOrganicMarket() {
 
                     {selectedProduct.variants && selectedProduct.variants.length > 0 ? (
                       <div className="border border-[#d5ddb8] bg-white p-4">
-                        <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#6f8234]">Giá variants</p>
+                        <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#6f8234]">{t('menuUi.variantPricesLabel')}</p>
                         <div className="mt-3 space-y-2">
                           {selectedProduct.variants.map((variant, idx) => {
                             const variantPrice = parseNumber(variant.price);
@@ -340,7 +342,7 @@ export default function TemplateOrganicMarket() {
                               >
                                 <div>
                                   <p className="text-sm font-black text-[#293515]">{variant.name}</p>
-                                  {variant.isDefault ? <p className="font-bold text-[11px] font-semibold text-[#7a8a3c]">Mặc định</p> : null}
+                                  {variant.isDefault ? <p className="font-bold text-[11px] font-semibold text-[#7a8a3c]">{t('menuUi.defaultVariant')}</p> : null}
                                 </div>
                                 <div className="text-right">
                                   <p className="text-sm font-black text-[#6a7f34]">{formatCurrency(variantPrice)}</p>
@@ -359,7 +361,7 @@ export default function TemplateOrganicMarket() {
                       className="flex w-full items-center justify-center gap-2 border border-[#6a7f34] bg-[#6a7f34] px-5 py-3 text-sm font-black uppercase tracking-[0.12em] text-white transition hover:bg-[#55662a]"
                     >
                       <Leaf size={14} />
-                      Đóng
+                      {t('menuUi.close')}
                     </button>
                   </div>
                 </div>

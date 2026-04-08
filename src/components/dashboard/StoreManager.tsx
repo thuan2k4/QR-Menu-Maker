@@ -12,6 +12,7 @@ import {
   ExternalLink,
   Palette
 } from 'lucide-react';
+import { useTranslation } from '../../i18n';
 
 // Components
 import Overview from './Overview';
@@ -24,6 +25,7 @@ interface StoreManagerProps {
 }
 
 export default function StoreManager({ user }: StoreManagerProps) {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const [store, setStore] = useState<Store | null>(null);
   const [loading, setLoading] = useState(true);
@@ -65,16 +67,16 @@ export default function StoreManager({ user }: StoreManagerProps) {
     try {
       await updateDoc(doc(db, 'restaurants', store.id), { menuVisibility: newVisibility, updatedAt: new Date().toISOString() });
     } catch (error) {
-      console.error('Không thể cập nhật trạng thái menu:', error);
-      alert('Không thể cập nhật trạng thái menu. Vui lòng thử lại.');
+      console.error('Failed to update menu visibility:', error);
+      alert(t('storeManager.updateVisibilityError'));
     }
   };
 
   const tabs = [
-    { id: 'overview', label: 'Mã QR', icon: <QrCode size={18} />, path: `/dashboard/store/${id}` },
-    { id: 'menu', label: 'Quản lý Menu', icon: <MenuIcon size={18} />, path: `/dashboard/store/${id}/menu` },
-    { id: 'theme', label: 'Giao diện', icon: <Palette size={18} />, path: `/dashboard/store/${id}/theme` },
-    { id: 'settings', label: 'Thông tin cửa hàng', icon: <Info size={18} />, path: `/dashboard/store/${id}/settings` },
+    { id: 'overview', label: t('storeManager.tabQr'), icon: <QrCode size={18} />, path: `/dashboard/store/${id}` },
+    { id: 'menu', label: t('storeManager.tabMenu'), icon: <MenuIcon size={18} />, path: `/dashboard/store/${id}/menu` },
+    { id: 'theme', label: t('storeManager.tabTheme'), icon: <Palette size={18} />, path: `/dashboard/store/${id}/theme` },
+    { id: 'settings', label: t('storeManager.tabInfo'), icon: <Info size={18} />, path: `/dashboard/store/${id}/settings` },
   ];
 
   const activeTab = location.pathname.endsWith('/settings') ? 'settings' :
@@ -86,7 +88,7 @@ export default function StoreManager({ user }: StoreManagerProps) {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <Link to="/dashboard/stores" className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-400 focus-visible:ring-2 focus-visible:ring-orange-400" aria-label="Quay lại danh sách cửa hàng">
+          <Link to="/dashboard/stores" className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-400 focus-visible:ring-2 focus-visible:ring-orange-400" aria-label={t('storeManager.backToStores')}>
             <ChevronLeft size={24} />
           </Link>
           <div>
@@ -94,14 +96,14 @@ export default function StoreManager({ user }: StoreManagerProps) {
             <div className="flex items-center gap-2 text-sm text-gray-400">
               <span>/m/{store.slug}</span>
               <a href={`/m/${store.slug}`} target="_blank" rel="noopener noreferrer" className="text-orange-500 hover:underline flex items-center gap-1 focus-visible:ring-2 focus-visible:ring-orange-300 rounded-md">
-                Xem Menu <ExternalLink size={12} />
+                {t('storeManager.viewMenu')} <ExternalLink size={12} />
               </a>
             </div>
           </div>
         </div>
         <div className="flex items-center gap-3 mt-4 md:mt-0">
           <span className={`px-3 py-1 rounded-full text-xs font-bold ${currentVisibility === 'public' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
-            {currentVisibility === 'public' ? 'Công khai' : 'Riêng tư'}
+            {currentVisibility === 'public' ? t('common.public') : t('common.private')}
           </span>
           <span className="px-3 py-1 rounded-full text-xs font-bold bg-orange-50 text-orange-700" style={{ border: `1px solid ${storePrimaryColor}` }}>
             {storeCurrency}
@@ -110,7 +112,7 @@ export default function StoreManager({ user }: StoreManagerProps) {
             to={`/dashboard/store/${id}/theme`}
             className="inline-flex min-h-[44px] items-center px-3 py-1 rounded-full text-xs font-bold border border-gray-200 text-gray-600 hover:bg-gray-50 focus-visible:ring-2 focus-visible:ring-orange-300"
           >
-            Đổi template
+            {t('storeManager.changeTemplate')}
           </Link>
           <button
             type="button"
@@ -118,7 +120,7 @@ export default function StoreManager({ user }: StoreManagerProps) {
             disabled={!isOwner}
             className={`min-h-[44px] px-4 py-2 rounded-2xl font-bold transition-all focus-visible:ring-2 focus-visible:ring-orange-300 ${isOwner ? 'bg-orange-500 text-white hover:bg-orange-600' : 'bg-gray-200 text-gray-500 cursor-not-allowed'}`}
           >
-            {currentVisibility === 'public' ? 'Chuyển về Private' : 'Chuyển Public'}
+            {currentVisibility === 'public' ? t('storeManager.switchToPrivate') : t('storeManager.switchToPublic')}
           </button>
         </div>
       </div>

@@ -3,6 +3,7 @@ import { ChevronRight, MapPin, Phone, Sparkles, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useMenuContext } from '../../MenuProvider';
 import PrivatePreviewInlineNotice from '../../PrivatePreviewInlineNotice';
+import { useTranslation } from '../../../../i18n';
 
 function parseNumber(value: unknown): number {
   if (typeof value === 'number' && Number.isFinite(value)) {
@@ -19,6 +20,7 @@ function parseNumber(value: unknown): number {
 }
 
 export default function TemplateBakery() {
+  const { t } = useTranslation();
   const {
     filteredProducts,
     categories,
@@ -81,7 +83,7 @@ export default function TemplateBakery() {
 
             <div className="absolute inset-x-0 bottom-0 p-5 sm:p-7">
               <div className="max-w-2xl w-full rounded-[28px] border border-[#efddcb]/80 bg-[#fff7ef]/92 p-4 backdrop-blur-md sm:p-5">
-                <p className="text-[11px] font-black uppercase tracking-[0.3em] text-[#8d5b35]">Fresh Batch Daily</p>
+                <p className="text-[11px] font-black uppercase tracking-[0.3em] text-[#8d5b35]">{t('menuUi.freshBatchDaily')}</p>
                 <h1 className="mt-2 text-3xl font-black leading-tight text-[#2b1b16] sm:text-4xl">
                   {store?.name || 'Bakery House'}
                 </h1>
@@ -116,8 +118,8 @@ export default function TemplateBakery() {
         >
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
-              <p className="text-[11px] font-black uppercase tracking-[0.24em] text-[#9c5a30]">Danh Mục</p>
-              <h2 className="mt-2 text-2xl font-black text-[#2d1c16]">Chọn món bạn muốn thử</h2>
+              <p className="text-[11px] font-black uppercase tracking-[0.24em] text-[#9c5a30]">{t('menuUi.categoriesLabel')}</p>
+              <h2 className="mt-2 text-2xl font-black text-[#2d1c16]">{t('menuUi.chooseProductPrompt')}</h2>
             </div>
 
 
@@ -204,7 +206,7 @@ export default function TemplateBakery() {
                         onClick={() => selectProduct(product)}
                         className="inline-flex items-center gap-2 rounded-full border border-[#d2b79f] bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.09em] text-[#7d4b2f] transition hover:border-[#8f4f2d] hover:text-[#5f341d]"
                       >
-                        Xem chi tiết
+                        {t('menuUi.viewDetails')}
                         <ChevronRight size={14} />
                       </button>
                     </div>
@@ -214,8 +216,8 @@ export default function TemplateBakery() {
             </div>
           ) : (
             <div className="rounded-[28px] border border-dashed border-[#d8c2ad] bg-[#fff6eb] p-10 text-center">
-              <p className="text-lg font-bold text-[#7d5339]">Danh mục này chưa có sản phẩm</p>
-              <p className="mt-2 text-sm text-[#8e684f]">Hãy chọn danh mục khác để xem thêm món mới.</p>
+              <p className="text-lg font-bold text-[#7d5339]">{t('menuUi.noProductsTitle')}</p>
+              <p className="mt-2 text-sm text-[#8e684f]">{t('menuUi.noProductsDescription')}</p>
             </div>
           )}
         </motion.section>
@@ -262,7 +264,7 @@ export default function TemplateBakery() {
                   </button>
 
                   <div className="absolute bottom-4 left-4 right-4">
-                    <p className="text-[11px] font-black uppercase tracking-[0.24em] text-[#f4d8bf]">Chi tiết sản phẩm</p>
+                    <p className="text-[11px] font-black uppercase tracking-[0.24em] text-[#f4d8bf]">{t('menuUi.productDetailTitle')}</p>
                     <h3 className="mt-1 text-2xl font-black text-white sm:text-3xl">{selectedProduct.name}</h3>
                     <p className="mt-2 text-2xl font-black text-[#ffd3ad]">{getProductDisplayPrice(selectedProduct)}</p>
                   </div>
@@ -281,7 +283,7 @@ export default function TemplateBakery() {
 
                   {detailContent.primary && (
                     <div className="rounded-[22px] border border-[#e2d0bd] bg-white p-4">
-                      <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#8f5a39]">Mô tả</p>
+                      <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#8f5a39]">{t('menuUi.descriptionLabel')}</p>
                       <p className="mt-2 text-sm leading-relaxed text-[#5f4435]">{detailContent.primary}</p>
                     </div>
                   )}
@@ -290,7 +292,7 @@ export default function TemplateBakery() {
                     <div className="rounded-[22px] border border-[#e2d0bd] bg-[#fff3e6] p-4">
                       <p className="inline-flex items-center gap-1 text-[11px] font-black uppercase tracking-[0.2em] text-[#8f5a39]">
                         <Sparkles size={12} />
-                        Mô tả chi tiết
+                        {t('menuUi.detailedDescriptionLabel')}
                       </p>
                       <p className="mt-2 text-sm leading-relaxed text-[#5f4435]">{detailContent.detailed}</p>
                     </div>
@@ -298,7 +300,7 @@ export default function TemplateBakery() {
 
                   {selectedProduct.variants && selectedProduct.variants.length > 0 && (
                     <div className="rounded-[22px] border border-[#e2d0bd] bg-white p-4">
-                      <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#8f5a39]">Giá variants</p>
+                      <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#8f5a39]">{t('menuUi.variantPricesLabel')}</p>
                       <div className="mt-3 space-y-2.5">
                         {selectedProduct.variants.map((variant) => {
                           const variantPrice = parseNumber(variant.price);
@@ -309,7 +311,7 @@ export default function TemplateBakery() {
                             <div key={variant.id || variant.name} className="flex items-center justify-between rounded-2xl border border-[#efdfcf] bg-[#fff8ef] px-3 py-2.5">
                               <div>
                                 <p className="text-sm font-bold text-[#3a2318]">{variant.name}</p>
-                                {variant.isDefault ? <p className="text-[11px] font-bold text-[#8c6852]">Mặc định</p> : null}
+                                {variant.isDefault ? <p className="text-[11px] font-bold text-[#8c6852]">{t('menuUi.defaultVariant')}</p> : null}
                               </div>
                               <div className="text-right">
                                 <p className="text-sm font-black text-[#8f4f2d]">{formatCurrency(variantPrice)}</p>
@@ -327,7 +329,7 @@ export default function TemplateBakery() {
                     onClick={clearSelectedProduct}
                     className="w-full rounded-full bg-[#8f4f2d] px-5 py-3 text-sm font-black uppercase tracking-[0.12em] text-white shadow-[0_16px_30px_-18px_rgba(66,35,20,0.9)] transition hover:bg-[#764027]"
                   >
-                    Đóng
+                    {t('menuUi.close')}
                   </button>
                 </div>
               </div>

@@ -5,6 +5,7 @@ import { Download, ExternalLink, QrCode, Utensils, LayoutList, Eye, MousePointer
 import React, { useState, useEffect, ReactNode } from 'react';
 import { collection, query, where, getDocs, onSnapshot } from 'firebase/firestore';
 import { db } from '../../firebase';
+import { useTranslation } from '../../i18n';
 
 interface OverviewProps {
   user: User;
@@ -12,6 +13,7 @@ interface OverviewProps {
 }
 
 export default function Overview({ user, store }: OverviewProps) {
+  const { t } = useTranslation();
   const [stats, setStats] = useState({ categories: 0, products: 0 });
   const [timeRange, setTimeRange] = useState<7 | 30>(7);
   const [analyticsStats, setAnalyticsStats] = useState({
@@ -83,10 +85,10 @@ export default function Overview({ user, store }: OverviewProps) {
         <div className="bg-orange-50 p-4 rounded-full inline-flex mb-6">
           <QrCode className="text-orange-500 w-12 h-12" />
         </div>
-        <h2 className="text-2xl font-bold mb-2">Chào mừng bạn!</h2>
-        <p className="text-gray-500 mb-8 max-w-md mx-auto">Bạn chưa thiết lập thông tin cửa hàng. Hãy bắt đầu bằng cách cập nhật thông tin cơ bản để tạo Menu.</p>
+        <h2 className="text-2xl font-bold mb-2">{t('storeOverview.welcomeTitle')}</h2>
+        <p className="text-gray-500 mb-8 max-w-md mx-auto">{t('storeOverview.welcomeDescription')}</p>
         <a href="/dashboard/settings" className="inline-flex min-h-[44px] items-center justify-center bg-orange-500 text-white px-8 py-4 rounded-full font-bold hover:bg-orange-600 transition-all shadow-lg shadow-orange-200 focus-visible:ring-2 focus-visible:ring-orange-400">
-          Thiết lập ngay
+          {t('storeOverview.setupNow')}
         </a>
       </div>
     );
@@ -118,15 +120,15 @@ export default function Overview({ user, store }: OverviewProps) {
   return (
     <div className="space-y-8">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <h3 className="text-lg font-bold text-gray-900">Chỉ số menu</h3>
-        <div className="flex items-center gap-2 bg-gray-100 rounded-xl p-1 w-fit" role="group" aria-label="Chọn khoảng thời gian thống kê">
+        <h3 className="text-lg font-bold text-gray-900">{t('storeOverview.menuMetrics')}</h3>
+        <div className="flex items-center gap-2 bg-gray-100 rounded-xl p-1 w-fit" role="group" aria-label={t('storeOverview.statsRangeAria')}>
           <button
             type="button"
             onClick={() => setTimeRange(7)}
             aria-pressed={timeRange === 7}
             className={`min-h-[44px] px-3 py-2 text-xs font-bold rounded-lg transition-all focus-visible:ring-2 focus-visible:ring-orange-400 ${timeRange === 7 ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
           >
-            7 ngày
+            {t('dashboardOverview.last7Days')}
           </button>
           <button
             type="button"
@@ -134,23 +136,23 @@ export default function Overview({ user, store }: OverviewProps) {
             aria-pressed={timeRange === 30}
             className={`min-h-[44px] px-3 py-2 text-xs font-bold rounded-lg transition-all focus-visible:ring-2 focus-visible:ring-orange-400 ${timeRange === 30 ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
           >
-            30 ngày
+            {t('dashboardOverview.last30Days')}
           </button>
         </div>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-min">
-        <StatCard icon={<Eye className="text-emerald-500" size={16} />} label="Lượt xem menu" value={analyticsStats.menuViews} />
-        <StatCard icon={<MousePointerClick className="text-teal-500" size={16} />} label="Click chi tiết" value={analyticsStats.productDetailClicks} />
-        <StatCard icon={<Utensils className="text-orange-500" size={16} />} label="Sản phẩm" value={stats.products} />
-        <StatCard icon={<LayoutList className="text-blue-500" size={16} />} label="Danh mục" value={stats.categories} />
+        <StatCard icon={<Eye className="text-emerald-500" size={16} />} label={t('dashboardOverview.menuViews')} value={analyticsStats.menuViews} />
+        <StatCard icon={<MousePointerClick className="text-teal-500" size={16} />} label={t('dashboardOverview.detailClicks')} value={analyticsStats.productDetailClicks} />
+        <StatCard icon={<Utensils className="text-orange-500" size={16} />} label={t('dashboardOverview.totalProducts')} value={stats.products} />
+        <StatCard icon={<LayoutList className="text-blue-500" size={16} />} label={t('dashboardOverview.totalCategories')} value={stats.categories} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* QR Code Section */}
         <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm flex flex-col items-center text-center">
-          <h3 className="text-xl font-bold mb-6">Mã QR Menu của bạn</h3>
+          <h3 className="text-xl font-bold mb-6">{t('storeOverview.yourMenuQr')}</h3>
           <div className="p-6 bg-gray-50 rounded-3xl border border-gray-100 mb-6">
             <QRCodeSVG
               id="qr-code-svg"
@@ -176,7 +178,7 @@ export default function Overview({ user, store }: OverviewProps) {
               onClick={downloadQR}
               className="flex-1 flex min-h-[44px] items-center justify-center gap-2 bg-gray-900 text-white px-6 py-4 rounded-2xl font-bold hover:bg-black transition-all focus-visible:ring-2 focus-visible:ring-gray-400"
             >
-              <Download size={18} /> Tải mã QR
+              <Download size={18} /> {t('storeOverview.downloadQr')}
             </button>
             <a
               href={menuUrl}
@@ -184,19 +186,19 @@ export default function Overview({ user, store }: OverviewProps) {
               rel="noopener noreferrer"
               className="flex-1 flex min-h-[44px] items-center justify-center gap-2 border border-gray-200 text-gray-700 px-6 py-4 rounded-2xl font-bold hover:bg-gray-50 transition-all focus-visible:ring-2 focus-visible:ring-orange-300"
             >
-              <ExternalLink size={18} /> Xem Menu
+              <ExternalLink size={18} /> {t('storeManager.viewMenu')}
             </a>
           </div>
         </div>
 
         {/* Quick Tips */}
         <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
-          <h3 className="text-xl font-bold mb-6">Hướng dẫn nhanh</h3>
+          <h3 className="text-xl font-bold mb-6">{t('storeOverview.quickGuide')}</h3>
           <div className="space-y-6">
-            <TipItem step="1" title="Cập nhật thông tin" description="Vào phần Thông tin cửa hàng để cập nhật Logo, Ảnh bìa và giới thiệu cửa hàng." />
-            <TipItem step="2" title="Tạo danh mục" description="Tạo các danh mục như: Đồ uống, Chăm sóc, Trẻ em..." />
-            <TipItem step="3" title="Thêm sản phẩm" description="Thêm hình ảnh, mô tả và giá cho từng sản phẩm trong danh mục." />
-            <TipItem step="4" title="In mã QR" description="Tải mã QR" />
+            <TipItem step="1" title={t('storeOverview.tip1Title')} description={t('storeOverview.tip1Description')} />
+            <TipItem step="2" title={t('storeOverview.tip2Title')} description={t('storeOverview.tip2Description')} />
+            <TipItem step="3" title={t('storeOverview.tip3Title')} description={t('storeOverview.tip3Description')} />
+            <TipItem step="4" title={t('storeOverview.tip4Title')} description={t('storeOverview.tip4Description')} />
           </div>
         </div>
       </div>

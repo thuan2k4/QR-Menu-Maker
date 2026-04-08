@@ -5,6 +5,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { Store, Category, Product, StoreCurrency, StoreFontFamily, StoreSizePreset } from '../../types';
 import { getMenuTemplateById } from '../../constants/menuTemplates';
 import { MenuTemplate } from '../../types';
+import { useTranslation } from '../../i18n';
 
 interface SizePresetClasses {
   storeTitle: string;
@@ -115,6 +116,7 @@ interface MenuProviderProps {
 }
 
 export function MenuProvider({ slug, children }: MenuProviderProps) {
+  const { t } = useTranslation();
   const [store, setStore] = useState<Store | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
@@ -277,7 +279,7 @@ export function MenuProvider({ slug, children }: MenuProviderProps) {
       if (min === max) {
         return formatCurrency(min);
       }
-      return `Từ ${formatCurrency(min)} - ${formatCurrency(max)}`;
+      return t('menuUi.fromPriceRange', { min: formatCurrency(min), max: formatCurrency(max) });
     }
 
     return formatCurrency(parseProductPrice(prod.price) || 0);
@@ -287,7 +289,7 @@ export function MenuProvider({ slug, children }: MenuProviderProps) {
     const longDescription = prod.longDescription?.trim();
     const legacyDescription = prod.description?.trim();
     const shortDescription = prod.shortDescription?.trim();
-    return longDescription || legacyDescription || shortDescription || 'Không có mô tả cho sản phẩm này.';
+    return longDescription || legacyDescription || shortDescription || t('menuUi.productDescriptionFallback');
   };
 
   const getComparableProductPrice = (prod: Product) => {

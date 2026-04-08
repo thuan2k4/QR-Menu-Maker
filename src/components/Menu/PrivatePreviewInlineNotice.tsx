@@ -1,11 +1,13 @@
 import { Info } from 'lucide-react';
 import { useMenuContext } from './MenuProvider';
+import { useTranslation } from '../../i18n';
 
 interface PrivatePreviewInlineNoticeProps {
   className?: string;
 }
 
 export default function PrivatePreviewInlineNotice({ className = '' }: PrivatePreviewInlineNoticeProps) {
+  const { t } = useTranslation();
   const { menuVisibility, isOwner, primaryColor, secondaryColor } = useMenuContext();
 
   if (menuVisibility === 'public' || !isOwner) {
@@ -21,10 +23,7 @@ export default function PrivatePreviewInlineNotice({ className = '' }: PrivatePr
     >
       <div className="flex items-start gap-2">
         <Info size={16} className="mt-0.5 shrink-0" />
-        <p>
-          Bạn đang xem menu ở chế độ Private. Đây là bản xem trước cho chủ cửa hàng,
-          khách bên ngoài sẽ không truy cập được.
-        </p>
+        <p>{t('menuUi.privatePreviewOwnerNotice')}</p>
       </div>
     </div>
   );

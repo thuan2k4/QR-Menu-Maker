@@ -3,8 +3,10 @@ import { X, ChevronRight } from 'lucide-react';
 import { useMenuContext } from '../../MenuProvider';
 import { useRef, useState, useEffect } from 'react';
 import PrivatePreviewInlineNotice from '../../PrivatePreviewInlineNotice';
+import { useTranslation } from '../../../../i18n';
 
 export default function TemplateMinimal() {
+  const { t } = useTranslation();
   const {
     filteredProducts,
     store,
@@ -17,6 +19,7 @@ export default function TemplateMinimal() {
     getProductDisplayPrice,
     getProductDetailDescription,
     categories,
+    formatCurrency,
   } = useMenuContext();
 
   const [isMobile, setIsMobile] = useState(false);
@@ -99,7 +102,7 @@ export default function TemplateMinimal() {
           className="hidden lg:flex flex-col w-52 border-r border-slate-200 py-8 px-6 bg-slate-50 overflow-y-auto"
         >
           <p className="text-xs font-black uppercase tracking-[0.1em] text-slate-700 mb-6">
-            Danh Mục
+            {t('menuUi.categoriesLabel')}
           </p>
           <div className="space-y-2">
             {categories.map((cat) => (
@@ -124,7 +127,7 @@ export default function TemplateMinimal() {
           {/* Mobile Category Pills */}
           <div className="lg:hidden sticky top-0 bg-white border-b border-slate-200 px-6 py-4 z-10">
             <p className="text-xs font-black uppercase tracking-[0.1em] text-slate-700 mb-3">
-              Danh Mục
+              {t('menuUi.categoriesLabel')}
             </p>
             <div className="flex gap-2 overflow-x-auto pb-2 flex-nowrap">
               {categories.map((cat) => (
@@ -207,7 +210,7 @@ export default function TemplateMinimal() {
                             <div className="flex flex-wrap gap-2 mt-3">
                               {product.variants.slice(0, 3).map((variant, vi) => (
                                 <span key={vi} className="text-xs font-bold bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full border border-indigo-200 max-w-full break-words">
-                                  {variant.name} <span className="text-indigo-600">+{((variant.price || 0) - (product.price || 0)).toLocaleString()}đ</span>
+                                  {variant.name} <span className="text-indigo-600">{`${((variant.price || 0) - (product.price || 0)) >= 0 ? '+' : ''}${formatCurrency((variant.price || 0) - (product.price || 0))}`}</span>
                                 </span>
                               ))}
                             </div>
@@ -233,10 +236,10 @@ export default function TemplateMinimal() {
                 animate={{ opacity: 1 }}
               >
                 <p className="text-slate-600 font-bold text-lg">
-                  Không có sản phẩm
+                  {t('menuUi.noProductsTitle')}
                 </p>
                 <p className="text-slate-500 text-sm mt-2">
-                  Hãy chọn một danh mục khác
+                  {t('menuUi.noProductsDescription')}
                 </p>
               </motion.div>
             )}
@@ -356,7 +359,7 @@ export default function TemplateMinimal() {
                       transition={{ delay: 0.15, duration: 0.2 }}
                     >
                       <h3 className="text-sm font-black text-slate-700 uppercase tracking-[0.1em]">
-                        📝 Chi tiết
+                        📝 {t('menuUi.descriptionLabel')}
                       </h3>
                       <p className={`text-slate-600 leading-relaxed font-medium ${isMobile ? 'text-xs' : 'text-sm'}`}>
                         {getProductDetailDescription(selectedProduct) || selectedProduct.description}
@@ -373,7 +376,7 @@ export default function TemplateMinimal() {
                       transition={{ delay: 0.2, duration: 0.2 }}
                     >
                       <h3 className="text-sm font-black text-slate-700 uppercase tracking-[0.1em]">
-                        🎯 Tùy chọn
+                        🎯 {t('menuUi.optionsLabel')}
                       </h3>
                       <div className="space-y-2">
                         {selectedProduct.variants.map((variant, idx) => (
@@ -382,12 +385,12 @@ export default function TemplateMinimal() {
                               <span className={`font-medium text-slate-700 ${isMobile ? 'text-xs' : 'text-sm'} truncate`}>{variant.name}</span>
                               {(variant.isDefault || idx === 0) ? (
                                 <span className={`rounded-full bg-indigo-100 px-2 py-0.5 font-black text-indigo-700 ${isMobile ? 'text-[10px]' : 'text-xs'}`}>
-                                  Mặc định
+                                  {t('menuUi.defaultVariant')}
                                 </span>
                               ) : null}
                             </div>
                             <span className={`font-black text-indigo-600 ${isMobile ? 'text-xs' : 'text-sm'}`}>
-                              {(variant.price || 0).toLocaleString()}đ
+                              {formatCurrency(variant.price || 0)}
                             </span>
                           </div>
                         ))}
@@ -405,7 +408,7 @@ export default function TemplateMinimal() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.25, duration: 0.2 }}
                   >
-                    {isMobile ? 'Xong' : 'Đóng'}
+                    {isMobile ? t('menuUi.done') : t('menuUi.close')}
                   </motion.button>
                 </div>
               </motion.div>

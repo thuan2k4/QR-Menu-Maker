@@ -6,8 +6,10 @@ import PublicMenuFilterSortControls from './Menu/PublicMenuFilterSortControls';
 import { Info, Smartphone } from 'lucide-react';
 import { useEffect } from 'react';
 import type { CSSProperties } from 'react';
+import { useTranslation } from '../i18n';
 
 function PublicMenuContent() {
+  const { t } = useTranslation();
   const { loading, store, menuVisibility, isOwner, rootStyle, sizePreset, primaryColor, secondaryColor } = useMenuContext();
   const isPrivateMenu = menuVisibility !== 'public';
 
@@ -49,9 +51,9 @@ function PublicMenuContent() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-gray-50">
         <Smartphone className="w-16 h-16 text-gray-300 mb-4" />
-        <h1 className="text-2xl font-bold text-gray-900">Không tìm thấy Menu</h1>
-          <p className="text-gray-500 mt-2">Vui lòng kiểm tra lại mã QR hoặc đường dẫn.</p>
-        </div>
+        <h1 className="text-2xl font-bold text-gray-900">{t('publicMenu.notFoundTitle')}</h1>
+        <p className="text-gray-500 mt-2">{t('publicMenu.notFoundDescription')}</p>
+      </div>
     );
   }
 
@@ -61,7 +63,7 @@ function PublicMenuContent() {
         <div className="w-16 h-16 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center mb-4">
           <Info size={28} />
         </div>
-        <h1 className="text-2xl font-bold text-gray-900">Menu đang trong trạng thái cập nhật, vui lòng quay lại sau.</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{t('publicMenu.privateNotice')}</h1>
       </div>
     );
   }
@@ -70,7 +72,7 @@ function PublicMenuContent() {
     <div style={themedStyle}>
       <PublicMenuFilterSortControls
         disabled={isPrivateMenu}
-        disabledReason="Filter/Sort tam khoa khi menu dang o che do Private."
+        disabledReason={t('publicMenu.filterDisabledReason')}
       />
       <MenuRenderer />
     </div>

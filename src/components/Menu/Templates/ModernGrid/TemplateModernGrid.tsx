@@ -4,8 +4,10 @@ import { useMenuContext } from '../../MenuProvider';
 import CategoryGridBold from './CategoryGridBold';
 import ProductGridCard from './ProductGridCard';
 import PrivatePreviewInlineNotice from '../../PrivatePreviewInlineNotice';
+import { useTranslation } from '../../../../i18n';
 
 export default function TemplateModernGrid() {
+  const { t } = useTranslation();
   const {
     filteredProducts,
     store,
@@ -48,7 +50,7 @@ export default function TemplateModernGrid() {
               </div>
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <p className="text-xs uppercase tracking-[0.15em] text-emerald-600 font-bold">✨ Welcome to</p>
+                  <p className="text-xs uppercase tracking-[0.15em] text-emerald-600 font-bold">✨ {t('menuUi.welcomeTo')}</p>
                   <h1 className="text-4xl font-black text-gray-900 leading-tight">{store?.name || 'Coffee Shop'}</h1>
                 </div>
                 <div className="flex flex-wrap gap-5 text-sm text-gray-700 font-semibold">
@@ -66,8 +68,8 @@ export default function TemplateModernGrid() {
             <div className="absolute inset-0 opacity-10"><div className="absolute -top-20 -right-20 w-64 h-64 bg-white rounded-full blur-2xl" /></div>
             <div className="relative space-y-5">
               <div>
-                <p className="text-xs uppercase tracking-[0.15em] font-bold text-emerald-100">📋 Menu Categories</p>
-                <h2 className="text-2xl font-black text-white mt-2">What are you craving today?</h2>
+                <p className="text-xs uppercase tracking-[0.15em] font-bold text-emerald-100">📋 {t('menuUi.menuCategories')}</p>
+                <h2 className="text-2xl font-black text-white mt-2">{t('menuUi.cravingPrompt')}</h2>
               </div>
               <CategoryGridBold />
             </div>
@@ -80,7 +82,7 @@ export default function TemplateModernGrid() {
               ))
             ) : (
               <div className="rounded-3xl border border-dashed border-gray-200 bg-white p-8 text-center text-gray-500">
-                Không có sản phẩm nào trong danh mục này.
+                {t('menuUi.noProductsTitle')}
               </div>
             )}
           </div>
@@ -136,7 +138,7 @@ export default function TemplateModernGrid() {
                 <div className="px-6 py-6 sm:px-8 sm:pb-8 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 20rem)' }}>
                   <div className="space-y-5">
                     <div className="space-y-3">
-                      <p className="text-xs uppercase tracking-[0.24em] text-gray-500">Chi tiết sản phẩm</p>
+                      <p className="text-xs uppercase tracking-[0.24em] text-gray-500">{t('menuUi.productDetailTitle')}</p>
                       <h2 className="text-3xl font-bold text-gray-900">{selectedProduct.name}</h2>
                       {selectedProduct.shortDescription ? (
                         <p className="text-sm leading-relaxed text-gray-600 max-w-2xl">{selectedProduct.shortDescription}</p>
@@ -144,7 +146,7 @@ export default function TemplateModernGrid() {
                     </div>
 
                     <div className="rounded-[28px] border border-gray-200 bg-emerald-50 px-5 py-4">
-                      <p className="text-xs uppercase tracking-[0.24em] text-emerald-700">Mức giá</p>
+                      <p className="text-xs uppercase tracking-[0.24em] text-emerald-700">{t('menuUi.priceLabel')}</p>
                       <p className={`mt-3 ${typography.modalPrice} font-bold`} style={{ color: primaryColor }}>
                         {getProductDisplayPrice(selectedProduct)}
                       </p>
@@ -160,7 +162,7 @@ export default function TemplateModernGrid() {
 
                     {(selectedProduct.longDescription || selectedProduct.description) && (
                       <div className="rounded-[28px] border border-gray-200 bg-gray-50 p-5">
-                        <p className="text-xs uppercase tracking-[0.24em] text-gray-500">Mô tả</p>
+                        <p className="text-xs uppercase tracking-[0.24em] text-gray-500">{t('menuUi.descriptionLabel')}</p>
                         <p className="mt-3 text-sm leading-relaxed text-gray-700">
                           {selectedProduct.longDescription || selectedProduct.description}
                         </p>
@@ -169,13 +171,13 @@ export default function TemplateModernGrid() {
 
                     {selectedProduct.variants && selectedProduct.variants.length > 0 && (
                       <div className="rounded-[28px] border border-gray-200 bg-gray-50 p-5">
-                        <p className="text-xs uppercase tracking-[0.24em] text-gray-500">Tuỳ chọn</p>
+                        <p className="text-xs uppercase tracking-[0.24em] text-gray-500">{t('menuUi.optionsLabel')}</p>
                         <div className="mt-3 grid gap-3">
                           {selectedProduct.variants.map((variant) => (
                             <div key={variant.id} className="flex items-center justify-between rounded-3xl bg-white px-4 py-3 shadow-sm">
                               <div className="space-y-1">
                                 <p className="text-sm font-semibold text-gray-900">{variant.name}</p>
-                                {variant.isDefault && <p className="font-bold text-[11px] text-gray-500">Mặc định</p>}
+                                {variant.isDefault && <p className="font-bold text-[11px] text-gray-500">{t('menuUi.defaultVariant')}</p>}
                               </div>
                               <span className="text-sm font-bold text-gray-900">{formatCurrency(variant.price)}</span>
                             </div>
@@ -189,7 +191,7 @@ export default function TemplateModernGrid() {
                       onClick={clearSelectedProduct}
                       className="rounded-3xl bg-emerald-600 px-5 py-4 text-sm font-bold text-white shadow-lg hover:bg-emerald-700"
                     >
-                      Đóng
+                      {t('menuUi.close')}
                     </button>
                   </div>
                 </div>

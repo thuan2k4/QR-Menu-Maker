@@ -1,5 +1,6 @@
 import { motion } from 'motion/react';
 import { useMenuContext } from '../../MenuProvider';
+import { useTranslation } from '../../../../i18n';
 
 interface ProductVibrantCardProps {
   product: any;
@@ -7,6 +8,7 @@ interface ProductVibrantCardProps {
 }
 
 export default function ProductVibrantCard({ product, index = 0 }: ProductVibrantCardProps) {
+  const { t } = useTranslation();
   const { selectProduct, getProductDisplayPrice } = useMenuContext();
 
   return (
@@ -39,7 +41,7 @@ export default function ProductVibrantCard({ product, index = 0 }: ProductVibran
               initial={{ opacity: 0 }}
               whileHover={{ opacity: 1 }}
             >
-              <span className="text-white font-black text-sm">Xem chi tiết</span>
+              <span className="text-white font-black text-sm">{t('menuUi.viewDetails')}</span>
             </motion.div>
           </>
         ) : (
@@ -99,7 +101,7 @@ export default function ProductVibrantCard({ product, index = 0 }: ProductVibran
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.98 }}
         >
-          Xem chi tiết
+          {t('menuUi.viewDetails')}
         </motion.div>
       </div>
     </motion.button>

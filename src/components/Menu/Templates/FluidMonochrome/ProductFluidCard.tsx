@@ -1,5 +1,6 @@
 import { motion } from 'motion/react';
 import { useMenuContext } from '../../MenuProvider';
+import { useTranslation } from '../../../../i18n';
 
 interface ProductFluidCardProps {
   product: any;
@@ -7,13 +8,14 @@ interface ProductFluidCardProps {
 }
 
 export default function ProductFluidCard({ product, index = 0 }: ProductFluidCardProps) {
+  const { t } = useTranslation();
   const { selectProduct, getProductDisplayPrice } = useMenuContext();
 
   return (
     <motion.button
       onClick={() => selectProduct(product)}
       className="group w-full text-left overflow-hidden rounded-[26px] border border-[#e0dbd1] bg-white shadow-sm transition-all duration-300 hover:shadow-md"
-      aria-label={`Xem chi tiết ${product.name}`}
+      aria-label={t('menuUi.viewProductDetailsAria', { productName: product.name })}
       initial={{ opacity: 0, x: -30 }}
       animate={{ opacity: 1, x: 0 }}
       whileHover={{ x: 4 }}
@@ -80,7 +82,7 @@ export default function ProductFluidCard({ product, index = 0 }: ProductFluidCar
                 {getProductDisplayPrice(product)}
               </p>
               <span className="inline-flex items-center rounded-full border border-[#1A1A1A] bg-[#1A1A1A] px-3 py-1 text-[11px] font-black uppercase tracking-[0.08em] text-[#F8F7F5]">
-                Chi tiết
+                {t('menuUi.viewDetails')}
               </span>
             </div>
 

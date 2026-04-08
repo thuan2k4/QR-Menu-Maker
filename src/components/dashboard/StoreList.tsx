@@ -5,12 +5,14 @@ import { Store } from '../../types';
 import { User } from 'firebase/auth';
 import { Plus, Store as StoreIcon, ChevronRight, Trash2, QrCode, Edit2, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from '../../i18n';
 
 interface StoreListProps {
   user: User;
 }
 
 export default function StoreList({ user }: StoreListProps) {
+  const { t } = useTranslation();
   const [stores, setStores] = useState<Store[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -39,6 +41,7 @@ export default function StoreList({ user }: StoreListProps) {
         name: newStoreName,
         slug,
         ownerId: user.uid,
+        menuVisibility: 'public',
         bio: '',
         logoUrl: '',
         coverUrl: '',
@@ -57,7 +60,7 @@ export default function StoreList({ user }: StoreListProps) {
   const handleDeleteStore = (e: React.MouseEvent, id: string, name: string) => {
     e.stopPropagation();
     setConfirmDialog({
-      message: 'Toàn bộ danh mục và món ăn liên quan sẽ bị xóa vĩnh viễn.',
+      message: t('storeList.deleteWarningMessage'),
       storeName: name,
       onConfirm: async () => {
         setIsDeleting(true);
@@ -84,7 +87,7 @@ export default function StoreList({ user }: StoreListProps) {
             await batch.commit();
           }
         } catch (err) {
-          console.error('Lỗi khi xoá liên đới cửa hàng:', err);
+          console.error('Failed to cascade delete store:', err);
         } finally {
           setIsDeleting(false);
           setConfirmDialog(null);
@@ -111,13 +114,13 @@ export default function StoreList({ user }: StoreListProps) {
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold text-gray-900">Cửa hàng của tôi</h2>
+        <h2 className="text-3xl font-bold text-gray-900">{t('storeList.pageTitle')}</h2>
         <button
           type="button"
           onClick={() => setShowAddModal(true)}
           className="flex min-h-[44px] items-center gap-2 bg-orange-500 text-white px-6 py-3 rounded-2xl font-bold hover:bg-orange-600 transition-all shadow-lg shadow-orange-200 focus-visible:ring-2 focus-visible:ring-orange-400"
         >
-          <Plus size={20} /> Thêm cửa hàng
+          <Plus size={20} /> {t('storeList.addStore')}
         </button>
       </div>
 
@@ -129,7 +132,7 @@ export default function StoreList({ user }: StoreListProps) {
             onKeyDown={(event) => handleCardKeyDown(event, store.id)}
             role="button"
             tabIndex={0}
-            aria-label={`Mở trang quản lý cho cửa hàng ${store.name}`}
+            aria-label={t('storeList.openStoreManagerAria', { storeName: store.name })}
             className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all cursor-pointer group relative focus-visible:ring-2 focus-visible:ring-orange-300"
           >
             <div className="flex items-center justify-between mb-4">
@@ -140,12 +143,12 @@ export default function StoreList({ user }: StoreListProps) {
                 {store.menuVisibility === 'private' ? (
                   <div className="bg-gray-50 text-gray-600 text-[11px] px-2.5 py-1 rounded-full border border-gray-200 flex items-center gap-1.5 font-bold shadow-sm">
                     <span className="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
-                    <span className="whitespace-nowrap">Riêng tư</span>
+                    <span className="whitespace-nowrap">{t('common.private')}</span>
                   </div>
                 ) : (
                   <div className="bg-green-50 text-green-600 text-[11px] px-2.5 py-1 rounded-full border border-green-100 flex items-center gap-1.5 font-bold shadow-sm">
                     <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-[pulse_2s_ease-in-out_infinite]"></span>
-                    <span className="whitespace-nowrap">Đang hoạt động</span>
+                    <span className="whitespace-nowrap">{t('storeList.active')}</span>
                   </div>
                 )}
               </div>
@@ -157,7 +160,7 @@ export default function StoreList({ user }: StoreListProps) {
                     navigate(`/dashboard/store/${store.id}`); // This is correct, but just reusing logic. It's actually meant to go to dashboard.
                   }}
                   className="p-2 text-gray-400 hover:text-orange-500 hover:bg-orange-50 transition-all rounded-xl opacity-0 group-hover:opacity-100 shadow-sm"
-                  aria-label="Chỉnh sửa"
+                  aria-label={t('storeList.edit')}
                 >
                   <Edit2 size={16} />
                 </button>
@@ -165,7 +168,7 @@ export default function StoreList({ user }: StoreListProps) {
                   type="button"
                   onClick={(e) => handleDeleteStore(e, store.id, store.name)}
                   className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all rounded-xl focus-visible:ring-2 focus-visible:ring-red-300 hover:shadow-sm"
-                  aria-label={`Xóa cửa hàng ${store.name}`}
+                  aria-label={t('storeList.deleteStoreAria', { storeName: store.name })}
                 >
                   <Trash2 size={16} />
                 </button>
@@ -176,7 +179,7 @@ export default function StoreList({ user }: StoreListProps) {
 
             <div className="flex items-center justify-between pt-4 border-t border-gray-50">
               <div className="flex items-center gap-2 text-xs font-bold text-gray-400">
-                <QrCode size={14} /> Quản lý QR & Menu
+                <QrCode size={14} /> {t('storeList.manageQrMenu')}
               </div>
               <ChevronRight size={18} className="text-gray-300 group-hover:text-orange-500 transition-colors" />
             </div>
@@ -188,16 +191,16 @@ export default function StoreList({ user }: StoreListProps) {
             <div className="bg-orange-50 w-24 h-24 rounded-full flex items-center justify-center mb-6">
               <StoreIcon className="text-orange-500 w-12 h-12" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">Chưa có cửa hàng nào</h3>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">{t('storeList.emptyTitle')}</h3>
             <p className="text-gray-500 max-w-sm mb-8">
-              Bắt đầu hành trình tạo Menu số thông minh của bạn bằng cách thiết lập cửa hàng đầu tiên ngay bây giờ.
+              {t('storeList.emptyDescription')}
             </p>
             <button
               type="button"
               onClick={() => setShowAddModal(true)}
               className="flex min-h-[44px] items-center justify-center gap-2 bg-orange-500 text-white px-8 py-3.5 rounded-full font-bold hover:bg-orange-600 transition-all shadow-lg shadow-orange-200 focus-visible:ring-2 focus-visible:ring-orange-400"
             >
-              <Plus size={20} /> Tạo cửa hàng đầu tiên
+              <Plus size={20} /> {t('storeList.createFirstStore')}
             </button>
           </div>
         )}
@@ -208,14 +211,14 @@ export default function StoreList({ user }: StoreListProps) {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-6">
           <div className="bg-white w-full max-w-md rounded-3xl overflow-hidden shadow-2xl">
             <div className="p-6 border-b border-gray-50 flex items-center justify-between">
-              <h3 className="text-xl font-bold">Thêm cửa hàng mới</h3>
-              <button type="button" onClick={() => setShowAddModal(false)} className="text-gray-400 hover:text-gray-900 rounded-full focus-visible:ring-2 focus-visible:ring-orange-300" aria-label="Đóng cửa sổ tạo cửa hàng">
+              <h3 className="text-xl font-bold">{t('storeList.addStoreModalTitle')}</h3>
+              <button type="button" onClick={() => setShowAddModal(false)} className="text-gray-400 hover:text-gray-900 rounded-full focus-visible:ring-2 focus-visible:ring-orange-300" aria-label={t('storeList.closeCreateStoreModal')}>
                 <Plus size={24} className="rotate-45" />
               </button>
             </div>
             <form onSubmit={handleAddStore} className="p-6 space-y-6">
               <div>
-                <label htmlFor="new-store-name" className="block text-sm font-bold text-gray-700 mb-2">Tên cửa hàng</label>
+                <label htmlFor="new-store-name" className="block text-sm font-bold text-gray-700 mb-2">{t('storeList.storeNameLabel')}</label>
                 <input
                   id="new-store-name"
                   type="text"
@@ -223,7 +226,7 @@ export default function StoreList({ user }: StoreListProps) {
                   autoFocus
                   value={newStoreName}
                   onChange={(e) => setNewStoreName(e.target.value)}
-                  placeholder="Ví dụ: My Coffee Shop"
+                  placeholder={t('storeList.storeNamePlaceholder')}
                   className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all"
                 />
               </div>
@@ -232,7 +235,7 @@ export default function StoreList({ user }: StoreListProps) {
                 disabled={isCreating || !newStoreName.trim()}
                 className="w-full min-h-[44px] bg-orange-500 text-white py-4 rounded-2xl font-bold hover:bg-orange-600 transition-all disabled:opacity-50"
               >
-                {isCreating ? 'Đang tạo...' : 'Tạo cửa hàng'}
+                {isCreating ? t('storeList.creating') : t('storeList.createStore')}
               </button>
             </form>
           </div>
@@ -249,7 +252,7 @@ export default function StoreList({ user }: StoreListProps) {
                   <Trash2 size={18} />
                 </div>
                 <div>
-                  <h3 className="font-bold text-gray-900 mb-1">Xóa cửa hàng "{confirmDialog.storeName}"?</h3>
+                  <h3 className="font-bold text-gray-900 mb-1">{t('storeList.deleteStoreTitle', { storeName: confirmDialog.storeName })}</h3>
                   <p className="text-sm text-gray-500 leading-relaxed">{confirmDialog.message}</p>
                 </div>
               </div>
@@ -260,7 +263,7 @@ export default function StoreList({ user }: StoreListProps) {
                   disabled={isDeleting}
                   className="flex-1 py-3 rounded-2xl border border-gray-200 text-gray-700 font-bold hover:bg-gray-50 transition-all disabled:opacity-50"
                 >
-                  Hủy
+                  {t('storeList.cancel')}
                 </button>
                 <button
                   type="button"
@@ -269,9 +272,9 @@ export default function StoreList({ user }: StoreListProps) {
                   className="flex-1 py-3 rounded-2xl bg-red-500 text-white font-bold hover:bg-red-600 transition-all disabled:opacity-70 flex items-center justify-center gap-2"
                 >
                   {isDeleting ? (
-                    <><Loader2 size={16} className="animate-spin" /> Đang xóa...</>
+                    <><Loader2 size={16} className="animate-spin" /> {t('storeList.deleting')}</>
                   ) : (
-                    'Xóa cửa hàng'
+                    t('storeList.deleteStore')
                   )}
                 </button>
               </div>

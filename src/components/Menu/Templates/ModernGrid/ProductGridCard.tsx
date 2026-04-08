@@ -1,12 +1,14 @@
 import { Smartphone } from 'lucide-react';
 import { Product } from '../../../../types';
 import { useMenuContext } from '../../MenuProvider';
+import { useTranslation } from '../../../../i18n';
 
 interface ProductGridCardProps {
   product: Product;
 }
 
 export default function ProductGridCard({ product }: ProductGridCardProps) {
+  const { t } = useTranslation();
   const { primaryColor, getProductDisplayPrice, selectProduct } = useMenuContext();
   const badgeLabel = product.hashtags && product.hashtags.length > 0 ? product.hashtags[0] : '';
 
@@ -35,7 +37,7 @@ export default function ProductGridCard({ product }: ProductGridCardProps) {
           <div className="text-lg font-bold" style={{ color: primaryColor }}>
             {getProductDisplayPrice(product)}
           </div>
-          <span className="rounded-2xl bg-gray-100 px-3 py-2 text-xs font-semibold text-gray-600">Chi tiết</span>
+          <span className="rounded-2xl bg-gray-100 px-3 py-2 text-xs font-semibold text-gray-600">{t('menuUi.viewDetails')}</span>
         </div>
       </div>
     </button>

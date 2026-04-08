@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Funnel, Search, SlidersHorizontal, X } from 'lucide-react';
 import { MenuSortOption, useMenuContext } from './MenuProvider';
+import { useTranslation } from '../../i18n';
 
-const SORT_OPTIONS: Array<{ value: MenuSortOption; label: string }> = [
-  { value: 'default', label: 'Mặc định' },
-  { value: 'price_asc', label: 'Giá tăng dần' },
-  { value: 'price_desc', label: 'Giá giảm dần' },
-  { value: 'name_asc', label: 'Tên A-Z' },
-  { value: 'name_desc', label: 'Tên Z-A' },
+const SORT_OPTIONS: Array<{ value: MenuSortOption; labelKey: string }> = [
+  { value: 'default', labelKey: 'publicMenuFilters.sortDefault' },
+  { value: 'price_asc', labelKey: 'publicMenuFilters.sortPriceAsc' },
+  { value: 'price_desc', labelKey: 'publicMenuFilters.sortPriceDesc' },
+  { value: 'name_asc', labelKey: 'publicMenuFilters.sortNameAsc' },
+  { value: 'name_desc', labelKey: 'publicMenuFilters.sortNameDesc' },
 ];
 
 interface PublicMenuFilterSortControlsProps {
@@ -17,8 +18,9 @@ interface PublicMenuFilterSortControlsProps {
 
 export default function PublicMenuFilterSortControls({
   disabled = false,
-  disabledReason = 'Filter/Sort tam khoa khi menu dang o che do Private.',
+  disabledReason,
 }: PublicMenuFilterSortControlsProps) {
+  const { t } = useTranslation();
   const {
     products,
     filteredProducts,
@@ -34,6 +36,7 @@ export default function PublicMenuFilterSortControls({
     primaryColor,
   } = useMenuContext();
   const [isOpen, setIsOpen] = useState(false);
+  const resolvedDisabledReason = disabledReason ?? t('publicMenuFilters.disabledReason');
 
   useEffect(() => {
     if (disabled) {
@@ -57,7 +60,7 @@ export default function PublicMenuFilterSortControls({
           type="button"
           onClick={() => setIsOpen((prev) => !prev)}
           disabled={disabled}
-          title={disabled ? disabledReason : undefined}
+          title={disabled ? resolvedDisabledReason : undefined}
           className={`ml-auto flex min-h-[44px] items-center gap-2 rounded-full border px-4 py-2 text-sm font-bold shadow-lg backdrop-blur focus-visible:ring-2 focus-visible:ring-orange-300 ${disabled
             ? 'cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400 shadow-none'
             : 'border-slate-300 bg-white/95 text-slate-800'
@@ -68,7 +71,7 @@ export default function PublicMenuFilterSortControls({
           style={disabled ? undefined : { borderColor: primaryColor, color: primaryColor, backgroundColor: 'rgba(255,255,255,0.95)' }}
         >
           <SlidersHorizontal size={16} />
-          Filter/Sort
+          {t('publicMenuFilters.trigger')}
           {!disabled && activeFilterCount > 0 && (
             <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-slate-900 px-2 text-xs font-black text-white">
               {activeFilterCount}
@@ -77,7 +80,7 @@ export default function PublicMenuFilterSortControls({
         </button>
 
         {disabled && (
-          <p className="mt-2 text-right text-[11px] font-semibold text-slate-500">{disabledReason}</p>
+          <p className="mt-2 text-right text-[11px] font-semibold text-slate-500">{resolvedDisabledReason}</p>
         )}
 
         {isOpen && !disabled && (
@@ -87,12 +90,12 @@ export default function PublicMenuFilterSortControls({
             style={{ borderColor: primaryColor }}
           >
             <div className="mb-3 flex items-center justify-between">
-              <p className="text-sm font-black uppercase tracking-[0.08em] text-slate-800">Lọc sản phẩm</p>
+              <p className="text-sm font-black uppercase tracking-[0.08em] text-slate-800">{t('publicMenuFilters.panelTitle')}</p>
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
                 className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-slate-200 text-slate-600 focus-visible:ring-2 focus-visible:ring-orange-300"
-                aria-label="Đóng bộ lọc"
+                aria-label={t('publicMenuFilters.closePanel')}
               >
                 <X size={16} />
               </button>
@@ -100,21 +103,21 @@ export default function PublicMenuFilterSortControls({
 
             <div className="space-y-3">
               <label htmlFor="public-menu-search" className="block">
-                <span className="mb-1 block text-xs font-bold uppercase tracking-[0.06em] text-slate-600">Tìm kiếm</span>
+                <span className="mb-1 block text-xs font-bold uppercase tracking-[0.06em] text-slate-600">{t('publicMenuFilters.searchLabel')}</span>
                 <div className="flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-3 py-2">
                   <Search size={14} className="text-slate-500" />
                   <input
                     id="public-menu-search"
                     value={searchKeyword}
                     onChange={(event) => setSearchKeyword(event.target.value)}
-                    placeholder="Tên món, mô tả, hashtag..."
+                    placeholder={t('publicMenuFilters.searchPlaceholder')}
                     className="w-full bg-transparent text-sm text-slate-800 outline-none focus-visible:ring-0"
                   />
                 </div>
               </label>
 
               <label htmlFor="public-menu-sort" className="block">
-                <span className="mb-1 block text-xs font-bold uppercase tracking-[0.06em] text-slate-600">Sắp xếp</span>
+                <span className="mb-1 block text-xs font-bold uppercase tracking-[0.06em] text-slate-600">{t('publicMenuFilters.sortLabel')}</span>
                 <select
                   id="public-menu-sort"
                   value={sortOption}
@@ -123,7 +126,7 @@ export default function PublicMenuFilterSortControls({
                 >
                   {SORT_OPTIONS.map((option) => (
                     <option key={option.value} value={option.value}>
-                      {option.label}
+                      {t(option.labelKey)}
                     </option>
                   ))}
                 </select>
@@ -137,7 +140,7 @@ export default function PublicMenuFilterSortControls({
                   style={onlyWithImage ? { borderColor: primaryColor, backgroundColor: primaryColor } : undefined}
                 >
                   <Funnel size={12} />
-                  Có ảnh
+                  {t('publicMenuFilters.withImage')}
                 </button>
                 <button
                   type="button"
@@ -146,13 +149,13 @@ export default function PublicMenuFilterSortControls({
                   style={onlyWithVariants ? { borderColor: primaryColor, backgroundColor: primaryColor } : undefined}
                 >
                   <Funnel size={12} />
-                  Có biến thể
+                  {t('publicMenuFilters.withVariants')}
                 </button>
               </div>
 
               <div className="flex items-center justify-between rounded-xl bg-slate-100 px-3 py-2 text-xs font-bold text-slate-600">
-                <span>{filteredProducts.length} sản phẩm đang hiển thị</span>
-                <span>Tổng {products.length}</span>
+                <span>{t('publicMenuFilters.visibleCount', { count: String(filteredProducts.length) })}</span>
+                <span>{t('publicMenuFilters.totalCount', { count: String(products.length) })}</span>
               </div>
 
               <button
@@ -160,7 +163,7 @@ export default function PublicMenuFilterSortControls({
                 onClick={resetProductFilters}
                 className="w-full min-h-[44px] rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-700 transition hover:border-slate-900 hover:text-slate-900 focus-visible:ring-2 focus-visible:ring-orange-300"
               >
-                Xóa tất cả bộ lọc
+                {t('publicMenuFilters.clearAll')}
               </button>
             </div>
           </div>

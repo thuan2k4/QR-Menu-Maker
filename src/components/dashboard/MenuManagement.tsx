@@ -35,6 +35,7 @@ import {
 } from 'lucide-react';
 import { Reorder, useDragControls } from 'motion/react';
 import { getStorageSetupHint, uploadImageWithBucketFallback } from '../../utils/storageUpload';
+import { useTranslation } from '../../i18n';
 
 interface MenuManagementProps {
   user: User;
@@ -97,7 +98,8 @@ function DraggableCategoryItem({ cat, isActive, onClick, onEdit, onDelete, onDra
   );
 }
 
-function DraggableProductItem({ prod, currency, getProductDisplayPrice, onEdit, onDelete, onDragEnd }: { prod: Product, currency: string, getProductDisplayPrice: (p: Product) => string, onEdit: () => void, onDelete: () => void, onDragEnd: () => void }) {
+function DraggableProductItem({ prod, getProductDisplayPrice, onEdit, onDelete, onDragEnd }: { prod: Product, getProductDisplayPrice: (p: Product) => string, onEdit: () => void, onDelete: () => void, onDragEnd: () => void }) {
+  const { t } = useTranslation();
   const controls = useDragControls();
   return (
     <Reorder.Item value={prod} dragListener={false} dragControls={controls} onDragEnd={onDragEnd} className="relative z-0 focus-within:z-10 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow group">
@@ -161,10 +163,10 @@ function DraggableProductItem({ prod, currency, getProductDisplayPrice, onEdit, 
         {/* Mobile Actions (Visible on small screens) */}
         <div className="flex sm:hidden items-center gap-2 w-full pt-3 mt-1 border-t border-gray-50 shrink-0">
           <button onClick={onEdit} className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-gray-50 rounded-xl text-gray-700 hover:text-orange-600 hover:bg-orange-50 font-bold text-sm transition-colors">
-            <Edit2 size={16} /> Sửa
+            <Edit2 size={16} /> {t('menuManagement.edit')}
           </button>
           <button onClick={onDelete} className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-gray-50 rounded-xl text-gray-700 hover:text-red-600 hover:bg-red-50 font-bold text-sm transition-colors">
-            <Trash2 size={16} /> Xoá
+            <Trash2 size={16} /> {t('menuManagement.delete')}
           </button>
         </div>
       </div>
@@ -173,6 +175,7 @@ function DraggableProductItem({ prod, currency, getProductDisplayPrice, onEdit, 
 }
 
 export default function MenuManagement({ user, store }: MenuManagementProps) {
+  const { t } = useTranslation();
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
@@ -240,7 +243,7 @@ export default function MenuManagement({ user, store }: MenuManagementProps) {
   if (!store) {
     return (
       <div className="bg-white p-12 rounded-3xl border border-gray-100 text-center shadow-sm">
-        <p className="text-gray-500">Vui lòng thiết lập thông tin cửa hàng trước khi quản lý Menu.</p>
+        <p className="text-gray-500">{t('menuManagement.setupStoreFirst')}</p>
       </div>
     );
   }
@@ -261,7 +264,10 @@ export default function MenuManagement({ user, store }: MenuManagementProps) {
       if (min === max) {
         return formatPriceByCurrency(min, storeCurrency);
       }
-      return `Từ ${formatPriceByCurrency(min, storeCurrency)} - ${formatPriceByCurrency(max, storeCurrency)}`;
+      return t('menuManagement.priceFromRange', {
+        min: formatPriceByCurrency(min, storeCurrency),
+        max: formatPriceByCurrency(max, storeCurrency)
+      });
     }
 
     return formatPriceByCurrency(prod.price || 0, storeCurrency);
@@ -273,7 +279,7 @@ export default function MenuManagement({ user, store }: MenuManagementProps) {
 
   const handleDeleteCategory = (id: string) => {
     setConfirmDialog({
-      message: 'Bạn có chắc chắn muốn xóa danh mục này? Tất cả sản phẩm trong danh mục cũng sẽ bị xóa vĩnh viễn.',
+      message: t('menuManagement.confirmDeleteCategoryMessage'),
       onConfirm: async () => {
         setIsDeleting(true);
         try {
@@ -294,7 +300,7 @@ export default function MenuManagement({ user, store }: MenuManagementProps) {
           }
           if (activeCategory === id) setActiveCategory(categories.find(c => c.id !== id)?.id || null);
         } catch (err) {
-          console.error('Lỗi khi xoá liên đới danh mục:', err);
+          console.error('Failed to cascade delete category:', err);
         } finally {
           setIsDeleting(false);
           setConfirmDialog(null);
@@ -305,13 +311,13 @@ export default function MenuManagement({ user, store }: MenuManagementProps) {
 
   const handleDeleteProduct = (id: string) => {
     setConfirmDialog({
-      message: 'Bạn có chắc chắn muốn xóa sản phẩm này?',
+      message: t('menuManagement.confirmDeleteProductMessage'),
       onConfirm: async () => {
         setIsDeleting(true);
         try {
           await deleteDoc(doc(db, 'products', id));
         } catch (err) {
-          console.error('Lỗi khi xoá sản phẩm:', err);
+          console.error('Failed to delete product:', err);
         } finally {
           setIsDeleting(false);
           setConfirmDialog(null);
@@ -376,7 +382,7 @@ export default function MenuManagement({ user, store }: MenuManagementProps) {
       {/* Categories Sidebar */}
       <div className="w-full md:w-72 space-y-4">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-bold">Danh mục</h3>
+          <h3 className="text-lg font-bold">{t('menuManagement.categories')}</h3>
           <button
             onClick={() => { setEditingCategory(null); setShowCategoryModal(true); }}
             className="p-2 bg-orange-50 text-orange-500 rounded-xl hover:bg-orange-100 transition-all"
@@ -401,7 +407,7 @@ export default function MenuManagement({ user, store }: MenuManagementProps) {
               ))}
             </Reorder.Group>
           ) : (
-            <p className="text-sm text-gray-400 text-center py-8 bg-white rounded-3xl border border-dashed border-gray-200">Chưa có danh mục nào</p>
+            <p className="text-sm text-gray-400 text-center py-8 bg-white rounded-3xl border border-dashed border-gray-200">{t('menuManagement.noCategories')}</p>
           )}
         </div>
       </div>
@@ -410,14 +416,14 @@ export default function MenuManagement({ user, store }: MenuManagementProps) {
       <div className="flex-1 space-y-6">
         <div className="flex items-center justify-between">
           <h3 className="text-xl font-bold">
-            {categories.find(c => c.id === activeCategory)?.name || 'Sản phẩm'}
+            {categories.find(c => c.id === activeCategory)?.name || t('menuManagement.products')}
           </h3>
           <button
             disabled={!activeCategory}
             onClick={() => { setEditingProduct(null); setShowProductModal(true); }}
             className="flex items-center gap-2 bg-orange-500 text-white px-6 py-3 rounded-2xl font-bold hover:bg-orange-600 transition-all disabled:opacity-50 shadow-lg shadow-orange-200"
           >
-            <Plus size={18} /> Thêm sản phẩm
+            <Plus size={18} /> {t('menuManagement.addProduct')}
           </button>
         </div>
 
@@ -427,7 +433,6 @@ export default function MenuManagement({ user, store }: MenuManagementProps) {
               <DraggableProductItem
                 key={prod.id}
                 prod={prod}
-                currency={storeCurrency}
                 getProductDisplayPrice={getProductDisplayPrice}
                 onEdit={() => { setEditingProduct(prod); setShowProductModal(true); }}
                 onDelete={() => handleDeleteProduct(prod.id)}
@@ -440,20 +445,20 @@ export default function MenuManagement({ user, store }: MenuManagementProps) {
             <div className="bg-orange-50 w-24 h-24 rounded-full flex items-center justify-center mb-6">
               <ImageIcon className="text-orange-500 w-12 h-12" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">Danh mục này hiện chưa có món</h3>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">{t('menuManagement.emptyCategoryTitle')}</h3>
             <p className="text-gray-500 max-w-sm mb-8">
-              Bổ sung ngay sản phẩm mới để phong phú hơn sự lựa chọn cho thực khách.
+              {t('menuManagement.emptyCategoryDescription')}
             </p>
             <button
               onClick={() => { setEditingProduct(null); setShowProductModal(true); }}
               className="flex min-h-[44px] items-center justify-center gap-2 bg-orange-500 text-white px-8 py-3.5 rounded-full font-bold hover:bg-orange-600 transition-all shadow-lg shadow-orange-200 focus-visible:ring-2 focus-visible:ring-orange-400"
             >
-              <Plus size={20} /> Thêm sản phẩm
+              <Plus size={20} /> {t('menuManagement.addProduct')}
             </button>
           </div>
         ) : (
           <div className="col-span-full bg-white p-16 rounded-3xl border border-dashed border-gray-200 text-center">
-            <p className="text-gray-400 text-lg">Vui lòng chọn hoặc tạo danh mục trước khi quản lý sản phẩm.</p>
+            <p className="text-gray-400 text-lg">{t('menuManagement.selectOrCreateCategory')}</p>
           </div>
         )}
       </div>
@@ -488,7 +493,7 @@ export default function MenuManagement({ user, store }: MenuManagementProps) {
                   <Trash2 size={18} />
                 </div>
                 <div>
-                  <h3 className="font-bold text-gray-900 mb-1">Xác nhận xóa</h3>
+                  <h3 className="font-bold text-gray-900 mb-1">{t('menuManagement.confirmDeleteTitle')}</h3>
                   <p className="text-sm text-gray-500 leading-relaxed">{confirmDialog.message}</p>
                 </div>
               </div>
@@ -499,7 +504,7 @@ export default function MenuManagement({ user, store }: MenuManagementProps) {
                   disabled={isDeleting}
                   className="flex-1 py-3 rounded-2xl border border-gray-200 text-gray-700 font-bold hover:bg-gray-50 transition-all disabled:opacity-50"
                 >
-                  Hủy
+                  {t('menuManagement.cancel')}
                 </button>
                 <button
                   type="button"
@@ -508,9 +513,9 @@ export default function MenuManagement({ user, store }: MenuManagementProps) {
                   className="flex-1 py-3 rounded-2xl bg-red-500 text-white font-bold hover:bg-red-600 transition-all disabled:opacity-70 flex items-center justify-center gap-2"
                 >
                   {isDeleting ? (
-                    <><Loader2 size={16} className="animate-spin" /> Đang xóa...</>
+                    <><Loader2 size={16} className="animate-spin" /> {t('menuManagement.deleting')}</>
                   ) : (
-                    'Xóa'
+                    t('menuManagement.delete')
                   )}
                 </button>
               </div>
@@ -523,6 +528,7 @@ export default function MenuManagement({ user, store }: MenuManagementProps) {
 }
 
 function CategoryModal({ storeId, editing, onClose }: { storeId: string, editing: Category | null, onClose: () => void }) {
+  const { t } = useTranslation();
   const [name, setName] = useState(editing?.name || '');
   const [loading, setLoading] = useState(false);
 
@@ -562,18 +568,18 @@ function CategoryModal({ storeId, editing, onClose }: { storeId: string, editing
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-6">
       <div className="bg-white w-full max-w-md rounded-3xl overflow-hidden shadow-2xl">
         <div className="p-6 border-b border-gray-50 flex items-center justify-between">
-          <h3 className="text-xl font-bold">{editing ? 'Sửa danh mục' : 'Thêm danh mục'}</h3>
+          <h3 className="text-xl font-bold">{editing ? t('menuManagement.editCategory') : t('menuManagement.addCategory')}</h3>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-900"><X size={24} /></button>
         </div>
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">Tên danh mục <span className="text-red-500">*</span></label>
+            <label className="block text-sm font-bold text-gray-700 mb-2">{t('menuManagement.categoryName')} <span className="text-red-500">*</span></label>
             <input
               type="text"
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Ví dụ: Món chính, Đồ uống..."
+              placeholder={t('menuManagement.categoryNamePlaceholder')}
               className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all"
             />
           </div>
@@ -582,7 +588,7 @@ function CategoryModal({ storeId, editing, onClose }: { storeId: string, editing
             disabled={loading}
             className="w-full bg-orange-500 text-white py-4 rounded-2xl font-bold hover:bg-orange-600 transition-all disabled:opacity-50"
           >
-            {loading ? 'Đang lưu...' : 'Lưu danh mục'}
+            {loading ? t('menuManagement.saving') : t('menuManagement.saveCategory')}
           </button>
         </form>
       </div>
@@ -591,6 +597,7 @@ function CategoryModal({ storeId, editing, onClose }: { storeId: string, editing
 }
 
 function ProductModal({ user, storeId, categoryId, categories, currency, editing, onClose }: { user: User, storeId: string, categoryId: string, categories: Category[], currency: 'EUR' | 'USD' | 'VND', editing: Product | null, onClose: () => void }) {
+  const { t } = useTranslation();
   const initialPriceValue = editing?.price != null ? Number(editing.price) : null;
   const normalizedInitialPrice = initialPriceValue != null && Number.isFinite(initialPriceValue) ? initialPriceValue : null;
   const initialHashtags = Array.isArray(editing?.hashtags)
@@ -682,7 +689,7 @@ function ProductModal({ user, storeId, categoryId, categories, currency, editing
       setFormData(prev => ({ ...prev, imageUrl: url }));
     } catch (err) {
       console.error('Product image upload failed:', err);
-      alert(`Không thể tải ảnh lên. Vui lòng vào Firebase Console > Build > Storage > Get started để tạo bucket. ${getStorageSetupHint()}`);
+      alert(`${t('menuManagement.uploadImageError')} ${getStorageSetupHint()}`);
     } finally {
       setUploading(false);
     }
@@ -769,7 +776,7 @@ function ProductModal({ user, storeId, categoryId, categories, currency, editing
 
     const normalizedBasePrice = Number(formData.price ?? 0);
     if (!hasVariants && (!Number.isFinite(normalizedBasePrice) || normalizedBasePrice < 0)) {
-      alert('Vui lòng nhập giá hợp lệ (số nguyên >= 0).');
+      alert(t('menuManagement.invalidPriceAlert'));
       return;
     }
 
@@ -850,8 +857,8 @@ function ProductModal({ user, storeId, categoryId, categories, currency, editing
       <div className="bg-white w-full max-w-3xl rounded-3xl overflow-hidden shadow-2xl max-h-[92vh] flex flex-col">
         <div className="p-5 sm:p-6 border-b border-gray-50 flex items-center justify-between bg-white">
           <div>
-            <h3 className="text-xl font-bold">{editing ? 'Sửa sản phẩm' : 'Thêm sản phẩm'}</h3>
-            <p className="text-xs text-gray-500 mt-1">Tiền tệ hiện tại của cửa hàng: <span className="font-semibold text-orange-600">{currency}</span></p>
+            <h3 className="text-xl font-bold">{editing ? t('menuManagement.editProduct') : t('menuManagement.addProduct')}</h3>
+            <p className="text-xs text-gray-500 mt-1">{t('menuManagement.currentStoreCurrency')}: <span className="font-semibold text-orange-600">{currency}</span></p>
           </div>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-900"><X size={24} /></button>
         </div>
@@ -859,18 +866,18 @@ function ProductModal({ user, storeId, categoryId, categories, currency, editing
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="space-y-6">
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Tên món ăn/sản phẩm <span className="text-red-500">*</span></label>
+                <label className="block text-sm font-bold text-gray-700 mb-2">{t('menuManagement.productName')} <span className="text-red-500">*</span></label>
                 <input
                   type="text"
                   required
                   value={formData.name}
                   onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                  placeholder="Ví dụ: Phở bò đặc biệt"
+                  placeholder={t('menuManagement.productNamePlaceholder')}
                   className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all"
                 />
               </div>
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Danh mục <span className="text-red-500">*</span></label>
+                <label className="block text-sm font-bold text-gray-700 mb-2">{t('menuManagement.category')} <span className="text-red-500">*</span></label>
                 <select
                   required
                   value={formData.categoryId}
@@ -885,28 +892,28 @@ function ProductModal({ user, storeId, categoryId, categories, currency, editing
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Mô tả ngắn</label>
+                <label className="block text-sm font-bold text-gray-700 mb-2">{t('menuManagement.shortDescription')}</label>
                 <input
                   type="text"
                   value={formData.shortDescription}
                   onChange={(e) => setFormData(prev => ({ ...prev, shortDescription: e.target.value }))}
-                  placeholder="Tóm tắt trong 1-2 câu"
+                  placeholder={t('menuManagement.shortDescriptionPlaceholder')}
                   className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all"
                 />
               </div>
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Mô tả chi tiết</label>
+                <label className="block text-sm font-bold text-gray-700 mb-2">{t('menuManagement.longDescription')}</label>
                 <textarea
                   rows={3}
                   value={formData.longDescription}
                   onChange={(e) => setFormData(prev => ({ ...prev, longDescription: e.target.value }))}
-                  placeholder="Mô tả chi tiết hơn về nguyên liệu, đồ ăn..."
+                  placeholder={t('menuManagement.longDescriptionPlaceholder')}
                   className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all"
                 />
               </div>
               {!hasVariants && (
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Giá bán <span className="text-red-500">*</span></label>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">{t('menuManagement.price')} <span className="text-red-500">*</span></label>
                   <input
                     type="number"
                     step={currency === 'VND' ? 1 : 0.01}
@@ -916,27 +923,29 @@ function ProductModal({ user, storeId, categoryId, categories, currency, editing
                     value={priceInput}
                     onChange={handlePriceChange}
                     onBlur={handlePriceBlur}
-                    placeholder={`Nhập giá theo ${currency}, ví dụ ${currency === 'VND' ? '45000' : '45.00'}`}
+                    placeholder={t('menuManagement.pricePlaceholder', { currency, example: currency === 'VND' ? '45000' : '45.00' })}
                     className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all"
                   />
                   <p className="text-xs text-gray-400 mt-2">
-                    {priceInput ? `Giá hiển thị: ${formatCurrency(Number(priceInput))}` : 'Bạn có thể để trống rồi nhập giá sau.'}
+                    {priceInput
+                      ? t('menuManagement.displayPrice', { price: formatCurrency(Number(priceInput)) })
+                      : t('menuManagement.emptyPriceHint')}
                   </p>
                 </div>
               )}
               {hasVariants && (
                 <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-800">
-                  Đang dùng giá theo variants. Giá đơn đã được ẩn để tránh xung đột dữ liệu hiển thị.
+                  {t('menuManagement.variantPricingNotice')}
                 </div>
               )}
             </div>
             <div className="space-y-6">
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Hình ảnh sản phẩm</label>
+                <label className="block text-sm font-bold text-gray-700 mb-2">{t('menuManagement.productImage')}</label>
                 <div className="space-y-4">
                   <div className="w-full h-48 bg-gray-100 rounded-2xl flex items-center justify-center overflow-hidden border border-gray-200 relative">
                     {formData.imageUrl ? (
-                      <img src={formData.imageUrl} alt="Preview" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                      <img src={formData.imageUrl} alt={t('menuManagement.previewImageAlt')} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                     ) : (
                       <ImageIcon className="text-gray-300 w-12 h-12" />
                     )}
@@ -958,7 +967,7 @@ function ProductModal({ user, storeId, categoryId, categories, currency, editing
                     onClick={() => fileInputRef.current?.click()}
                     className="w-full flex items-center justify-center gap-2 bg-gray-50 border border-gray-100 text-gray-600 px-4 py-3 rounded-2xl text-sm font-bold hover:bg-gray-100 transition-all"
                   >
-                    <Upload size={16} /> Tải ảnh lên
+                    <Upload size={16} /> {t('menuManagement.uploadImage')}
                   </button>
                 </div>
               </div>
@@ -966,7 +975,7 @@ function ProductModal({ user, storeId, categoryId, categories, currency, editing
           </div>
 
           <div className="bg-white p-4 rounded-2xl border border-gray-100">
-            <h4 className="font-bold mb-3">Hashtags (thẻ)</h4>
+            <h4 className="font-bold mb-3">{t('menuManagement.hashtags')}</h4>
             <div className="flex gap-2 flex-wrap mb-3">
               {EU_DEFAULT_HASHTAGS.slice(0, 8).map((tag) => (
                 <button
@@ -993,14 +1002,14 @@ function ProductModal({ user, storeId, categoryId, categories, currency, editing
                   e.preventDefault();
                   addHashtag();
                 }}
-                placeholder="#ví dụ"
+                placeholder={t('menuManagement.hashtagPlaceholder')}
                 className="flex-1 px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
               />
               <button
                 type="button"
                 onClick={addHashtag}
                 className="px-4 py-2 bg-orange-500 text-white rounded-xl hover:bg-orange-600"
-              >Thêm</button>
+              >{t('menuManagement.add')}</button>
             </div>
             <div className="flex flex-wrap gap-2">
               {formData.hashtags.map((tag) => (
@@ -1015,18 +1024,18 @@ function ProductModal({ user, storeId, categoryId, categories, currency, editing
           <div className="bg-white p-4 rounded-2xl border border-gray-100">
             <div className="flex items-center justify-between mb-3">
               <div>
-                <h4 className="font-bold">Variants (tuỳ chọn giá)</h4>
-                <p className="text-xs text-gray-500">Đơn vị tiền tệ đang áp dụng: {currency}</p>
+                <h4 className="font-bold">{t('menuManagement.variants')}</h4>
+                <p className="text-xs text-gray-500">{t('menuManagement.currencyApplied')}: {currency}</p>
               </div>
               <button
                 type="button"
                 onClick={addVariant}
                 className="px-3 py-1.5 text-xs font-bold text-orange-700 bg-orange-50 border border-orange-200 rounded-lg hover:bg-orange-100 transition-all"
               >
-                Thêm variant
+                {t('menuManagement.addVariant')}
               </button>
             </div>
-            {formData.variants.length === 0 && <p className="text-xs text-gray-400">Chưa có variant. Tạo variant để hiển thị đoạn giá Từ - Đến.</p>}
+            {formData.variants.length === 0 && <p className="text-xs text-gray-400">{t('menuManagement.noVariants')}</p>}
             <div className="space-y-3">
               {formData.variants.map((variant) => (
                 <div key={variant.id} className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center rounded-2xl border border-gray-200 bg-gray-50 p-2.5">
@@ -1034,7 +1043,7 @@ function ProductModal({ user, storeId, categoryId, categories, currency, editing
                     className="sm:col-span-5 px-3 py-2.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
                     value={variant.name}
                     onChange={(e) => updateVariant(variant.id, { name: e.target.value })}
-                    placeholder="Tên variant, ví dụ: Nhỏ"
+                    placeholder={t('menuManagement.variantNamePlaceholder')}
                   />
                   <input
                     className="sm:col-span-4 px-3 py-2.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
@@ -1050,7 +1059,7 @@ function ProductModal({ user, storeId, categoryId, categories, currency, editing
                         : e.target.value.replace(/[^0-9.]/g, '');
                       updateVariantPrice(variant.id, normalized);
                     }}
-                    placeholder={`Giá (${currency})`}
+                    placeholder={t('menuManagement.variantPricePlaceholder', { currency })}
                   />
                   <button
                     type="button"
@@ -1062,7 +1071,7 @@ function ProductModal({ user, storeId, categoryId, categories, currency, editing
                     onClick={() => setVariantDefault(variant.id)}
                   >
                     {variant.isDefault ? <Check size={14} /> : <span className="h-3.5 w-3.5 rounded-full border border-current" />}
-                    Mặc định
+                    {t('menuManagement.defaultVariant')}
                   </button>
                   <button
                     type="button"
@@ -1078,7 +1087,7 @@ function ProductModal({ user, storeId, categoryId, categories, currency, editing
             disabled={loading || uploading}
             className="w-full bg-orange-500 text-white py-4 rounded-2xl font-bold hover:bg-orange-600 transition-all disabled:opacity-50"
           >
-            {loading ? 'Đang lưu...' : 'Lưu sản phẩm'}
+            {loading ? t('menuManagement.saving') : t('menuManagement.saveProduct')}
           </button>
         </form>
       </div>

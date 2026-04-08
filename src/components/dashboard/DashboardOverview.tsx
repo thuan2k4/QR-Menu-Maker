@@ -4,6 +4,7 @@ import { collection, query, where, getDocs, onSnapshot } from 'firebase/firestor
 import { db } from '../../firebase';
 import { Store, Utensils, LayoutList, Plus, Eye, MousePointerClick } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from '../../i18n';
 
 interface DashboardOverviewProps {
   user: User;
@@ -17,6 +18,7 @@ type TopStoreMetric = {
 };
 
 export default function DashboardOverview({ user }: DashboardOverviewProps) {
+  const { t } = useTranslation();
   const [timeRange, setTimeRange] = useState<7 | 30>(7);
   const [stats, setStats] = useState({
     stores: 0,
@@ -49,7 +51,7 @@ export default function DashboardOverview({ user }: DashboardOverviewProps) {
         const storesQuery = query(collection(db, 'restaurants'), where('ownerId', '==', user.uid));
         const storesSnap = await getDocs(storesQuery);
         const storeIds = storesSnap.docs.map(doc => doc.id);
-        const storesMeta = storesSnap.docs.map(doc => ({ id: doc.id, name: String(doc.data().name || 'Cửa hàng chưa đặt tên') }));
+        const storesMeta = storesSnap.docs.map(doc => ({ id: doc.id, name: String(doc.data().name || t('dashboardOverview.unnamedStore')) }));
 
         let totalCategories = 0;
         let totalProducts = 0;
@@ -62,10 +64,10 @@ export default function DashboardOverview({ user }: DashboardOverviewProps) {
             storeBatches.push(storeIds.slice(i, i + batchSize));
           }
 
-          const catQueries = storeBatches.map(batch => 
+          const catQueries = storeBatches.map(batch =>
             getDocs(query(collection(db, 'categories'), where('restaurantId', 'in', batch)))
           );
-          const prodQueries = storeBatches.map(batch => 
+          const prodQueries = storeBatches.map(batch =>
             getDocs(query(collection(db, 'products'), where('restaurantId', 'in', batch)))
           );
 
@@ -145,7 +147,7 @@ export default function DashboardOverview({ user }: DashboardOverviewProps) {
     return () => {
       unsubscribeAnalytics?.();
     };
-  }, [user.uid, timeRange]);
+  }, [user.uid, timeRange, t]);
 
   if (stats.loading) {
     return (
@@ -159,18 +161,18 @@ export default function DashboardOverview({ user }: DashboardOverviewProps) {
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Tổng quan Dashboard</h1>
-          <p className="text-gray-500 mt-1">Chào mừng quay trở lại, {user.displayName || 'User'}!</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('dashboardOverview.title')}</h1>
+          <p className="text-gray-500 mt-1">{t('dashboardOverview.welcomeBack', { name: user.displayName || 'User' })}</p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-2 bg-gray-100 rounded-xl p-1" role="group" aria-label="Chọn khoảng thời gian analytics">
+          <div className="flex items-center gap-2 bg-gray-100 rounded-xl p-1" role="group" aria-label={t('dashboardOverview.analyticsRangeAria')}>
             <button
               type="button"
               onClick={() => setTimeRange(7)}
               aria-pressed={timeRange === 7}
               className={`min-h-[44px] px-3 py-2 text-xs font-bold rounded-lg transition-all focus-visible:ring-2 focus-visible:ring-orange-400 ${timeRange === 7 ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
             >
-              7 ngày
+              {t('dashboardOverview.last7Days')}
             </button>
             <button
               type="button"
@@ -178,7 +180,7 @@ export default function DashboardOverview({ user }: DashboardOverviewProps) {
               aria-pressed={timeRange === 30}
               className={`min-h-[44px] px-3 py-2 text-xs font-bold rounded-lg transition-all focus-visible:ring-2 focus-visible:ring-orange-400 ${timeRange === 30 ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
             >
-              30 ngày
+              {t('dashboardOverview.last30Days')}
             </button>
           </div>
           <Link
@@ -186,7 +188,7 @@ export default function DashboardOverview({ user }: DashboardOverviewProps) {
             className="inline-flex min-h-[44px] items-center gap-2 bg-orange-500 text-white px-6 py-3 rounded-2xl font-bold hover:bg-orange-600 transition-all shadow-lg shadow-orange-200 focus-visible:ring-2 focus-visible:ring-orange-400"
           >
             <Plus size={20} />
-            Thêm cửa hàng mới
+            {t('dashboardOverview.addNewStore')}
           </Link>
         </div>
       </div>
@@ -195,47 +197,47 @@ export default function DashboardOverview({ user }: DashboardOverviewProps) {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4 auto-rows-min">
         <StatCard
           icon={<Store className="text-orange-500" size={16} />}
-          label="Tổng cửa hàng"
+          label={t('dashboardOverview.totalStores')}
           value={stats.stores}
         />
         <StatCard
           icon={<LayoutList className="text-blue-500" size={16} />}
-          label="Tổng danh mục"
+          label={t('dashboardOverview.totalCategories')}
           value={stats.categories}
         />
         <StatCard
           icon={<Utensils className="text-green-500" size={16} />}
-          label="Tổng sản phẩm"
+          label={t('dashboardOverview.totalProducts')}
           value={stats.products}
         />
         <StatCard
           icon={<Eye className="text-emerald-500" size={16} />}
-          label="Lượt xem menu"
+          label={t('dashboardOverview.menuViews')}
           value={stats.menuViews}
         />
         <StatCard
           icon={<MousePointerClick className="text-teal-500" size={16} />}
-          label="Click chi tiết"
+          label={t('dashboardOverview.detailClicks')}
           value={stats.productDetailClicks}
         />
       </div>
 
       <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/70">
-          <h3 className="text-lg font-bold text-gray-900">Top cửa hàng theo lượt xem Menu</h3>
-          <p className="text-sm text-gray-500 mt-1">Dữ liệu trong {timeRange} ngày gần nhất.</p>
+          <h3 className="text-lg font-bold text-gray-900">{t('dashboardOverview.topStoresByViews')}</h3>
+          <p className="text-sm text-gray-500 mt-1">{t('dashboardOverview.dataInLastDays', { days: String(timeRange) })}</p>
         </div>
 
         {stats.topStores.length === 0 ? (
-          <div className="p-6 text-sm text-gray-500">Chưa có dữ liệu analytics trong khoảng thời gian đã chọn.</div>
+          <div className="p-6 text-sm text-gray-500">{t('dashboardOverview.noAnalyticsData')}</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-white text-gray-500 text-xs">
                 <tr>
-                  <th className="text-left px-6 py-3">Cửa hàng</th>
-                  <th className="text-left px-6 py-3">Lượt xem</th>
-                  <th className="text-left px-6 py-3">Click chi tiết</th>
+                  <th className="text-left px-6 py-3">{t('dashboardOverview.storeColumn')}</th>
+                  <th className="text-left px-6 py-3">{t('dashboardOverview.viewsColumn')}</th>
+                  <th className="text-left px-6 py-3">{t('dashboardOverview.detailClicksColumn')}</th>
                 </tr>
               </thead>
               <tbody>

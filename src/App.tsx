@@ -11,8 +11,10 @@ import Login from './components/Login';
 import PublicMenu from './components/PublicMenu';
 import LandingPage from './components/LandingPage';
 import NotFound from './components/NotFound';
+import { useTranslation } from './i18n';
 
 export default function App() {
+  const { t } = useTranslation();
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -51,7 +53,7 @@ export default function App() {
             displayName: currentUser.displayName || 'User',
             role: 'user',
           });
-          setAuthWarning('Khong doc duoc profile Firestore (thieu quyen). Vui long kiem tra Firestore Rules cho collection users.');
+          setAuthWarning('app.authWarningProfileRead');
         } finally {
           setLoading(false);
         }
@@ -65,6 +67,7 @@ export default function App() {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
+        <span className="sr-only">{t('app.loading')}</span>
       </div>
     );
   }
@@ -72,11 +75,11 @@ export default function App() {
   return (
     <Router>
       <a href="#main-content" className="skip-link">
-        Bỏ qua điều hướng và đến nội dung chính
+        {t('common.skipToContent')}
       </a>
       {authWarning && user && (
         <div role="status" aria-live="polite" className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] px-4 py-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-sm shadow-sm">
-          {authWarning}
+          {t(authWarning)}
         </div>
       )}
       <main id="main-content" tabIndex={-1}>

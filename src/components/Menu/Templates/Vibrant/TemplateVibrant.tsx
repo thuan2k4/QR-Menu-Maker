@@ -4,8 +4,10 @@ import { useMenuContext } from '../../MenuProvider';
 import ProductVibrantCard from './ProductVibrantCard';
 import { useRef } from 'react';
 import PrivatePreviewInlineNotice from '../../PrivatePreviewInlineNotice';
+import { useTranslation } from '../../../../i18n';
 
 export default function TemplateVibrant() {
+  const { t } = useTranslation();
   const {
     filteredProducts,
     categories,
@@ -86,7 +88,7 @@ export default function TemplateVibrant() {
                   transition={{ type: 'spring', stiffness: 300, delay: 0.3 }}
                 >
                   <div>
-                    <p className="text-sm font-black text-orange-600 uppercase tracking-[0.2em]">✨ Welcome to</p>
+                    <p className="text-sm font-black text-orange-600 uppercase tracking-[0.2em]">✨ {t('menuUi.welcomeTo')}</p>
                     <h1 className="text-4xl font-black text-gray-900 leading-tight mt-1">{store?.name || 'Menu'}</h1>
                   </div>
                   <div className="space-y-2.5 text-sm font-bold">
@@ -123,9 +125,9 @@ export default function TemplateVibrant() {
         >
           <div>
             <p className="text-sm font-black text-orange-600 uppercase tracking-[0.15em]">
-              📋 Our Menu
+              📋 {t('menuUi.menuCategories')}
             </p>
-            <h2 className="text-2xl font-black text-gray-900 mt-2">What are you craving today?</h2>
+            <h2 className="text-2xl font-black text-gray-900 mt-2">{t('menuUi.cravingPrompt')}</h2>
           </div>
 
           <div className="relative">
@@ -175,9 +177,9 @@ export default function TemplateVibrant() {
               animate={{ opacity: 1, scale: 1 }}
             >
               <p className="text-orange-700 font-black text-xl">
-                Không có sản phẩm nào trong danh mục này
+                {t('menuUi.noProductsTitle')}
               </p>
-              <p className="text-orange-600 mt-2 text-sm">Hãy chọn danh mục khác để khám phá menu</p>
+              <p className="text-orange-600 mt-2 text-sm">{t('menuUi.noProductsDescription')}</p>
             </motion.div>
           )}
         </div>
@@ -263,7 +265,7 @@ export default function TemplateVibrant() {
                       transition={{ delay: 0.15 }}
                     >
                       <h3 className="text-sm font-black text-orange-600 uppercase tracking-[0.15em]">
-                        📝 Mô tả
+                        📝 {t('menuUi.descriptionLabel')}
                       </h3>
                       <p className="text-gray-700 text-base leading-relaxed font-medium">
                         {getProductDetailDescription(selectedProduct) || selectedProduct.description}
@@ -298,7 +300,7 @@ export default function TemplateVibrant() {
                       transition={{ delay: 0.2 }}
                     >
                       <h3 className="text-sm font-black text-orange-600 uppercase tracking-[0.15em]">
-                        🎨 Tùy chọn
+                        🎨 {t('menuUi.optionsLabel')}
                       </h3>
                       <div className="grid gap-3">
                         {selectedProduct.variants.map((variant: any, idx: number) => (
@@ -326,14 +328,14 @@ export default function TemplateVibrant() {
                                     animate={{ scale: 1 }}
                                     transition={{ type: 'spring', stiffness: 300 }}
                                   >
-                                    Mặc định
+                                    {t('menuUi.defaultVariant')}
                                   </motion.span>
                                 )}
                               </label>
                             </div>
                             {variant.price && (
                               <span className="font-black text-lg text-orange-600">
-                                +{variant.price.toLocaleString()}đ
+                                +{formatCurrency(variant.price || 0)}
                               </span>
                             )}
                           </motion.div>
@@ -349,7 +351,7 @@ export default function TemplateVibrant() {
                     whileHover={{ scale: 1.05, boxShadow: '0 20px 40px rgba(249, 115, 22, 0.4)' }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    Đóng
+                    {t('menuUi.close')}
                   </motion.button>
                 </motion.div>
               </motion.div>
