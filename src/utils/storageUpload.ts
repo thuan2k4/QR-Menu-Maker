@@ -1,5 +1,6 @@
 import { getDownloadURL, ref, type FirebaseStorage, uploadBytes } from 'firebase/storage';
 import { storage, storageDebugInfo, storageFallback } from '../firebase';
+import imageCompression from 'browser-image-compression';
 
 type MediaProvider = 'auto' | 'firebase' | 'cloudinary';
 
@@ -43,7 +44,27 @@ async function uploadToCloudinary(path: string, file: File): Promise<string> {
   return payload.secure_url as string;
 }
 
-export async function uploadImageWithBucketFallback(path: string, file: File): Promise<string> {
+export async function uploadImageWithBucketFallback(path: string, originalFile: File): Promise<string> {
+  let fileToUpload = originalFile;
+  if (originalFile.type.startsWith('image/')) {
+    try {
+      const options = {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1920,
+        useWebWorker: true,
+      };
+      const compressedBlob = await imageCompression(originalFile, options);
+      fileToUpload = new File([compressedBlob], originalFile.name, {
+        type: compressedBlob.type,
+        lastModified: Date.now(),
+      });
+    } catch (error) {
+      console.warn("Lỗi nén ảnh, tiếp tục upload ảnh gốc:", error);
+    }
+  }
+
+  const file = fileToUpload;
+
   if (configuredProvider === 'cloudinary' && !isCloudinaryConfigured) {
     throw new Error('Cloudinary provider is selected but Cloudinary config is missing.');
   }

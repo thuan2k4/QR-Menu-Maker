@@ -152,14 +152,17 @@ export function MenuProvider({ slug, children }: MenuProviderProps) {
         unsubscribeCategories = onSnapshot(catQuery, (catSnap) => {
           const cats = catSnap.docs
             .map((d) => ({ id: d.id, ...d.data() } as Category))
-            .sort((a, b) => a.order - b.order);
+            .sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0));
           setCategories(cats);
         }, (error) => {
           console.error('Failed to subscribe public categories snapshot:', error);
         });
 
         unsubscribeProducts = onSnapshot(prodQuery, (prodSnap) => {
-          setProducts(prodSnap.docs.map((d) => ({ id: d.id, ...d.data() } as Product)));
+          const prods = prodSnap.docs
+            .map((d) => ({ id: d.id, ...d.data() } as Product))
+            .sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0));
+          setProducts(prods);
         }, (error) => {
           console.error('Failed to subscribe public products snapshot:', error);
         });

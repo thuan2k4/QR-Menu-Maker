@@ -80,6 +80,7 @@ export interface Product {
   imageUrl: string;
   categoryId: string;
   storeId: string;
+  order?: number;
   restaurantId?: string; // legacy compatibility
 }
 

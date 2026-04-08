@@ -55,22 +55,29 @@ export default function DashboardOverview({ user }: DashboardOverviewProps) {
         let totalProducts = 0;
 
         if (storeIds.length > 0) {
-          // Firestore 'in' query has a limit of 10, but for MVP this is fine
-          // For more stores, we'd need multiple queries or a different approach
-          const limitedStoreIds = storeIds.slice(0, 10);
+          // Process storeIds in batches of 10 for Firestore 'in' query
+          const batchSize = 10;
+          const storeBatches: string[][] = [];
+          for (let i = 0; i < storeIds.length; i += batchSize) {
+            storeBatches.push(storeIds.slice(i, i + batchSize));
+          }
 
-          const catQuery = query(collection(db, 'categories'), where('restaurantId', 'in', limitedStoreIds));
-          const prodQuery = query(collection(db, 'products'), where('restaurantId', 'in', limitedStoreIds));
+          const catQueries = storeBatches.map(batch => 
+            getDocs(query(collection(db, 'categories'), where('restaurantId', 'in', batch)))
+          );
+          const prodQueries = storeBatches.map(batch => 
+            getDocs(query(collection(db, 'products'), where('restaurantId', 'in', batch)))
+          );
 
-          const [catSnap, prodSnap] = await Promise.all([
-            getDocs(catQuery),
-            getDocs(prodQuery)
-          ]);
+          const catSnaps = await Promise.all(catQueries);
+          const prodSnaps = await Promise.all(prodQueries);
 
-          totalCategories = catSnap.size;
-          totalProducts = prodSnap.size;
+          totalCategories = catSnaps.reduce((acc, snap) => acc + snap.size, 0);
+          totalProducts = prodSnaps.reduce((acc, snap) => acc + snap.size, 0);
 
-          const analyticsQuery = query(collection(db, 'analytics'), where('storeId', 'in', limitedStoreIds));
+          // For analytics snapshots, we focus on the first 10 for performance in overview
+          // In a real production app, we would use a more scalable analytics solution
+          const analyticsQuery = query(collection(db, 'analytics'), where('storeId', 'in', storeBatches[0]));
           unsubscribeAnalytics = onSnapshot(analyticsQuery, (analyticsSnap) => {
             const cutoffDate = new Date();
             cutoffDate.setDate(cutoffDate.getDate() - timeRange);

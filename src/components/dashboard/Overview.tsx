@@ -158,14 +158,16 @@ export default function Overview({ user, store }: OverviewProps) {
               size={200}
               level="H"
               includeMargin={true}
-              imageSettings={{
-                src: store.logoUrl || "https://picsum.photos/seed/store/200/200",
+              bgColor={store.qrBgColor || "#ffffff"}
+              fgColor={store.qrDotColor || "#000000"}
+              imageSettings={store.logoUrl ? {
+                src: store.logoUrl,
                 x: undefined,
                 y: undefined,
-                height: 40,
-                width: 40,
+                height: 48,
+                width: 48,
                 excavate: true,
-              }}
+              } : undefined}
             />
           </div>
           <p className="text-sm text-gray-400 mb-8 break-all max-w-xs">{menuUrl}</p>

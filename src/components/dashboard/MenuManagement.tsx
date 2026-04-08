@@ -17,7 +17,9 @@ import {
   addDoc,
   updateDoc,
   deleteDoc,
-  doc
+  doc,
+  writeBatch,
+  getDocs
 } from 'firebase/firestore';
 import {
   Plus,
@@ -28,8 +30,10 @@ import {
   Check,
   X,
   Upload,
-  Loader2
+  Loader2,
+  GripVertical
 } from 'lucide-react';
+import { Reorder, useDragControls } from 'motion/react';
 import { getStorageSetupHint, uploadImageWithBucketFallback } from '../../utils/storageUpload';
 
 interface MenuManagementProps {
@@ -55,6 +59,118 @@ const formatPriceByCurrency = (value: number, currency: 'EUR' | 'USD' | 'VND') =
   }
 };
 
+function DraggableCategoryItem({ cat, isActive, onClick, onEdit, onDelete, onDragEnd }: { cat: Category, isActive: boolean, onClick: () => void, onEdit: () => void, onDelete: () => void, onDragEnd: () => void }) {
+  const controls = useDragControls();
+  return (
+    <Reorder.Item value={cat} dragListener={false} dragControls={controls} onDragEnd={onDragEnd}>
+      <div
+        onClick={onClick}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => { if (e.key === 'Enter') onClick(); }}
+        className={`group flex items-center justify-between p-4 rounded-2xl cursor-pointer transition-all select-none ${isActive
+          ? 'bg-orange-500 text-white shadow-lg shadow-orange-200'
+          : 'bg-white border border-gray-100 text-gray-700 hover:bg-gray-50'
+          }`}
+        style={{ WebkitUserSelect: 'none', userSelect: 'none' }}
+      >
+        <div className="flex items-center gap-2 overflow-hidden flex-1">
+          <div
+            onPointerDown={(e) => controls.start(e)}
+            className={`cursor-grab active:cursor-grabbing p-1.5 -ml-1.5 rounded-lg hover:bg-black/5 transition-colors ${isActive ? 'text-white/70 hover:text-white' : 'text-gray-300 hover:text-gray-500'}`}
+            style={{ touchAction: 'none' }}
+          >
+            <GripVertical size={16} />
+          </div>
+          <span className="font-bold truncate pr-2 select-none">{cat.name}</span>
+        </div>
+        <div className={`flex items-center gap-1 transition-opacity ${isActive ? 'text-white/90' : 'text-gray-400 opacity-0 group-hover:opacity-100'}`}>
+          <button onClick={(e) => { e.stopPropagation(); onEdit(); }} className="p-1.5 hover:bg-black/10 rounded-lg transition-colors">
+            <Edit2 size={16} />
+          </button>
+          <button onClick={(e) => { e.stopPropagation(); onDelete(); }} className="p-1.5 hover:bg-black/10 hover:text-red-500 rounded-lg transition-colors">
+            <Trash2 size={16} />
+          </button>
+        </div>
+      </div>
+    </Reorder.Item>
+  );
+}
+
+function DraggableProductItem({ prod, currency, getProductDisplayPrice, onEdit, onDelete, onDragEnd }: { prod: Product, currency: string, getProductDisplayPrice: (p: Product) => string, onEdit: () => void, onDelete: () => void, onDragEnd: () => void }) {
+  const controls = useDragControls();
+  return (
+    <Reorder.Item value={prod} dragListener={false} dragControls={controls} onDragEnd={onDragEnd} className="relative z-0 focus-within:z-10 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow group">
+      <div className="flex flex-col sm:flex-row items-stretch p-3 gap-4 select-none" style={{ WebkitUserSelect: 'none', userSelect: 'none' }}>
+        {/* Drag Handle (Desktop) */}
+        <div
+          onPointerDown={(e) => controls.start(e)}
+          className="hidden sm:flex items-center justify-center cursor-grab active:cursor-grabbing p-1 text-gray-300 hover:text-gray-500 hover:bg-gray-50 rounded-lg transition-colors"
+          style={{ touchAction: 'none' }}
+        >
+          <GripVertical size={20} />
+        </div>
+        
+        {/* Image Container */}
+        <div className="w-full sm:w-28 h-40 sm:h-24 rounded-xl bg-gray-50 overflow-hidden shrink-0 relative border border-gray-100/50">
+          {/* Drag Handle (Mobile overlay) */}
+          <div
+            onPointerDown={(e) => controls.start(e)}
+            className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm p-1.5 rounded-lg text-gray-500 sm:hidden z-10 cursor-grab active:cursor-grabbing shadow-sm border border-gray-100"
+            style={{ touchAction: 'none' }}
+          >
+            <GripVertical size={16} />
+          </div>
+          
+          {prod.imageUrl ? (
+            <img src={prod.imageUrl} alt={prod.name} className="w-full h-full object-cover select-none pointer-events-none" referrerPolicy="no-referrer" />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-gray-300">
+              <ImageIcon size={24} />
+            </div>
+          )}
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 min-w-0 py-1 flex flex-col justify-center">
+          <div className="flex flex-wrap items-center gap-2 mb-1.5">
+            <h4 className="font-bold text-gray-900 truncate text-base sm:text-lg max-w-full leading-tight">{prod.name}</h4>
+            <span className="text-orange-600 font-bold whitespace-nowrap bg-orange-50 px-2 py-0.5 rounded-md text-xs sm:text-sm shadow-sm border border-orange-100">{getProductDisplayPrice(prod)}</span>
+          </div>
+          <p className="text-xs sm:text-sm text-gray-500 line-clamp-2 leading-relaxed">{prod.shortDescription || prod.longDescription || prod.description || 'Chưa có mô tả'}</p>
+          {prod.hashtags && prod.hashtags.length > 0 && (
+             <div className="flex flex-wrap gap-1 mt-2">
+               {prod.hashtags.slice(0, 4).map((tag) => (
+                 <span key={tag} className="text-[10px] sm:text-xs px-2 py-0.5 bg-gray-50 text-gray-500 rounded-full border border-gray-100 shadow-sm">{tag}</span>
+               ))}
+             </div>
+          )}
+        </div>
+
+        {/* Desktop/Tablet Actions */}
+        <div className="hidden sm:flex items-center gap-1.5 pr-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+          <button onClick={onEdit} className="p-2.5 bg-white border border-gray-100 rounded-xl text-gray-600 hover:text-orange-600 hover:bg-orange-50 hover:border-orange-200 shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-orange-500">
+            <Edit2 size={16} />
+          </button>
+          <button onClick={onDelete} className="p-2.5 bg-white border border-gray-100 rounded-xl text-gray-600 hover:text-red-600 hover:bg-red-50 hover:border-red-200 shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-red-500">
+            <Trash2 size={16} />
+          </button>
+        </div>
+
+        {/* Mobile Actions (Visible on small screens) */}
+        <div className="flex sm:hidden items-center gap-2 w-full pt-3 mt-1 border-t border-gray-50 shrink-0">
+          <button onClick={onEdit} className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-gray-50 rounded-xl text-gray-700 hover:text-orange-600 hover:bg-orange-50 font-bold text-sm transition-colors">
+            <Edit2 size={16} /> Sửa
+          </button>
+          <button onClick={onDelete} className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-gray-50 rounded-xl text-gray-700 hover:text-red-600 hover:bg-red-50 font-bold text-sm transition-colors">
+            <Trash2 size={16} /> Xoá
+          </button>
+        </div>
+      </div>
+    </Reorder.Item>
+  );
+}
+
 export default function MenuManagement({ user, store }: MenuManagementProps) {
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
@@ -63,6 +179,25 @@ export default function MenuManagement({ user, store }: MenuManagementProps) {
   const [showProductModal, setShowProductModal] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [confirmDialog, setConfirmDialog] = useState<{ message: string; onConfirm: () => void } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // Guard: block onSnapshot from overwriting state during drag operations
+  const isDragging = useRef(false);
+  const dragTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const categoriesRef = useRef(categories);
+  const productsRef = useRef(products);
+  // Refs to capture the latest reordered arrays
+  const dragCategoriesRef = useRef<Category[]>([]);
+  const dragProductsRef = useRef<Product[]>([]);
+
+  useEffect(() => {
+    categoriesRef.current = categories;
+  }, [categories]);
+
+  useEffect(() => {
+    productsRef.current = products;
+  }, [products]);
 
   useEffect(() => {
     if (store) {
@@ -70,9 +205,11 @@ export default function MenuManagement({ user, store }: MenuManagementProps) {
       const prodQuery = query(collection(db, 'products'), where('restaurantId', '==', store.id));
 
       const unsubCats = onSnapshot(catQuery, (snap) => {
+        // Skip snapshot updates while user is dragging to prevent snap-back
+        if (isDragging.current) return;
         const cats = snap.docs
           .map(d => ({ id: d.id, ...d.data() } as Category))
-          .sort((a, b) => a.order - b.order);
+          .sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0));
         setCategories(cats);
         setActiveCategory((prev) => {
           if (cats.length === 0) return null;
@@ -84,7 +221,9 @@ export default function MenuManagement({ user, store }: MenuManagementProps) {
       });
 
       const unsubProds = onSnapshot(prodQuery, (snap) => {
-        setProducts(snap.docs.map(d => ({ id: d.id, ...d.data() } as Product)));
+        // Skip snapshot updates while user is dragging to prevent snap-back
+        if (isDragging.current) return;
+        setProducts(snap.docs.map(d => ({ id: d.id, ...d.data() } as Product)).sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0)));
       }, (error) => {
         console.error('Failed to subscribe products snapshot:', error);
       });
@@ -92,6 +231,7 @@ export default function MenuManagement({ user, store }: MenuManagementProps) {
       return () => {
         unsubCats();
         unsubProds();
+        if (dragTimeoutRef.current) clearTimeout(dragTimeoutRef.current);
       };
     }
   }, [store]);
@@ -130,16 +270,103 @@ export default function MenuManagement({ user, store }: MenuManagementProps) {
     ? products.filter(p => p.categoryId === activeCategory)
     : [];
 
-  const handleDeleteCategory = async (id: string) => {
-    if (window.confirm('Bạn có chắc chắn muốn xóa danh mục này? Tất cả sản phẩm trong danh mục cũng sẽ bị ảnh hưởng.')) {
-      await deleteDoc(doc(db, 'categories', id));
-      if (activeCategory === id) setActiveCategory(categories.find(c => c.id !== id)?.id || null);
+  const handleDeleteCategory = (id: string) => {
+    setConfirmDialog({
+      message: 'Bạn có chắc chắn muốn xóa danh mục này? Tất cả sản phẩm trong danh mục cũng sẽ bị xóa vĩnh viễn.',
+      onConfirm: async () => {
+        setIsDeleting(true);
+        try {
+          const batchItems: any[] = [];
+          const prodQ = query(collection(db, 'products'), where('categoryId', '==', id));
+          const prodSnap = await getDocs(prodQ);
+          prodSnap.docs.forEach(d => batchItems.push(d.ref));
+          batchItems.push(doc(db, 'categories', id));
+
+          const chunks = [];
+          for (let i = 0; i < batchItems.length; i += 500) {
+            chunks.push(batchItems.slice(i, i + 500));
+          }
+          for (const chunk of chunks) {
+            const batch = writeBatch(db);
+            chunk.forEach(ref => batch.delete(ref));
+            await batch.commit();
+          }
+          if (activeCategory === id) setActiveCategory(categories.find(c => c.id !== id)?.id || null);
+        } catch (err) {
+          console.error('Lỗi khi xoá liên đới danh mục:', err);
+        } finally {
+          setIsDeleting(false);
+          setConfirmDialog(null);
+        }
+      }
+    });
+  };
+
+  const handleDeleteProduct = (id: string) => {
+    setConfirmDialog({
+      message: 'Bạn có chắc chắn muốn xóa sản phẩm này?',
+      onConfirm: async () => {
+        setIsDeleting(true);
+        try {
+          await deleteDoc(doc(db, 'products', id));
+        } catch (err) {
+          console.error('Lỗi khi xoá sản phẩm:', err);
+        } finally {
+          setIsDeleting(false);
+          setConfirmDialog(null);
+        }
+      }
+    });
+  };
+
+  const handleCategoryReorder = (newOrder: Category[]) => {
+    isDragging.current = true;
+    setCategories(newOrder);
+    // Store latest order for drag end
+    dragCategoriesRef.current = newOrder;
+  };
+
+  const handleCategoryDragEnd = async () => {
+    try {
+      const batch = writeBatch(db);
+      const currentCategories = dragCategoriesRef.current.length ? dragCategoriesRef.current : categoriesRef.current;
+      currentCategories.forEach((cat, index) => {
+        batch.update(doc(db, 'categories', cat.id), { order: index });
+      });
+      await batch.commit();
+      // Drag operation finished, allow snapshots to resume immediately
+      if (dragTimeoutRef.current) clearTimeout(dragTimeoutRef.current);
+      isDragging.current = false;
+    } catch (err) {
+      console.error('Category reorder failed:', err);
     }
   };
 
-  const handleDeleteProduct = async (id: string) => {
-    if (window.confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) {
-      await deleteDoc(doc(db, 'products', id));
+  const handleProductReorder = (newOrder: Product[]) => {
+    if (!activeCategory) return;
+    isDragging.current = true;
+    setProducts(prev => {
+      const otherProducts = prev.filter(p => p.categoryId !== activeCategory);
+      return [...otherProducts, ...newOrder];
+    });
+    // Store latest order for drag end
+    dragProductsRef.current = newOrder;
+  };
+
+  const handleProductDragEnd = async () => {
+    try {
+      const batch = writeBatch(db);
+      const currentProducts = dragProductsRef.current.length ? dragProductsRef.current : productsRef.current;
+      const activeProducts = currentProducts.filter(p => p.categoryId === activeCategory);
+      activeProducts.forEach((prod, index) => {
+        batch.update(doc(db, 'products', prod.id), { order: index });
+      });
+      await batch.commit();
+      // Drag operation finished, allow snapshots to resume immediately
+      if (dragTimeoutRef.current) clearTimeout(dragTimeoutRef.current);
+      isDragging.current = false;
+    } catch (err) {
+      console.error('Product reorder failed:', err);
     }
   };
 
@@ -158,28 +385,22 @@ export default function MenuManagement({ user, store }: MenuManagementProps) {
         </div>
 
         <div className="space-y-2">
-          {categories.map(cat => (
-            <div
-              key={cat.id}
-              onClick={() => setActiveCategory(cat.id)}
-              className={`group flex items-center justify-between p-4 rounded-2xl cursor-pointer transition-all ${activeCategory === cat.id
-                ? 'bg-orange-500 text-white shadow-lg shadow-orange-200'
-                : 'bg-white border border-gray-100 text-gray-700 hover:bg-gray-50'
-                }`}
-            >
-              <span className="font-bold truncate pr-2">{cat.name}</span>
-              <div className={`flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity ${activeCategory === cat.id ? 'text-white' : 'text-gray-400'}`}>
-                <button onClick={(e) => { e.stopPropagation(); setEditingCategory(cat); setShowCategoryModal(true); }} className="p-1 hover:bg-white/20 rounded">
-                  <Edit2 size={14} />
-                </button>
-                <button onClick={(e) => { e.stopPropagation(); handleDeleteCategory(cat.id); }} className="p-1 hover:bg-white/20 rounded">
-                  <Trash2 size={14} />
-                </button>
-              </div>
-            </div>
-          ))}
-          {categories.length === 0 && (
-            <p className="text-sm text-gray-400 text-center py-8">Chưa có danh mục nào</p>
+          {categories.length > 0 ? (
+            <Reorder.Group axis="y" values={categories} onReorder={handleCategoryReorder} className="space-y-2">
+              {categories.map(cat => (
+                <DraggableCategoryItem
+                  key={cat.id}
+                  cat={cat}
+                  isActive={activeCategory === cat.id}
+                  onClick={() => setActiveCategory(cat.id)}
+                  onEdit={() => { setEditingCategory(cat); setShowCategoryModal(true); }}
+                  onDelete={() => handleDeleteCategory(cat.id)}
+                  onDragEnd={() => handleCategoryDragEnd()}
+                />
+              ))}
+            </Reorder.Group>
+          ) : (
+            <p className="text-sm text-gray-400 text-center py-8 bg-white rounded-3xl border border-dashed border-gray-200">Chưa có danh mục nào</p>
           )}
         </div>
       </div>
@@ -199,53 +420,41 @@ export default function MenuManagement({ user, store }: MenuManagementProps) {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-          {filteredProducts.map(prod => (
-            <div key={prod.id} className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden group">
-              <div className="h-40 bg-gray-100 relative overflow-hidden">
-                {prod.imageUrl ? (
-                  <img src={prod.imageUrl} alt={prod.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-300">
-                    <ImageIcon size={32} />
-                  </div>
-                )}
-                <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button onClick={() => { setEditingProduct(prod); setShowProductModal(true); }} className="bg-white p-2 rounded-xl text-gray-600 hover:text-orange-500 shadow-sm">
-                    <Edit2 size={16} />
-                  </button>
-                  <button onClick={() => handleDeleteProduct(prod.id)} className="bg-white p-2 rounded-xl text-gray-600 hover:text-red-500 shadow-sm">
-                    <Trash2 size={16} />
-                  </button>
-                </div>
-              </div>
-              <div className="p-5">
-                <div className="flex justify-between items-start mb-2">
-                  <h4 className="font-bold text-gray-900 truncate pr-2">{prod.name}</h4>
-                  <span className="text-orange-500 font-bold whitespace-nowrap">{getProductDisplayPrice(prod)}</span>
-                </div>
-                <p className="text-xs text-gray-400 line-clamp-2 leading-relaxed">{prod.shortDescription || prod.longDescription || prod.description || 'Chưa có mô tả'}</p>
-                {prod.hashtags && prod.hashtags.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mt-2">
-                    {prod.hashtags.slice(0, 4).map((tag) => (
-                      <span key={tag} className="text-[10px] px-2 py-1 bg-gray-100 text-gray-600 rounded-full">{tag}</span>
-                    ))}
-                  </div>
-                )}
-              </div>
+        {activeCategory && filteredProducts.length > 0 ? (
+          <Reorder.Group axis="y" values={filteredProducts} onReorder={(newOrder) => handleProductReorder(newOrder)} className="flex flex-col gap-3">
+            {filteredProducts.map(prod => (
+              <DraggableProductItem
+                key={prod.id}
+                prod={prod}
+                currency={storeCurrency}
+                getProductDisplayPrice={getProductDisplayPrice}
+                onEdit={() => { setEditingProduct(prod); setShowProductModal(true); }}
+                onDelete={() => handleDeleteProduct(prod.id)}
+                onDragEnd={() => handleProductDragEnd()}
+              />
+            ))}
+          </Reorder.Group>
+        ) : activeCategory ? (
+          <div className="col-span-full bg-white p-16 rounded-3xl border border-dashed border-gray-200 text-center flex flex-col items-center justify-center">
+            <div className="bg-orange-50 w-24 h-24 rounded-full flex items-center justify-center mb-6">
+              <ImageIcon className="text-orange-500 w-12 h-12" />
             </div>
-          ))}
-          {activeCategory && filteredProducts.length === 0 && (
-            <div className="col-span-full bg-white p-12 rounded-3xl border border-gray-100 text-center">
-              <p className="text-gray-400">Chưa có sản phẩm nào trong danh mục này</p>
-            </div>
-          )}
-          {!activeCategory && (
-            <div className="col-span-full bg-white p-12 rounded-3xl border border-gray-100 text-center">
-              <p className="text-gray-400">Vui lòng chọn hoặc tạo danh mục trước</p>
-            </div>
-          )}
-        </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">Danh mục này hiện chưa có món</h3>
+            <p className="text-gray-500 max-w-sm mb-8">
+              Bổ sung ngay sản phẩm mới để phong phú hơn sự lựa chọn cho thực khách.
+            </p>
+            <button
+              onClick={() => { setEditingProduct(null); setShowProductModal(true); }}
+              className="flex min-h-[44px] items-center justify-center gap-2 bg-orange-500 text-white px-8 py-3.5 rounded-full font-bold hover:bg-orange-600 transition-all shadow-lg shadow-orange-200 focus-visible:ring-2 focus-visible:ring-orange-400"
+            >
+              <Plus size={20} /> Thêm sản phẩm
+            </button>
+          </div>
+        ) : (
+          <div className="col-span-full bg-white p-16 rounded-3xl border border-dashed border-gray-200 text-center">
+            <p className="text-gray-400 text-lg">Vui lòng chọn hoặc tạo danh mục trước khi quản lý sản phẩm.</p>
+          </div>
+        )}
       </div>
 
       {/* Modals */}
@@ -262,9 +471,51 @@ export default function MenuManagement({ user, store }: MenuManagementProps) {
           storeId={store.id}
           currency={storeCurrency}
           categoryId={activeCategory!}
+          categories={categories}
           editing={editingProduct}
           onClose={() => setShowProductModal(false)}
         />
+      )}
+
+      {/* Custom Confirm Modal — replaces window.confirm() which is blocked by some browsers */}
+      {confirmDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="bg-white w-full max-w-sm rounded-3xl shadow-2xl overflow-hidden">
+            <div className="p-6">
+              <div className="flex items-start gap-4 mb-6">
+                <div className="shrink-0 w-10 h-10 bg-red-50 rounded-2xl flex items-center justify-center text-red-500 border border-red-100">
+                  <Trash2 size={18} />
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-900 mb-1">Xác nhận xóa</h3>
+                  <p className="text-sm text-gray-500 leading-relaxed">{confirmDialog.message}</p>
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setConfirmDialog(null)}
+                  disabled={isDeleting}
+                  className="flex-1 py-3 rounded-2xl border border-gray-200 text-gray-700 font-bold hover:bg-gray-50 transition-all disabled:opacity-50"
+                >
+                  Hủy
+                </button>
+                <button
+                  type="button"
+                  onClick={confirmDialog.onConfirm}
+                  disabled={isDeleting}
+                  className="flex-1 py-3 rounded-2xl bg-red-500 text-white font-bold hover:bg-red-600 transition-all disabled:opacity-70 flex items-center justify-center gap-2"
+                >
+                  {isDeleting ? (
+                    <><Loader2 size={16} className="animate-spin" /> Đang xóa...</>
+                  ) : (
+                    'Xóa'
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
@@ -282,9 +533,17 @@ function CategoryModal({ storeId, editing, onClose }: { storeId: string, editing
       if (editing) {
         await updateDoc(doc(db, 'categories', editing.id), { name });
       } else {
+        // Fetch current categories to determine the next order value
+        const q = query(collection(db, 'categories'), where('restaurantId', '==', storeId));
+        const snap = await getDocs(q);
+        const maxOrder = snap.docs.reduce((max, d) => {
+          const order = Number(d.data().order) || 0;
+          return order > max ? order : max;
+        }, -1);
+
         await addDoc(collection(db, 'categories'), {
           name,
-          order: Date.now(),
+          order: maxOrder + 1,
           storeId,
           restaurantId: storeId,
           createdAt: new Date().toISOString()
@@ -330,7 +589,7 @@ function CategoryModal({ storeId, editing, onClose }: { storeId: string, editing
   );
 }
 
-function ProductModal({ user, storeId, categoryId, currency, editing, onClose }: { user: User, storeId: string, categoryId: string, currency: 'EUR' | 'USD' | 'VND', editing: Product | null, onClose: () => void }) {
+function ProductModal({ user, storeId, categoryId, categories, currency, editing, onClose }: { user: User, storeId: string, categoryId: string, categories: Category[], currency: 'EUR' | 'USD' | 'VND', editing: Product | null, onClose: () => void }) {
   const initialPriceValue = editing?.price != null ? Number(editing.price) : null;
   const normalizedInitialPrice = initialPriceValue != null && Number.isFinite(initialPriceValue) ? initialPriceValue : null;
   const initialHashtags = Array.isArray(editing?.hashtags)
@@ -360,6 +619,7 @@ function ProductModal({ user, storeId, categoryId, currency, editing, onClose }:
     hashtags: string[];
     variants: Variant[];
     imageUrl: string;
+    categoryId: string;
   }>({
     name: editing?.name || '',
     shortDescription: typeof editing?.shortDescription === 'string' ? editing.shortDescription : '',
@@ -367,7 +627,8 @@ function ProductModal({ user, storeId, categoryId, currency, editing, onClose }:
     price: normalizedInitialPrice,
     hashtags: initialHashtags,
     variants: initialVariants,
-    imageUrl: typeof editing?.imageUrl === 'string' ? editing.imageUrl : ''
+    imageUrl: typeof editing?.imageUrl === 'string' ? editing.imageUrl : '',
+    categoryId: editing?.categoryId || categoryId
   });
   const [priceInput, setPriceInput] = useState(normalizedInitialPrice != null ? String(normalizedInitialPrice) : '');
   const [newTag, setNewTag] = useState('');
@@ -532,7 +793,6 @@ function ProductModal({ user, storeId, categoryId, currency, editing, onClose }:
     const normalizedShortDescription = formData.shortDescription.trim();
     const normalizedLongDescription = formData.longDescription.trim();
     const normalizedDescription = normalizedLongDescription || normalizedShortDescription;
-    const targetCategoryId = editing?.categoryId || categoryId;
 
     setLoading(true);
     try {
@@ -552,7 +812,7 @@ function ProductModal({ user, storeId, categoryId, currency, editing, onClose }:
         hashtags: normalizedHashtags,
         variants: normalizedVariants,
         imageUrl: formData.imageUrl.trim(),
-        categoryId: targetCategoryId,
+        categoryId: formData.categoryId,
         storeId,
         restaurantId: storeId,
         updatedAt: new Date().toISOString()
@@ -561,8 +821,16 @@ function ProductModal({ user, storeId, categoryId, currency, editing, onClose }:
       if (editing) {
         await updateDoc(doc(db, 'products', editing.id), data);
       } else {
+        const q = query(collection(db, 'products'), where('categoryId', '==', formData.categoryId));
+        const snap = await getDocs(q);
+        const maxOrder = snap.docs.reduce((max, d) => {
+          const order = Number(d.data().order) || 0;
+          return order > max ? order : max;
+        }, -1);
+
         await addDoc(collection(db, 'products'), {
           ...data,
+          order: maxOrder + 1,
           createdAt: new Date().toISOString()
         });
       }
@@ -599,6 +867,21 @@ function ProductModal({ user, storeId, categoryId, currency, editing, onClose }:
                   placeholder="Ví dụ: Phở bò đặc biệt"
                   className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all"
                 />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Danh mục <span className="text-red-500">*</span></label>
+                <select
+                  required
+                  value={formData.categoryId}
+                  onChange={(e) => setFormData(prev => ({ ...prev, categoryId: e.target.value }))}
+                  className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all cursor-pointer"
+                >
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-2">Mô tả ngắn</label>

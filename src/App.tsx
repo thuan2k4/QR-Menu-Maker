@@ -10,6 +10,7 @@ import Dashboard from './components/Dashboard';
 import Login from './components/Login';
 import PublicMenu from './components/PublicMenu';
 import LandingPage from './components/LandingPage';
+import NotFound from './components/NotFound';
 
 export default function App() {
   const [user, setUser] = useState<User | null>(null);
@@ -84,6 +85,7 @@ export default function App() {
           <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <Login />} />
           <Route path="/dashboard/*" element={user ? <Dashboard user={user} profile={profile} /> : <Navigate to="/login" />} />
           <Route path="/m/:slug" element={<PublicMenu />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
     </Router>
