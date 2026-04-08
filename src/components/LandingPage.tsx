@@ -12,6 +12,10 @@ export default function LandingPage() {
     { src: '/preview_2.png', altKey: 'landing.demoImageAlt2' },
     { src: '/preview_3.png', altKey: 'landing.demoImageAlt3' },
     { src: '/preview_4.png', altKey: 'landing.demoImageAlt4' },
+    { src: '/preview_5.png', altKey: 'landing.demoImageAlt5' },
+    { src: '/preview_6.png', altKey: 'landing.demoImageAlt6' },
+    { src: '/preview_7.png', altKey: 'landing.demoImageAlt7' },
+    { src: '/preview_8.png', altKey: 'landing.demoImageAlt8' },
   ];
   const [activeDemoIndex, setActiveDemoIndex] = useState(0);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
@@ -98,9 +102,9 @@ export default function LandingPage() {
           {t('landing.demoDescription')}
         </p>
 
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 items-stretch">
-          <div className="rounded-3xl overflow-hidden border border-gray-100 shadow-lg h-full min-h-[560px] xl:min-h-[700px] bg-white">
-            <div className="w-full h-full flex items-center justify-center bg-white p-4">
+        <div className="grid grid-cols-1 xl:grid-cols-[1.7fr_1fr] gap-8 items-stretch">
+          <div className="rounded-3xl overflow-hidden border border-gray-100 shadow-lg bg-white h-full">
+            <div className="w-full h-full bg-white p-4 flex items-center justify-center">
               <img
                 src={demoImages[activeDemoIndex].src}
                 alt={t(demoImages[activeDemoIndex].altKey)}
@@ -109,7 +113,7 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="space-y-5 min-h-[560px] xl:min-h-[700px]">
+          <div className="flex h-full flex-col gap-5">
             <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
               <p className="text-gray-500 text-sm mb-2">{t('landing.screenshotDetails')}</p>
               <p className="text-lg font-semibold text-gray-900">{t(demoImages[activeDemoIndex].altKey)}</p>
@@ -130,7 +134,7 @@ export default function LandingPage() {
 
             <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
               <p className="text-gray-500 text-sm mb-2">{t('landing.selectAnotherImage')}</p>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3">
                 {demoImages.map((image, index) => (
                   <button
                     key={image.src}
@@ -142,7 +146,9 @@ export default function LandingPage() {
                       : 'border-gray-200 hover:border-orange-300 hover:shadow-sm'
                       }`}
                   >
-                    <img src={image.src} alt={t(image.altKey)} className="w-full h-24 xl:h-28 object-cover" />
+                    <div className="aspect-video w-full overflow-hidden">
+                      <img src={image.src} alt={t(image.altKey)} className="w-full h-full object-cover" />
+                    </div>
                   </button>
                 ))}
               </div>
