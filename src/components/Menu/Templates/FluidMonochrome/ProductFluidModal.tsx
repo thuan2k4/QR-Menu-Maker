@@ -47,7 +47,7 @@ export default function ProductFluidModal({ product, onClose }: ProductFluidModa
 
   return (
     <motion.div
-      className="w-full sm:max-w-2xl max-h-[calc(100dvh-2rem)] rounded-3xl overflow-hidden shadow-2xl border border-black/5"
+      className="relative w-full sm:max-w-2xl max-h-[calc(100dvh-2rem)] rounded-3xl overflow-hidden shadow-2xl border border-black/5"
       style={{ backgroundColor: '#F8F7F5' }}
       onClick={(e) => e.stopPropagation()}
     >
@@ -55,10 +55,10 @@ export default function ProductFluidModal({ product, onClose }: ProductFluidModa
         {/* Close Button - Floating */}
         <motion.button
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 p-2 rounded-full backdrop-blur-md hover:opacity-80 transition-opacity"
+          className="absolute top-4 right-4 z-20 flex h-11 w-11 items-center justify-center rounded-full border backdrop-blur-md hover:opacity-80 transition-opacity"
           style={{
             backgroundColor: 'rgba(26, 26, 26, 0.8)',
-            borderColor: '#1A1A1A'
+            borderColor: 'rgba(248, 247, 245, 0.24)'
           }}
           aria-label={t('menuUi.close')}
           whileHover={{ scale: 1.1 }}
@@ -69,7 +69,7 @@ export default function ProductFluidModal({ product, onClose }: ProductFluidModa
 
         {/* Product Image - Large Organic Shape */}
         <motion.div
-          className="relative h-52 sm:h-72 shrink-0 overflow-hidden"
+          className="relative h-80 sm:h-72 shrink-0 overflow-hidden"
           style={{ backgroundColor: '#E8E6E0' }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

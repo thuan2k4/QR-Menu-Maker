@@ -5,7 +5,7 @@ import { db } from '../../firebase';
 import { Store } from '../../types';
 import { getMenuTemplateById } from '../../constants/menuTemplates';
 import * as QRCode from 'qrcode.react';
-import { CheckCircle, LayoutGrid, LayoutList, MapPin, Palette, Phone, QrCode, RefreshCcw, Save, Star } from 'lucide-react';
+import { CheckCircle, ChevronRight, LayoutGrid, LayoutList, MapPin, Palette, Phone, QrCode, RefreshCcw, Save, Star } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 
 type TemplateOption = {
@@ -275,163 +275,322 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
       id: PREVIEW_PRODUCT_BASE[0].id,
       name: t('themeEditor.previewProduct1Name'),
       description: t('themeEditor.previewProduct1Description'),
-      price: PREVIEW_PRODUCT_BASE[0].price
+      price: PREVIEW_PRODUCT_BASE[0].price,
+      hashtags: ['#càphê', '#sáng', '#mới'],
     },
     {
       id: PREVIEW_PRODUCT_BASE[1].id,
       name: t('themeEditor.previewProduct2Name'),
       description: t('themeEditor.previewProduct2Description'),
-      price: PREVIEW_PRODUCT_BASE[1].price
+      price: PREVIEW_PRODUCT_BASE[1].price,
+      hashtags: ['#salad', '#tươi', '#healthy'],
     },
     {
       id: PREVIEW_PRODUCT_BASE[2].id,
       name: t('themeEditor.previewProduct3Name'),
       description: t('themeEditor.previewProduct3Description'),
-      price: PREVIEW_PRODUCT_BASE[2].price
+      price: PREVIEW_PRODUCT_BASE[2].price,
+      hashtags: ['#trà', '#giảikhát', '#mát'],
     }
   ], [t]);
+
+  const previewStoreName = restaurant?.name || 'The Coffee Shop';
+  const previewStoreBio = restaurant?.bio || previewText.coffeeShopBio;
+  const previewStoreAddress = restaurant?.address || previewText.cityFallback;
+  const previewStorePhone = restaurant?.phone || '0123456789';
+  const previewStoreInitial = previewStoreName.trim().charAt(0).toUpperCase() || 'C';
+
+  const previewCoffeeProducts = [
+    {
+      id: 'rose-espresso',
+      name: 'Rose Espresso',
+      description: 'Espresso Hoa Hồng',
+      priceFrom: 59000,
+      priceTo: 59000,
+      hashtags: ['#rose', '#espresso'],
+      variants: ['M +0', 'L +5,000'],
+    },
+    {
+      id: 'coldbrew',
+      name: 'Coldbrew',
+      description: t('themeEditor.previewColdBrewDescription'),
+      priceFrom: 32000,
+      priceTo: 45000,
+      hashtags: ['#coffee', '#coldbrew', '#ice'],
+      variants: ['M +0', 'L +13,000'],
+    },
+    {
+      id: 'americano',
+      name: 'Americano',
+      description: t('themeEditor.previewAmericanoDescription'),
+      priceFrom: 25000,
+      priceTo: 30000,
+      hashtags: ['#cà phê'],
+      variants: ['M +0', 'L +5,000'],
+    },
+  ] as const;
 
   const renderPreviewLayout = () => {
     // Vibrant Template Preview
     if (isVibrantPreview) {
       return (
-        <div className="h-full w-full bg-gradient-to-b from-white to-orange-50">
-          {/* Cover Image */}
-          <div className="h-24 bg-gradient-to-r from-orange-500 to-orange-600" />
+        <div className="h-full w-full bg-[#fff7f2] text-[#1b1511]">
+          <div className="relative h-28 overflow-hidden">
+            {restaurant?.coverUrl ? (
+              <img
+                src={restaurant.coverUrl}
+                alt="Cover"
+                className="h-full w-full object-cover object-center"
+                referrerPolicy="no-referrer"
+              />
+            ) : (
+              <div className="h-full w-full bg-gradient-to-r from-orange-500 via-orange-600 to-orange-700" />
+            )}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-orange-500/20 to-orange-700/40" />
+          </div>
 
-          <div className="px-3 space-y-4 pt-4 pb-4">
-            {/* Store Info Card */}
-            <div className="rounded-3xl bg-white shadow-md overflow-hidden border-4 border-orange-100">
-              <div className="flex items-start gap-4 p-4">
-                <div className="flex-shrink-0 w-16 h-16 rounded-2xl overflow-hidden border-2 border-orange-400 bg-gradient-to-br from-orange-100 to-orange-50 flex items-center justify-center">
-                  <span className="text-2xl font-black text-orange-600">C</span>
-                </div>
-                <div className="flex-1 space-y-2">
-                  <p className="text-sm font-black text-orange-600 uppercase tracking-[0.2em]">✨ Welcome to</p>
-                  <h1 className="text-lg font-black text-gray-900">{restaurant?.name || 'Coffee Shop'}</h1>
-                  <div className="space-y-1 text-xs font-semibold text-gray-700">
-                    <p className="flex items-center gap-1.5"><span>📍</span>{restaurant?.address || previewText.cityFallback}</p>
-                    <p className="flex items-center gap-1.5"><span>☎️</span>0123456789</p>
-                    <p className="flex items-center gap-1.5">{previewText.detailedStoreDescription}</p>
-
+          <div className="-mt-14 px-3 relative z-10">
+            <div className="overflow-hidden rounded-[34px] border-4 border-orange-100 bg-white shadow-[0_24px_52px_-28px_rgba(249,115,22,0.45)]">
+              <div className="px-5 py-6">
+                <div className="flex flex-col items-center text-center gap-5">
+                  <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-[28px] border-4 border-orange-500 bg-white shadow-lg ring-8 ring-orange-50">
+                    {restaurant?.logoUrl ? (
+                      <img
+                        src={restaurant.logoUrl}
+                        alt="Logo"
+                        className="h-full w-full object-cover object-center"
+                        referrerPolicy="no-referrer"
+                      />
+                    ) : (
+                      <span className="text-4xl font-black text-orange-600">{previewStoreInitial}</span>
+                    )}
                   </div>
-                </div>
-              </div>
-            </div>
 
-            {/* Category Buttons */}
-            <div className="space-y-2">
-              <p className="text-xs font-bold text-orange-600 uppercase tracking-wider">📋 Our Menu</p>
-              <div className="flex gap-2 flex-wrap">
-                {[previewText.coffee, previewText.matcha].map((cat) => (
-                  <button key={cat} type="button" className="px-4 py-2 rounded-full font-bold text-sm whitespace-nowrap bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md text-xs">
-                    {cat}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Product Grid */}
-            <div className="grid gap-3 grid-cols-2">
-              {previewProducts.map((product) => (
-                <div key={product.id} className="rounded-2xl bg-white border-2 border-orange-200 shadow-md overflow-hidden">
-                  <div className="h-20 bg-orange-50" />
-                  <div className="p-3 space-y-1.5">
-                    <h4 className="font-bold text-xs text-gray-900 line-clamp-2">{product.name}</h4>
-                    <p className="text-xs text-orange-600 font-black">
-                      {new Intl.NumberFormat(theme.currency === 'VND' ? 'vi-VN' : theme.currency === 'EUR' ? 'de-DE' : 'en-US', { style: 'currency', currency: theme.currency, maximumFractionDigits: theme.currency === 'VND' ? 0 : 2 }).format(product.price)}
+                  <div className="space-y-3">
+                    <p className="inline-flex rounded-full bg-orange-50 px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.28em] text-orange-600">
+                      ✨ {t('menuUi.welcomeTo')}
+                    </p>
+                    <h1 className="text-3xl font-black leading-tight text-gray-900">
+                      {previewStoreName}
+                    </h1>
+                    <div className="flex flex-col items-center gap-2 text-sm font-semibold text-gray-700">
+                      <p className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gray-50 px-4 py-2">
+                        <MapPin size={14} className="text-orange-500" />
+                        <span>{previewStoreAddress}</span>
+                      </p>
+                      <p className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gray-50 px-4 py-2">
+                        <Phone size={14} className="text-orange-500" />
+                        <span>{previewStorePhone}</span>
+                      </p>
+                    </div>
+                    <p className="text-sm leading-relaxed text-gray-500">
+                      {previewStoreBio}
                     </p>
                   </div>
                 </div>
-              ))}
+              </div>
             </div>
+          </div>
+
+          <div className="sticky top-0 z-20 mt-4 px-3">
+            <div className="rounded-[30px] border border-orange-100 bg-white/90 p-2 shadow-[0_18px_36px_-24px_rgba(249,115,22,0.45)] backdrop-blur-xl">
+              <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+                {[previewText.coffee, previewText.matcha].map((cat, index) => {
+                  const isActive = index === 0;
+
+                  return (
+                    <button
+                      key={cat}
+                      type="button"
+                      className={`relative flex-shrink-0 whitespace-nowrap rounded-2xl px-5 py-3 text-xs font-black uppercase tracking-widest transition-all ${isActive ? 'text-white' : 'text-gray-500 hover:text-orange-600'}`}
+                    >
+                      {isActive && (
+                        <span className="absolute inset-0 rounded-2xl bg-gradient-to-r from-orange-500 to-orange-600 shadow-lg shadow-orange-500/30" />
+                      )}
+                      <span className="relative z-10">{cat}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-4 px-3 pb-5 pt-4">
+            {previewCoffeeProducts.slice(0, 2).map((product, index) => (
+              <div
+                key={product.id}
+                className="overflow-hidden rounded-[28px] border-2 border-orange-200 bg-white shadow-[0_18px_38px_-26px_rgba(249,115,22,0.42)]"
+              >
+                <div className="relative h-40 overflow-hidden bg-gradient-to-br from-orange-100 via-orange-50 to-white">
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(251,146,60,0.25),_transparent_36%),radial-gradient(circle_at_bottom_left,_rgba(255,255,255,0.8),_transparent_30%)]" />
+                  <div className="absolute inset-3 rounded-[20px] border border-orange-200/70 bg-white/40 backdrop-blur-sm" />
+
+                </div>
+
+                <div className="space-y-3 p-4 w-full">
+                  <div className="space-y-1">
+                    <h3 className="text-base font-black text-gray-900">{product.name}</h3>
+                    <p className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-orange-500">
+                      {product.priceFrom === product.priceTo
+                        ? formatPreviewCurrency(product.priceFrom)
+                        : formatPreviewRange(product.priceFrom, product.priceTo)}
+                    </p>
+                    <p className="text-sm leading-relaxed text-gray-600">{product.description}</p>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    {product.hashtags.map((tag) => (
+                      <span key={`${product.id}-${tag}`} className="text-sm px-2.5 py-1 text-[10px] font-black text-gray-600">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+
+
+                  <div className="w-full pt-2 w-full">
+                    <button className="rounded-full bg-orange-500 px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.08em] text-white shadow-md w-full">
+                      {previewText.detail}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       );
     }
 
-    // Minimal Template Preview - CHECK BEFORE CLASSIC!
+    // Minimal Template Preview - static mirror of public menu layout
     if (isMinimalPreview) {
+      const minimalPreviewCategories = [previewText.coffee, previewText.matcha, 'Trà', 'Kombuch'];
+
       return (
-        <div className="h-full w-full flex flex-col bg-white">
-          {/* Cover Banner */}
-          <div className="h-20 bg-gradient-to-r from-indigo-400 via-indigo-300 to-slate-400" />
-
-          {/* Header */}
-          <div className="px-4 py-4 border-b border-slate-200 space-y-2">
-            <div className="flex items-center gap-3">
-              <div className="w-14 h-14 rounded-lg bg-indigo-200 flex items-center justify-center font-black text-indigo-700">
-                C
-              </div>
-              <div className='flex flex-col gap-2'>
-                <h1 className="text-base font-black text-gray-900">{restaurant?.name || 'Store'}</h1>
-                <p className="text-xs text-slate-600 font-medium">{previewText.trendyCafe}</p>
-                <div className="flex text-xs text-slate-600 font-medium space-y-0.5">
-                  <p>📍 {previewText.cityFallback}</p>
-                  <p className='ml-4'>☎️ 0123456789</p>
-                </div>
-              </div>
-            </div>
-
+        <div className="min-h-full bg-[#f4f5f7] text-[#171717]">
+          <div className="relative h-28 overflow-hidden bg-gradient-to-br from-slate-800 via-slate-700 to-slate-500">
+            {restaurant?.coverUrl ? (
+              <img
+                src={restaurant.coverUrl}
+                alt="Cover"
+                className="h-full w-full object-cover object-center"
+                referrerPolicy="no-referrer"
+              />
+            ) : (
+              <div className="h-full w-full bg-gradient-to-br from-slate-800 via-slate-700 to-slate-500" />
+            )}
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/20" />
           </div>
 
-          {/* Categories */}
-          <div className="px-4 py-3 border-b border-slate-200 space-y-2">
-            <p className="text-xs font-black uppercase tracking-[0.1em] text-slate-700">{previewText.categories}</p>
-            <div className="flex gap-2">
-              <button className="rounded-full bg-indigo-600 text-white font-bold px-4 py-1 text-xs shadow-sm">{previewText.coffee}</button>
-              <button className="rounded-full bg-slate-200 text-slate-700 font-bold px-4 py-1 text-xs">{previewText.matcha}</button>
+          <div className="border-b border-slate-100 bg-white">
+            <div className="px-6 py-8">
+              <div className="flex flex-col items-center text-center gap-5">
+                <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 shadow-sm">
+                  {restaurant?.logoUrl ? (
+                    <img
+                      src={restaurant.logoUrl}
+                      alt="Logo"
+                      className="h-full w-full object-cover object-center"
+                      referrerPolicy="no-referrer"
+                    />
+                  ) : (
+                    <span className="text-3xl font-black text-slate-700">{previewStoreInitial}</span>
+                  )}
+                </div>
+
+                <div className="space-y-3">
+                  <h1 className="text-4xl font-black uppercase tracking-tighter text-gray-900">
+                    {previewStoreName}
+                  </h1>
+                  <p className="mx-auto max-w-sm text-sm font-medium leading-relaxed text-slate-600">
+                    {previewStoreBio}
+                  </p>
+                  <div className="flex flex-col gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">
+                    <span className="flex items-center justify-center gap-2">📍 {previewStoreAddress}</span>
+                    <span className="flex items-center justify-center gap-2">☎️ {previewStorePhone}</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Products */}
-          <div className="px-4 py-3 space-y-4 overflow-y-auto flex-1">
-            {/* Product Card 1 */}
-            <div className="flex gap-4 pb-4 border-b border-slate-100">
-              <div className="w-28 h-28 rounded-lg bg-slate-300 flex-shrink-0" />
-              <div className="flex-1 min-w-0 space-y-2">
-                <h3 className="font-black text-sm text-gray-900">Coldbrew</h3>
-                <p className="text-xs text-slate-600">{t('themeEditor.previewColdBrewDescription')}</p>
+          <div className="sticky top-0 z-20 border-b border-slate-100 bg-white/90 backdrop-blur-md">
+            <div className="px-6">
+              <div className="flex items-center gap-8 overflow-x-auto no-scrollbar py-4">
+                {minimalPreviewCategories.map((category, index) => {
+                  const isActive = index === 0;
 
-                {/* Hashtags */}
-                <div className="flex flex-wrap gap-1">
-                  <span className="text-xs text-indigo-600 font-bold">#coffee</span>
-                  <span className="text-xs text-indigo-600 font-bold">#coldbrew</span>
-                  <span className="text-xs text-indigo-600 font-bold">#ice</span>
-                </div>
-
-                {/* Variants */}
-                <div className="flex flex-wrap gap-1">
-                  <span className="text-xs font-bold bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full border border-indigo-200">M +0đ</span>
-                  <span className="text-xs font-bold bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full border border-indigo-200">L +13,000đ</span>
-                </div>
-
-                {/* Price Range */}
-                <p className="text-sm font-black text-indigo-600">{formatPreviewRange(32000, 45000)}</p>
+                  return (
+                    <button
+                      key={category}
+                      type="button"
+                      className={`relative py-2 text-xs font-black uppercase tracking-[0.2em] transition-colors flex-shrink-0 whitespace-nowrap ${isActive ? 'text-indigo-600' : 'text-slate-400'}`}
+                    >
+                      <span>{category}</span>
+                      {isActive && <span className="absolute bottom-0 left-0 right-0 h-1 rounded-full bg-indigo-600" />}
+                    </button>
+                  );
+                })}
               </div>
             </div>
+          </div>
 
-            {/* Product Card 2 */}
-            <div className="flex gap-4">
-              <div className="w-28 h-28 rounded-lg bg-slate-300 flex-shrink-0" />
-              <div className="flex-1 min-w-0 space-y-2">
-                <h3 className="font-black text-sm text-gray-900">Americano</h3>
-                <p className="text-xs text-slate-600">{t('themeEditor.previewAmericanoDescription')}</p>
+          <div className="px-6 py-8">
+            <div className="space-y-4">
+              {previewCoffeeProducts.slice(0, 2).map((product, index) => {
+                const displayPrice = index === 0 ? formatPreviewCurrency(59000) : formatPreviewRange(32000, 45000);
 
-                {/* Hashtags */}
-                <div className="flex flex-wrap gap-1">
-                  <span className="text-xs text-indigo-600 font-bold">{t('themeEditor.previewCoffeeTag')}</span>
-                </div>
+                return (
+                  <div
+                    key={product.id}
+                    className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm"
+                  >
+                    <div className="flex flex-col gap-4">
+                      <div className="h-40 w-full flex-shrink-0 overflow-hidden rounded-lg bg-slate-100">
+                        {restaurant?.coverUrl ? (
+                          <img
+                            src={restaurant.coverUrl}
+                            alt="Product"
+                            className="h-full w-full object-cover object-center"
+                            referrerPolicy="no-referrer"
+                          />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center bg-slate-200 text-2xl text-slate-500">☕</div>
+                        )}
+                      </div>
 
-                {/* Variants */}
-                <div className="flex flex-wrap gap-1">
-                  <span className="text-xs font-bold bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full border border-indigo-200">M +0đ</span>
-                  <span className="text-xs font-bold bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full border border-indigo-200">L +5,000đ</span>
-                </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-lg font-black text-gray-900 truncate">{product.name}</h3>
+                        <p className="mt-2 line-clamp-2 text-sm font-medium text-slate-600">
+                          {product.description}
+                        </p>
 
-                {/* Price Range */}
-                <p className="text-sm font-black text-indigo-600">{formatPreviewRange(25000, 30000)}</p>
-              </div>
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {product.hashtags.slice(0, 3).map((tag) => (
+                            <span key={`${product.id}-${tag}`} className="text-xs font-bold text-indigo-600">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {product.variants.slice(0, 2).map((variant) => (
+                            <span
+                              key={`${product.id}-${variant}`}
+                              className="rounded-full border border-indigo-200 bg-indigo-50 px-2.5 py-1 text-xs font-bold text-indigo-700"
+                            >
+                              {variant}
+                            </span>
+                          ))}
+                        </div>
+
+                        <div className="mt-4 flex items-center justify-between gap-2">
+                          <p className="text-base font-black text-indigo-600">{displayPrice}</p>
+                          <ChevronRight size={20} className="text-slate-400" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -493,8 +652,8 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                         <span className="rounded-full border border-[#d2c8a8] bg-[#f5f0df] px-2 py-1 text-[10px] font-semibold text-[#736852]">#ice</span>
                       </div>
                       <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-                        <p className="text-base font-bold text-[#3f382f]">{formatPreviewRange(minPrice, maxPrice)}</p>
-                        <button className="rounded-full border border-[#8f8771] bg-[#8f8771] px-3 py-1.5 text-[11px] font-semibold text-white">{previewText.detail}</button>
+                        <p className="text-md font-bold text-[#3f382f]">{formatPreviewRange(minPrice, maxPrice)}</p>
+                        <button className="rounded-full border border-[#8f8771] bg-[#8f8771] px-3 py-1.5 text-[12px] font-semibold text-white">{previewText.detail}</button>
                       </div>
                     </div>
                   </div>
@@ -506,66 +665,130 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
       );
     }
 
-    // Fluid Monochrome Template Preview
+    // Fluid Monochrome Template Preview - static mirror of public menu layout
     if (isFluidMonochromePreview) {
-      return (
-        <div className="h-full w-full bg-[#f8f7f5] text-[#1a1a1a]">
-          <div className="h-24 overflow-hidden rounded-[30px] bg-gradient-to-r from-[#4f4f4f] via-[#666] to-[#4a4a4a]">
-            {restaurant?.coverUrl ? (
-              <img
-                src={restaurant.coverUrl}
-                alt="Cover"
-                className="h-full w-full object-cover grayscale"
-                referrerPolicy="no-referrer"
-              />
-            ) : null}
-          </div>
+      const fluidPreviewCategories = [previewText.coffee, previewText.matcha, 'Trà'];
 
-          <div className="space-y-4 px-3 pb-4 pt-4">
-            <div className="rounded-[26px] border border-[#d8d4cc] bg-[#fbfaf8] p-4 shadow-sm">
-              <div className="flex flex-col items-start gap-3">
-                <div className="h-14 w-14 flex-shrink-0 rounded-[36px] border border-[#bdb8ad] bg-[#e5e2dc]" />
-                <div className="min-w-0 space-y-1.5">
-                  <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#777268]">✧ Welcome</p>
-                  <h1 className="truncate text-xl font-black text-[#1f1f1f]">{restaurant?.name || 'Coffee Shop'}</h1>
-                  <div className="space-y-0.5 text-[11px] font-semibold text-[#5e5b55]">
-                    <p>📍 {restaurant?.address || previewText.cityFallback}</p>
-                    <p>☎️ 0123456789</p>
+      return (
+        <div className="relative min-h-full bg-[#f8f7f5] text-[#1a1a1a]">
+          <svg className="pointer-events-none absolute inset-0 h-full w-full opacity-40">
+            <defs>
+              <pattern id="theme-editor-fluid-noise" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
+                <circle cx="25" cy="25" r="1" fill="#6B6B6B" opacity="0.1" />
+                <circle cx="75" cy="75" r="1" fill="#6B6B6B" opacity="0.1" />
+                <circle cx="75" cy="25" r="0.5" fill="#6B6B6B" opacity="0.05" />
+                <circle cx="25" cy="75" r="0.5" fill="#6B6B6B" opacity="0.05" />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#theme-editor-fluid-noise)" />
+          </svg>
+
+          <div className="relative z-[1]">
+            <div className="relative overflow-hidden pt-0">
+              {restaurant?.coverUrl ? (
+                <div className="relative h-44 overflow-hidden">
+                  <img
+                    src={restaurant.coverUrl}
+                    alt="Cover"
+                    className="h-full w-full object-cover grayscale"
+                    referrerPolicy="no-referrer"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/40" />
+                </div>
+              ) : (
+                <div className="h-44 bg-gradient-to-br" style={{ backgroundColor: '#4A4A4A' }} />
+              )}
+
+              <div className="relative z-10 mx-auto -mt-20 mb-8 px-5">
+                <div className="overflow-hidden rounded-[2.5rem] border border-black/5 bg-[#F8F7F5] shadow-xl">
+                  <div className="p-6 pb-7">
+                    <div className="flex flex-col items-center gap-5 text-center">
+                      <div className="h-20 w-20 overflow-hidden rounded-full border-2 ring-8 ring-black/5" style={{ borderColor: '#1A1A1A', backgroundColor: '#6B6B6B' }}>
+                        {restaurant?.logoUrl ? (
+                          <img
+                            src={restaurant.logoUrl}
+                            alt="Logo"
+                            className="h-full w-full object-cover"
+                            referrerPolicy="no-referrer"
+                          />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center text-3xl font-black text-[#F8F7F5]">{previewStoreInitial}</div>
+                        )}
+                      </div>
+
+                      <div className="space-y-3">
+                        <p className="inline-block rounded-full bg-black/5 px-3 py-1 text-[10px] font-black uppercase tracking-[0.25em] text-[#6B6B6B]">
+                          ✧ {t('menuUi.greeting')}
+                        </p>
+                        <h1 className="text-3xl font-black leading-tight text-[#1A1A1A]">{previewStoreName}</h1>
+                        <div className="space-y-2 text-sm font-bold text-[#4A4A4A]">
+                          <p className="flex items-center justify-center gap-2">📍 {previewStoreAddress}</p>
+                          <p className="flex items-center justify-center gap-2">☎️ {previewStorePhone}</p>
+                        </div>
+                        <p className="text-sm font-medium leading-relaxed text-[#6B6B6B] opacity-80">{previewStoreBio}</p>
+                      </div>
+                    </div>
                   </div>
-                  <p className="text-[11px] text-[#6c6961]">{restaurant?.bio || previewText.coffeeShopBio}</p>
                 </div>
               </div>
             </div>
 
-            <div className="rounded-[26px] border border-[#ded9cf] bg-white p-4 shadow-sm">
-              <p className="text-[9px] font-black uppercase tracking-[0.16em] text-[#747068]">◆ {previewText.categories}</p>
-              <h2 className="mt-1 text-xl font-black text-[#1e1e1e]">{previewText.chooseDish}</h2>
-              <div className="mt-3 flex flex-wrap gap-2">
-                <button className="rounded-full border border-[#1f1f1f] bg-[#1f1f1f] px-3 py-1.5 text-xs font-black text-[#f8f7f5]">{previewText.coffee}</button>
-                <button className="rounded-full border border-[#c9c3b8] bg-[#f7f5f1] px-3 py-1.5 text-xs font-black text-[#5f5b54]">{previewText.matcha}</button>
+            <div className="sticky top-0 z-20 mb-7 px-5">
+              <div className="flex items-center gap-2 overflow-x-auto no-scrollbar rounded-[2rem] border border-black/5 bg-[#F8F7F5]/90 p-2 shadow-lg backdrop-blur-xl">
+                {fluidPreviewCategories.map((category, index) => {
+                  const isActive = index === 0;
+
+                  return (
+                    <button
+                      key={category}
+                      type="button"
+                      className={`relative flex-shrink-0 whitespace-nowrap rounded-2xl px-5 py-3 text-[11px] font-black uppercase tracking-widest ${isActive ? 'text-[#F8F7F5]' : 'text-[#4A4A4A]'}`}
+                    >
+                      {isActive && <span className="absolute inset-0 rounded-2xl bg-[#1A1A1A]" />}
+                      <span className="relative z-10">{category}</span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
-            <div className="grid grid-cols-1 gap-3">
-              {previewProducts.slice(0, 2).map((product, idx) => {
-                const minPrice = product.price;
-                const maxPrice = product.price + (idx + 1) * 9000;
+            <div className="space-y-5 px-5 pb-8">
+              {previewCoffeeProducts.slice(0, 2).map((product, index) => {
+                const displayPrice = index === 0 ? formatPreviewCurrency(59000) : formatPreviewRange(32000, 45000);
 
                 return (
-                  <div key={product.id} className="overflow-hidden rounded-[26px] border border-[#e0dbd1] bg-white p-4 shadow-sm">
-                    <div className="grid gap-3 sm:grid-cols-[90px_1fr]">
-                      <div className="h-24 w-full overflow-hidden rounded-[24px] border border-[#ccc7bd] bg-[#e6e2d9]" />
-                      <div className="min-w-0 space-y-2">
-                        <h4 className="truncate text-base font-black text-[#1f1f1f]">{product.name}</h4>
-                        <p className="line-clamp-2 text-[11px] font-medium text-[#605d56]">{product.description}</p>
-                        <div className="mt-3 flex items-center justify-between gap-1">
-                          <p className="text-[10px] font-black text-[#1f1f1f]">{formatPreviewRange(minPrice, maxPrice)}</p>
-                          <button className="rounded-full border border-[#1f1f1f] bg-[#1f1f1f] p-1 text-[5px] text-[#f8f7f5]">{previewText.detail}</button>
+                  <div key={product.id} className="overflow-hidden rounded-[26px] border border-[#e0dbd1] bg-white shadow-sm">
+                    <div className="flex flex-col gap-3 p-4">
+                      <div className="relative h-24 overflow-hidden rounded-[24px] border border-[#ccc7bd] bg-[#e6e2d9]">
+                        {restaurant?.coverUrl ? (
+                          <img
+                            src={restaurant.coverUrl}
+                            alt="Product"
+                            className="h-full w-full object-cover object-center"
+                            referrerPolicy="no-referrer"
+                          />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center text-3xl font-black text-[#6B6B6B]">◆</div>
+                        )}
+                      </div>
+
+                      <div className="min-w-0">
+                        <h3 className="truncate text-base font-black text-[#1A1A1A]">{product.name}</h3>
+                        <p className="mt-1 line-clamp-2 text-[11px] font-medium leading-relaxed text-[#4A4A4A]">{product.description}</p>
+
+                        <div className="mt-3 flex min-w-0 items-center justify-between gap-3 flex-nowrap">
+                          <p className="min-w-0 truncate text-[12px] font-black text-[#1A1A1A]">{displayPrice}</p>
+                          <span className="inline-flex flex-shrink-0 items-center rounded-full border border-[#1A1A1A] bg-[#1A1A1A] px-2 py-1 text-[10px] font-black uppercase tracking-[0.08em] text-[#F8F7F5]">
+                            {previewText.detail}
+                          </span>
                         </div>
-                        <div className="flex flex-wrap gap-2">
-                          <span className="rounded-full bg-[#efebe4] px-2 py-0.5 text-[9px] font-black text-[#666259]">#coffee</span>
-                          <span className="rounded-full bg-[#efebe4] px-2 py-0.5 text-[9px] font-black text-[#666259]">#coldbrew</span>
-                          <span className="rounded-full bg-[#efebe4] px-2 py-0.5 text-[9px] font-black text-[#666259]">#ice</span>
+
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {product.hashtags.slice(0, 3).map((tag) => (
+                            <span key={`${product.id}-${tag}`} className="rounded-full bg-[#efebe4] px-2 py-1 text-[9px] font-black text-[#666259]">
+                              {tag}
+                            </span>
+                          ))}
                         </div>
                       </div>
                     </div>
@@ -713,7 +936,7 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-2.5">
+            <div className="grid grid-cols-1 gap-2.5">
               {previewProducts.slice(0, 2).map((product, idx) => {
                 const minPrice = product.price;
                 const maxPrice = product.price + (idx + 1) * 9000;
@@ -725,15 +948,15 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                   >
                     <div className="h-24 w-full bg-[#ecdcc9]" />
                     <div className="space-y-1.5 p-2.5">
-                      <h4 className="truncate text-xs font-black text-[#25190f]">{product.name}</h4>
-                      <p className="line-clamp-2 text-[10px] font-medium text-[#674b37]">{product.description}</p>
+                      <h4 className="truncate text-xl font-black text-[#25190f]">{product.name}</h4>
+                      <p className="line-clamp-2 text-md font-medium text-[#674b37]">{product.description}</p>
                       <div className="flex flex-wrap gap-1">
-                        <span className="border border-[#e2d0bc] bg-[#f5ebdd] px-2 py-0.5 text-[9px] font-black text-[#825233]">#coffee</span>
-                        <span className="border border-[#e2d0bc] bg-[#f5ebdd] px-2 py-0.5 text-[9px] font-black text-[#825233]">#coldbrew</span>
+                        <span className="border border-[#e2d0bc] bg-[#f5ebdd] px-2 py-0.5 text-[11px] font-black text-[#825233]">#coffee</span>
+                        <span className="border border-[#e2d0bc] bg-[#f5ebdd] px-2 py-0.5 text-[11px] font-black text-[#825233]">#coldbrew</span>
                       </div>
-                      <div className="flex flex-col items-start justify-between gap-2 pt-1">
-                        <p className="text-[11px] font-black text-[#9e5e35]">{formatPreviewRange(minPrice, maxPrice)}</p>
-                        <button className="border border-[#271c12] bg-[#271c12] px-2 py-1 text-[9px] font-black text-[#f5e6d4]">{previewText.detail}</button>
+                      <div className="flex items-center justify-between gap-2 pt-1">
+                        <p className="text-xl font-black text-[#9e5e35]">{formatPreviewRange(minPrice, maxPrice)}</p>
+                        <button className="border border-[#271c12] bg-[#271c12] px-2 py-2 text-[9px] font-black text-[#f5e6d4]">{previewText.detail}</button>
                       </div>
                     </div>
                   </div>
@@ -791,8 +1014,8 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
             <div className="mt-4 space-y-3">
               {[previewProducts[0], previewProducts[1]].map((product) => (
                 <div key={product.id} className="rounded-[28px] border border-[#e2d0bc] bg-[#fff9f2] p-4 shadow-sm">
-                  <div className="flex items-center gap-4">
-                    <div className="h-20 w-20 flex-shrink-0 rounded-[22px] bg-[#dcc4ad]" />
+                  <div className="flex flex-col gap-4">
+                    <div className="h-40 w-full flex-shrink-0 rounded-[22px] bg-[#dcc4ad]" />
                     <div className="min-w-0 flex-1 space-y-2">
                       <h4 className="truncate text-sm font-black text-[#2f1f17]">{product.name}</h4>
                       <p className="line-clamp-2 text-[11px] text-[#705340]">{product.description}</p>
@@ -801,7 +1024,7 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                         <span className="rounded-full bg-[#f0dfce] px-2 py-1 text-[10px] font-bold text-[#7f5135]">#hot</span>
                       </div>
                       <div className="mt-3 flex items-center justify-between gap-3">
-                        <p className="text-[12px] font-black text-[#8f4f2d]">
+                        <p className="text-lg font-black text-[#8f4f2d]">
                           {new Intl.NumberFormat(
                             theme.currency === 'VND' ? 'vi-VN' : theme.currency === 'EUR' ? 'de-DE' : 'en-US',
                             { style: 'currency', currency: theme.currency, maximumFractionDigits: theme.currency === 'VND' ? 0 : 2 },
@@ -871,7 +1094,6 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                   <div key={product.id} className="border border-[#cfd8ae] bg-[#fcfdf7] shadow-sm overflow-hidden">
                     <div className="h-32 w-full border-b border-[#d4ddb8] bg-[#dce5a9]" />
                     <div className="p-3 space-y-1.5">
-                      <span className="inline-flex border border-[#d9e2bd] bg-white px-2 py-0.5 text-[9px] font-black uppercase text-[#70823a]">Organic</span>
                       <h4 className="truncate text-sm font-black text-[#1f2b14]">{product.name}</h4>
                       <p className="line-clamp-2 text-[11px] font-semibold text-[#5a6a32]">{product.description}</p>
                       <div className="flex flex-wrap gap-1">
@@ -922,9 +1144,16 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
                     <div className="h-full w-full bg-gradient-to-br from-gray-200 to-gray-300" />
                   </div>
                 )}
-                <div className="min-w-0 space-y-2">
+                <div className="min-w-0 space-y-3">
                   <h4 className="font-semibold text-gray-900 line-clamp-2 break-words">{product.name}</h4>
                   <p className="text-sm text-gray-500 leading-relaxed">{product.description}</p>
+                  {product.hashtags && (
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {product.hashtags.map((tag) => (
+                        <span key={tag} className="text-[11px] text-gray-500 bg-gray-100 px-2 py-1 rounded-full">{tag}</span>
+                      ))}
+                    </div>
+                  )}
                   <span className="inline-flex items-center rounded-full px-3 py-1 text-sm font-bold text-white" style={{ backgroundColor: theme.primaryColor }}>
                     {new Intl.NumberFormat(theme.currency === 'VND' ? 'vi-VN' : theme.currency === 'EUR' ? 'de-DE' : 'en-US', { style: 'currency', currency: theme.currency, maximumFractionDigits: theme.currency === 'VND' ? 0 : 2 }).format(product.price)}
                   </span>
@@ -988,16 +1217,28 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
           </div>
 
           {/* Product Grid */}
-          <div className="grid gap-3 grid-cols-2">
+          <div className="grid grid-cols-1 gap-3">
             {previewProducts.map((product) => (
               <div key={product.id} className="rounded-[20px] border border-gray-200 bg-white shadow-sm overflow-hidden hover:shadow-md transition">
                 <div className="h-20 bg-gray-100" />
                 <div className="p-3 space-y-1.5">
+                  {product.hashtags && (
+                    <div className="flex flex-wrap gap-2 mt-2 mb-4">
+                      {product.hashtags.map((tag) => (
+                        <span key={tag} className="text-[10px] text-gray-500 bg-emerald-100 font-bold px-2 py-1 rounded-full">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                   <h4 className="font-bold text-xs text-gray-900 line-clamp-2">{product.name}</h4>
                   <p className="text-xs text-gray-500 line-clamp-1">{product.description}</p>
-                  <p className="text-xs font-bold text-emerald-600">
-                    {new Intl.NumberFormat(theme.currency === 'VND' ? 'vi-VN' : theme.currency === 'EUR' ? 'de-DE' : 'en-US', { style: 'currency', currency: theme.currency, maximumFractionDigits: theme.currency === 'VND' ? 0 : 2 }).format(product.price)}
-                  </p>
+                  <div className='flex items-center justify-between gap-2 pt-1'>
+                    <p className="text-xs font-bold text-emerald-600">
+                      {new Intl.NumberFormat(theme.currency === 'VND' ? 'vi-VN' : theme.currency === 'EUR' ? 'de-DE' : 'en-US', { style: 'currency', currency: theme.currency, maximumFractionDigits: theme.currency === 'VND' ? 0 : 2 }).format(product.price)}
+                    </p>
+                    <span className="rounded-2xl bg-gray-100 px-3 py-2 text-xs font-semibold text-gray-600">{t('menuUi.viewDetails')}</span>
+                  </div>
                 </div>
               </div>
             ))}
@@ -1052,7 +1293,7 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
     <div className="grid grid-cols-1 gap-6 xl:grid-cols-[0.42fr_0.58fr] xl:items-stretch xl:min-h-[620px]">
       <div className="space-y-6 xl:flex xl:h-full xl:min-h-[620px] xl:flex-col">
         <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
-          <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between md:gap-6">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-6">
             <div>
               <h2 className="text-2xl font-bold text-gray-900">{t('themeEditor.title')}</h2>
               <p className="text-sm text-gray-500 mt-1">{t('themeEditor.subtitle')}</p>
@@ -1170,7 +1411,7 @@ export default function ThemeEditor({ user, restaurant }: ThemeEditorProps) {
           </div>
 
           <div className="mt-5 flex items-center justify-center">
-            <div className="relative mx-auto w-full max-w-[396px]">
+            <div className="relative mx-auto w-full h-full max-h-[900px] max-w-[420px]">
               <span className="pointer-events-none absolute -left-[3px] top-20 h-10 w-[3px] rounded-r bg-slate-500/70" />
               <span className="pointer-events-none absolute -right-[3px] top-24 h-14 w-[3px] rounded-l bg-slate-500/80" />
               <span className="pointer-events-none absolute -right-[3px] top-44 h-11 w-[3px] rounded-l bg-slate-500/80" />

@@ -223,14 +223,13 @@ export default function TemplateOrganicMarket() {
                     ) : null}
 
                     <div className="flex flex-wrap items-end justify-between gap-2 pt-1">
-                      <p className="text-xl font-black text-[#6a7f34]">{getProductDisplayPrice(product)}</p>
+                      <p className="text-md font-black text-[#6a7f34]">{getProductDisplayPrice(product)}</p>
                       <button
                         type="button"
                         onClick={() => selectProduct(product)}
                         className="inline-flex items-center gap-1.5 border-b-2 border-[#6a7f34] pb-1 text-xs font-black uppercase tracking-[0.12em] text-[#4e5f26] transition hover:text-[#233015]"
                       >
                         {t('menuUi.viewDetails')}
-                        <ChevronRight size={14} />
                       </button>
                     </div>
                   </div>

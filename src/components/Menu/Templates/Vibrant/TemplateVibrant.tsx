@@ -49,14 +49,14 @@ export default function TemplateVibrant() {
 
         {/* Store Info Card - Enhanced */}
         <motion.div
-          className="relative mx-auto max-w-6xl px-4 sm:px-6 -mt-24 mb-12 z-10"
+          className="relative mx-auto max-w-2xl px-6 -mt-24 mb-10 z-10"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ type: 'spring', stiffness: 300, damping: 25, delay: 0.1 }}
         >
-          <div className="rounded-4xl bg-white shadow-2xl overflow-hidden border-4 border-orange-200 backdrop-blur-sm">
-            <div className="bg-gradient-to-r from-orange-50 to-white p-8">
-              <div className="flex items-start gap-8">
+          <div className="rounded-[2.5rem] bg-white shadow-2xl overflow-hidden border-4 border-orange-100 backdrop-blur-sm">
+            <div className="bg-gradient-to-br from-orange-50/50 to-white p-8">
+              <div className="flex flex-col items-center text-center gap-6">
                 {/* Logo */}
                 <motion.div
                   className="flex-shrink-0"
@@ -64,7 +64,7 @@ export default function TemplateVibrant() {
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ type: 'spring', stiffness: 300, delay: 0.2 }}
                 >
-                  <div className="w-28 h-28 rounded-3xl overflow-hidden border-4 border-orange-500 bg-gradient-to-br from-orange-200 to-orange-100 shadow-xl flex items-center justify-center ring-4 ring-orange-100">
+                  <div className="w-28 h-28 rounded-3xl overflow-hidden border-4 border-orange-500 bg-white shadow-xl flex items-center justify-center ring-8 ring-orange-50">
                     {store?.logoUrl ? (
                       <img
                         src={store.logoUrl}
@@ -82,31 +82,31 @@ export default function TemplateVibrant() {
 
                 {/* Store Details */}
                 <motion.div
-                  className="flex-1 space-y-4"
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ type: 'spring', stiffness: 300, delay: 0.3 }}
+                  className="space-y-4"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
                 >
                   <div>
-                    <p className="text-sm font-black text-orange-600 uppercase tracking-[0.2em]">✨ {t('menuUi.welcomeTo')}</p>
-                    <h1 className="text-4xl font-black text-gray-900 leading-tight mt-1">{store?.name || 'Menu'}</h1>
+                    <p className="text-[10px] font-black text-orange-600 uppercase tracking-[0.25em] mb-2 px-4 py-1.5 bg-orange-50 rounded-full inline-block">✨ {t('menuUi.welcomeTo')}</p>
+                    <h1 className="text-3xl font-black text-gray-900 leading-tight">{store?.name || 'Menu'}</h1>
                   </div>
-                  <div className="space-y-2.5 text-sm font-bold">
+                  <div className="flex flex-col items-center gap-2.5 text-sm font-bold">
                     {store?.address && (
-                      <p className="flex items-center gap-3 text-gray-800">
-                        <span className="text-2xl">📍</span>{store.address}
+                      <p className="flex items-center gap-2 text-gray-800 bg-gray-50 px-4 py-2 rounded-2xl w-full justify-center">
+                        <span className="text-lg">📍</span>{store.address}
                       </p>
                     )}
                     {store?.phone && (
-                      <p className="flex items-center gap-3 text-gray-800">
-                        <span className="text-2xl">☎️</span> {store.phone}
+                      <p className="flex items-center gap-2 text-gray-800 bg-gray-50 px-4 py-2 rounded-2xl w-full justify-center">
+                        <span className="text-lg">☎️</span> {store.phone}
                       </p>
                     )}
                   </div>
                   {store?.bio && (
-                    <p className="text-gray-700 leading-relaxed font-medium text-sm">{store.bio}</p>
+                    <p className="text-gray-500 leading-relaxed font-medium text-sm pt-2">{store.bio}</p>
                   )}
-                  <PrivatePreviewInlineNotice className="border-orange-200 bg-orange-50 text-orange-700" />
+                  <PrivatePreviewInlineNotice className="border-orange-100 bg-orange-50/50 text-orange-700 mx-auto" />
                 </motion.div>
               </div>
             </div>
@@ -114,54 +114,47 @@ export default function TemplateVibrant() {
         </motion.div>
       </div>
 
-      {/* Main Content */}
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 pb-12 space-y-10">
-        {/* Scrollable Categories */}
-        <motion.div
-          className="space-y-5"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-        >
-          <div>
-            <p className="text-sm font-black text-orange-600 uppercase tracking-[0.15em]">
-              📋 {t('menuUi.menuCategories')}
-            </p>
-            <h2 className="text-2xl font-black text-gray-900 mt-2">{t('menuUi.cravingPrompt')}</h2>
-          </div>
-
-          <div className="relative">
-            <div
-              ref={scrollContainer}
-              className="flex gap-4 overflow-x-auto pb-3 scroll-smooth flex-nowrap"
-              style={{ scrollBehavior: 'smooth' }}
-            >
-              {categories.map((cat, idx) => (
-                <motion.button
+      {/* Categories Toolbar */}
+      <div className="sticky top-0 z-30 mb-8 mt-2">
+        <div className="mx-auto max-w-2xl px-6">
+          <motion.div
+            className="bg-white/80 backdrop-blur-2xl rounded-[2rem] border-2 border-orange-50 shadow-lg p-2 flex items-center overflow-x-auto no-scrollbar gap-2 relative"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            {categories.map((cat) => {
+              const isActive = activeCategory === cat.id;
+              return (
+                <button
                   key={cat.id}
                   onClick={() => setActiveCategory(cat.id)}
-                  className={`px-6 py-3 rounded-full font-black text-sm whitespace-nowrap transition-all flex-shrink-0 translate-z-0 ${activeCategory === cat.id
-                    ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg shadow-orange-500/40'
-                    : 'bg-white text-gray-700 border-2 border-orange-300 hover:border-orange-500 shadow-md hover:shadow-lg'
+                  className={`relative px-6 py-3.5 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all flex-shrink-0 whitespace-nowrap ${isActive ? 'text-white' : 'text-gray-500 hover:text-orange-600'
                     }`}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  whileHover={{ scale: 1.08 }}
-                  whileTap={{ scale: 0.95 }}
-                  transition={{ delay: idx * 0.05, type: 'spring', stiffness: 300 }}
                 >
-                  {cat.name}
-                </motion.button>
-              ))}
-            </div>
-          </div>
-        </motion.div>
+                  {isActive && (
+                    <motion.div
+                      layoutId="vibrantActivePill"
+                      className="absolute inset-0 z-0 rounded-2xl bg-gradient-to-r from-orange-500 to-orange-600 shadow-lg shadow-orange-500/30"
+                      transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+                    />
+                  )}
+                  <span className="relative z-10">{cat.name}</span>
+                </button>
+              );
+            })}
+          </motion.div>
+        </div>
+      </div>
 
+      {/* Main Content */}
+      <div className="mx-auto max-w-2xl px-6 pb-12">
         {/* Products Grid */}
         <div>
+
           {filteredProducts.length > 0 ? (
             <motion.div
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+              className="grid grid-cols-1 sm:grid-cols-2 gap-6"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
@@ -205,17 +198,18 @@ export default function TemplateVibrant() {
               className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4"
             >
               <motion.div
-                className="w-full max-h-[90vh] sm:max-w-2xl max-w-lg rounded-t-4xl sm:rounded-4xl bg-white shadow-2xl overflow-y-auto flex flex-col border-4 border-orange-200"
+                className="relative w-full max-h-[90vh] sm:max-w-2xl max-w-lg rounded-t-4xl sm:rounded-4xl bg-white shadow-2xl overflow-y-auto flex flex-col border-4 border-orange-200"
                 layoutId="product-modal"
               >
                 {/* Close Button */}
                 <motion.button
                   onClick={clearSelectedProduct}
-                  className="absolute top-4 right-4 z-10 p-2 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 shadow-lg hover:shadow-xl border-0 text-white transition-all"
+                  aria-label={t('menuUi.close')}
+                  className="absolute top-4 right-4 z-20 flex h-11 w-11 items-center justify-center rounded-full border border-orange-200 bg-white/95 text-orange-600 shadow-lg transition-all hover:bg-orange-50"
                   whileHover={{ scale: 1.1, rotate: 90 }}
                   whileTap={{ scale: 0.9 }}
                 >
-                  <X className="w-6 h-6" />
+                  <X className="w-5 h-5" />
                 </motion.button>
 
                 {/* Product Image */}

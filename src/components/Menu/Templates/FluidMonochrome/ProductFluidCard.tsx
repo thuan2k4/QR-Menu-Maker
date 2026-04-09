@@ -27,7 +27,7 @@ export default function ProductFluidCard({ product, index = 0 }: ProductFluidCar
       }}
     >
       <div className="grid gap-4 sm:grid-cols-[90px_1fr] p-6">
-        <div className="relative h-24 w-full overflow-hidden rounded-[24px] border border-[#ccc7bd] bg-[#e6e2d9]">
+        <div className="relative h-82 w-full overflow-hidden rounded-[24px] border border-[#ccc7bd] bg-[#e6e2d9]">
           {product.imageUrl ? (
             <motion.img
               src={product.imageUrl}

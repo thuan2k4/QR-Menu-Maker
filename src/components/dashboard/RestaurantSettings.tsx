@@ -12,15 +12,15 @@ interface RestaurantSettingsProps {
   user: User;
   restaurant: Store | null;
   onCreated?: (id: string) => void;
+  section?: 'store-info' | 'customize';
 }
 
 const FONT_FAMILY_OPTIONS = ['Inter', 'Roboto', 'Playfair Display', 'Be Vietnam Pro'] as const;
 const SIZE_PRESET_OPTIONS = ['large', 'normal', 'compact'] as const;
 const CURRENCY_OPTIONS = ['EUR', 'USD', 'VND'] as const;
 
-export default function RestaurantSettings({ user, restaurant, onCreated }: RestaurantSettingsProps) {
+export default function RestaurantSettings({ user, restaurant, onCreated, section = 'store-info' }: RestaurantSettingsProps) {
   const { t } = useTranslation();
-  const [activeSettingsNav, setActiveSettingsNav] = useState<'store-info' | 'customize'>('store-info');
   const [formData, setFormData] = useState({
     name: '',
     bio: '',
@@ -45,6 +45,8 @@ export default function RestaurantSettings({ user, restaurant, onCreated }: Rest
 
   const logoInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
+  const showStoreInfoSection = section === 'store-info';
+  const showCustomizeSection = section === 'customize';
 
   useEffect(() => {
     if (restaurant) {
@@ -196,30 +198,7 @@ export default function RestaurantSettings({ user, restaurant, onCreated }: Rest
         )}
 
         <form id="settings-form" onSubmit={handleSubmit} className="p-8 space-y-8">
-          <div className="rounded-2xl border border-gray-100 bg-gray-50 p-1 inline-flex flex-wrap gap-1">
-            <button
-              type="button"
-              onClick={() => setActiveSettingsNav('store-info')}
-              className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${activeSettingsNav === 'store-info'
-                ? 'bg-white text-orange-600 shadow-sm'
-                : 'text-gray-500 hover:text-gray-700'
-                }`}
-            >
-              {t('restaurant.storeInfoTab')}
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveSettingsNav('customize')}
-              className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${activeSettingsNav === 'customize'
-                ? 'bg-white text-orange-600 shadow-sm'
-                : 'text-gray-500 hover:text-gray-700'
-                }`}
-            >
-              {t('restaurant.customizeTab')}
-            </button>
-          </div>
-
-          {activeSettingsNav === 'store-info' && (
+          {showStoreInfoSection && (
             <section className="rounded-3xl border border-gray-100 bg-gray-50/40 p-6">
               <div className="mb-6">
                 <h3 className="text-lg font-bold text-gray-900">{t('restaurant.sectionHeading')}</h3>
@@ -382,7 +361,7 @@ export default function RestaurantSettings({ user, restaurant, onCreated }: Rest
             </section>
           )}
 
-          {activeSettingsNav === 'customize' && (
+          {showCustomizeSection && (
             <section className="rounded-3xl border border-gray-100 bg-white p-6 space-y-6">
               <div className="mb-2">
                 <h3 className="text-lg font-bold text-gray-900">{t('restaurant.customizeHeading')}</h3>

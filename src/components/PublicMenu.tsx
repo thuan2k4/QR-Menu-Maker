@@ -1,4 +1,4 @@
-﻿import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { MenuProvider } from './Menu/MenuProvider';
 import { useMenuContext } from './Menu/MenuProvider';
 import MenuRenderer from './Menu/MenuRenderer';
@@ -70,10 +70,7 @@ function PublicMenuContent() {
 
   return (
     <div style={themedStyle}>
-      <PublicMenuFilterSortControls
-        disabled={isPrivateMenu}
-        disabledReason={t('publicMenu.filterDisabledReason')}
-      />
+      <PublicMenuFilterSortControls />
       <MenuRenderer />
     </div>
   );

@@ -189,7 +189,7 @@ export default function TemplateModernGrid() {
                     <button
                       type="button"
                       onClick={clearSelectedProduct}
-                      className="rounded-3xl bg-emerald-600 px-5 py-4 text-sm font-bold text-white shadow-lg hover:bg-emerald-700"
+                      className="rounded-3xl w-full bg-emerald-600 px-5 py-4 text-sm font-bold text-white shadow-lg hover:bg-emerald-700"
                     >
                       {t('menuUi.close')}
                     </button>

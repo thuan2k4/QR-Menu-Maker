@@ -238,15 +238,14 @@ export default function TemplateMatchaSignature() {
                         </div>
                       ) : null}
 
-                      <div className="flex flex-wrap items-end justify-between gap-2 pt-1">
-                        <p className="text-2xl font-black text-[#9a5936]">{getProductDisplayPrice(product)}</p>
+                      <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+                        <p className="text-md font-black text-[#9a5936]">{getProductDisplayPrice(product)}</p>
                         <button
                           type="button"
                           onClick={() => selectProduct(product)}
                           className="inline-flex items-center gap-1.5 rounded-full border border-[#a15f38] bg-[#a15f38] px-4 py-2 text-xs font-black uppercase tracking-[0.08em] text-white transition hover:bg-[#8f5130]"
                         >
                           {t('menuUi.viewDetails')}
-                          <ChevronRight size={14} />
                         </button>
                       </div>
                     </div>

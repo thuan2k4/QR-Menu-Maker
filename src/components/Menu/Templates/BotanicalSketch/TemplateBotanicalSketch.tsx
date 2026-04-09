@@ -203,7 +203,7 @@ export default function TemplateBotanicalSketch() {
                         </div>
                       ) : null}
 
-                      <div className="flex flex-wrap items-end justify-between gap-2 pt-1">
+                      <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
                         <p className="text-xl font-semibold text-[#857f70]">{getProductDisplayPrice(product)}</p>
                         <button
                           type="button"
@@ -211,7 +211,6 @@ export default function TemplateBotanicalSketch() {
                           className="inline-flex items-center gap-1 rounded-full border border-[#908a79] bg-[#908a79] px-3 py-2 text-xs font-semibold uppercase tracking-[0.1em] text-[#f8f0de] transition hover:bg-[#7f796a]"
                         >
                           {t('menuUi.viewDetails')}
-                          <ChevronRight size={14} />
                         </button>
                       </div>
                     </div>

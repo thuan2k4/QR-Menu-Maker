@@ -62,20 +62,20 @@ export default function TemplateFluidMonochrome() {
 
         {/* Store Info - Floating Card */}
         <motion.div
-          className="relative mx-auto max-w-5xl px-4 sm:px-6 -mt-32 mb-16 z-10"
+          className="relative mx-auto max-w-2xl px-6 -mt-32 mb-10 z-10"
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ type: 'spring', stiffness: 200, damping: 30, delay: 0.2 }}
         >
           <div
-            className="rounded-3xl shadow-2xl overflow-hidden backdrop-blur-md border border-black/5"
+            className="rounded-[2.5rem] shadow-2xl overflow-hidden backdrop-blur-md border border-black/5"
             style={{ backgroundColor: '#F8F7F5' }}
           >
             <div
-              className="p-8 sm:p-10"
+              className="p-8 pb-10"
               style={{ backgroundColor: '#F8F7F5' }}
             >
-              <div className="flex flex-col sm:flex-row items-start gap-8">
+              <div className="flex flex-col items-center text-center gap-6">
                 {/* Logo - Organic Shape */}
                 <motion.div
                   className="flex-shrink-0"
@@ -83,7 +83,7 @@ export default function TemplateFluidMonochrome() {
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ type: 'spring', stiffness: 250, delay: 0.3 }}
                 >
-                  <div className="w-24 h-24 rounded-full overflow-hidden shadow-lg flex items-center justify-center border-2"
+                  <div className="w-24 h-24 rounded-full overflow-hidden shadow-lg flex items-center justify-center border-2 ring-8 ring-black/5"
                     style={{
                       borderColor: '#1A1A1A',
                       backgroundColor: '#6B6B6B'
@@ -106,32 +106,32 @@ export default function TemplateFluidMonochrome() {
 
                 {/* Store Details */}
                 <motion.div
-                  className="flex-1 space-y-4"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
+                  className="space-y-4"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
                   transition={{ type: 'spring', stiffness: 250, delay: 0.4 }}
                 >
                   <div>
                     <p
-                      className="text-xs font-black uppercase tracking-[0.15em]"
+                      className="text-[10px] font-black uppercase tracking-[0.25em] mb-2 px-3 py-1 bg-black/5 rounded-full inline-block"
                       style={{ color: '#6B6B6B' }}
                     >
                       ✧ {t('menuUi.greeting')}
                     </p>
-                    <h1 className="text-4xl font-black leading-tight mt-2" style={{ color: '#1A1A1A' }}>
+                    <h1 className="text-3xl font-black leading-tight" style={{ color: '#1A1A1A' }}>
                       {store?.name || 'Menu'}
                     </h1>
                   </div>
 
-                  <div className="space-y-3 text-sm">
+                  <div className="flex flex-col gap-2.5 text-sm font-bold">
                     {store?.address && (
-                      <p className="flex items-center gap-3 font-bold" style={{ color: '#4A4A4A' }}>
+                      <p className="flex items-center justify-center gap-2" style={{ color: '#4A4A4A' }}>
                         <span style={{ color: '#1A1A1A' }}>📍</span>
                         {store.address}
                       </p>
                     )}
                     {store?.phone && (
-                      <p className="flex items-center gap-3 font-bold" style={{ color: '#4A4A4A' }}>
+                      <p className="flex items-center justify-center gap-2" style={{ color: '#4A4A4A' }}>
                         <span style={{ color: '#1A1A1A' }}>☎️</span>
                         {store.phone}
                       </p>
@@ -140,13 +140,13 @@ export default function TemplateFluidMonochrome() {
 
                   {store?.bio && (
                     <p
-                      className="text-sm leading-relaxed font-medium pt-2"
+                      className="text-sm leading-relaxed font-medium pt-2 opacity-70"
                       style={{ color: '#6B6B6B' }}
                     >
                       {store.bio}
                     </p>
                   )}
-                  <PrivatePreviewInlineNotice className="border-[#cfc9be] bg-[#f1efea] text-[#3f3f3f]" />
+                  <PrivatePreviewInlineNotice className="border-[#cfc9be] bg-[#f1efea] text-[#3f3f3f] mx-auto" />
                 </motion.div>
               </div>
             </div>
@@ -154,51 +154,41 @@ export default function TemplateFluidMonochrome() {
         </motion.div>
       </div>
 
-      {/* Main Content */}
-      <div className="relative mx-auto max-w-5xl px-4 sm:px-6 pb-16 space-y-12 z-0">
-        {/* Section Header */}
-        <motion.div
-          className="space-y-4"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-        >
-          <div>
-            <p
-              className="text-xs font-black uppercase tracking-[0.15em]"
-              style={{ color: '#6B6B6B' }}
-            >
-              ◆ {t('menuUi.categoriesLabel')}
-            </p>
-            <h2 className="text-3xl font-black mt-2" style={{ color: '#1A1A1A' }}>
-              {t('menuUi.cravingPrompt')}
-            </h2>
+      {/* Categories Toolbar - Sticky Fluid */}
+      <div className="sticky top-0 z-30 mb-10">
+        <div className="mx-auto max-w-2xl px-6">
+          <div 
+             className="bg-[#F8F7F5]/80 backdrop-blur-xl rounded-[2rem] border border-black/5 shadow-lg p-2 flex items-center overflow-x-auto no-scrollbar gap-2 relative"
+          >
+            {categories.map((cat) => {
+              const isActive = activeCategory === cat.id;
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => setActiveCategory(cat.id)}
+                  className={`relative px-6 py-3.5 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all flex-shrink-0 whitespace-nowrap ${
+                    isActive ? 'text-[#F8F7F5]' : 'text-[#4A4A4A] hover:text-[#1A1A1A]'
+                  }`}
+                >
+                  {isActive && (
+                    <motion.div
+                      layoutId="fluidActivePill"
+                      className="absolute inset-0 z-0 rounded-2xl"
+                      style={{ backgroundColor: '#1A1A1A' }}
+                      transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+                    />
+                  )}
+                  <span className="relative z-10">{cat.name}</span>
+                </button>
+              );
+            })}
           </div>
+        </div>
+      </div>
 
-          {/* Category Buttons - Horizontal Scroll */}
-          <div className="mt-4 flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 flex-nowrap">
-            {categories.map((cat, idx) => (
-              <motion.button
-                key={cat.id}
-                onClick={() => setActiveCategory(cat.id)}
-                className="px-6 py-2.5 min-h-[44px] rounded-full font-bold text-sm whitespace-nowrap flex-shrink-0 min-w-max transition-all border-2 capitalize"
-                style={{
-                  backgroundColor: activeCategory === cat.id ? '#1A1A1A' : 'transparent',
-                  color: activeCategory === cat.id ? '#F8F7F5' : '#4A4A4A',
-                  borderColor: activeCategory === cat.id ? '#1A1A1A' : '#6B6B6B'
-                }}
-                aria-pressed={activeCategory === cat.id}
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                whileHover={{ scale: 1.08 }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ delay: idx * 0.04, type: 'spring', stiffness: 300 }}
-              >
-                {cat.name}
-              </motion.button>
-            ))}
-          </div>
-        </motion.div>
+      {/* Main Content */}
+      <div className="relative mx-auto max-w-2xl px-6 pb-16 space-y-12 z-0">
+
 
         {/* Products - Vertical Stack */}
         <div>

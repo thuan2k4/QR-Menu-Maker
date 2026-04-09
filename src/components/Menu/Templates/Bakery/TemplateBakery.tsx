@@ -200,14 +200,13 @@ export default function TemplateBakery() {
                     )}
 
                     <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-                      <p className="text-2xl font-black text-[#8f4f2d]">{getProductDisplayPrice(product)}</p>
+                      <p className="text-md font-black text-[#8f4f2d]">{getProductDisplayPrice(product)}</p>
                       <button
                         type="button"
                         onClick={() => selectProduct(product)}
                         className="inline-flex items-center gap-2 rounded-full border border-[#d2b79f] bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.09em] text-[#7d4b2f] transition hover:border-[#8f4f2d] hover:text-[#5f341d]"
                       >
                         {t('menuUi.viewDetails')}
-                        <ChevronRight size={14} />
                       </button>
                     </div>
                   </div>

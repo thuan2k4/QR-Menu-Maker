@@ -60,7 +60,7 @@ export default function TemplateClassic() {
 
   return (
     <div className="min-h-screen pb-20 overflow-y-auto" style={rootStyle}>
-      <div className="h-48 md:h-64 w-full relative overflow-hidden" style={{ borderRadius: selectedTemplate.cardStyle === 'solid' ? '32px' : '24px' }}>
+      <div className="h-48 md:h-64 w-full relative overflow-hidden" style={{ borderRadius: '32px' }}>
         {store.coverUrl ? (
           <img src={store.coverUrl} alt="Cover" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
         ) : (

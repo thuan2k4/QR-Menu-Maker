@@ -242,15 +242,14 @@ export default function TemplateCoffeeAtelier() {
                         </div>
                       ) : null}
 
-                      <div className="flex flex-wrap items-end justify-between gap-2 pt-1">
-                        <p className="text-2xl font-black text-[#9e5e35]">{getProductDisplayPrice(product)}</p>
+                      <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+                        <p className="text-md font-black text-[#9e5e35]">{getProductDisplayPrice(product)}</p>
                         <button
                           type="button"
                           onClick={() => selectProduct(product)}
-                          className="inline-flex items-center gap-1.5 border-2 border-[#271c12] bg-[#271c12] px-3 py-2 text-xs font-black uppercase tracking-[0.09em] text-[#f5e6d4] transition hover:bg-[#c7773d] hover:text-[#271c12]"
+                          className="inline-flex items-center gap-1.5 border-2 border-[#271c12] bg-[#271c12] px-2 py-2 text-xs font-black uppercase tracking-[0.09em] text-[#f5e6d4] transition hover:bg-[#c7773d] hover:text-[#271c12]"
                         >
                           {t('menuUi.viewDetails')}
-                          <ChevronRight size={14} />
                         </button>
                       </div>
                     </div>

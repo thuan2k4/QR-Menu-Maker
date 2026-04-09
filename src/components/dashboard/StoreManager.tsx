@@ -77,11 +77,13 @@ export default function StoreManager({ user }: StoreManagerProps) {
     { id: 'menu', label: t('storeManager.tabMenu'), icon: <MenuIcon size={18} />, path: `/dashboard/store/${id}/menu` },
     { id: 'theme', label: t('storeManager.tabTheme'), icon: <Palette size={18} />, path: `/dashboard/store/${id}/theme` },
     { id: 'settings', label: t('storeManager.tabInfo'), icon: <Info size={18} />, path: `/dashboard/store/${id}/settings` },
+    { id: 'setup', label: t('storeManager.tabSetup'), icon: <Info size={18} />, path: `/dashboard/store/${id}/setup` },
   ];
 
-  const activeTab = location.pathname.endsWith('/settings') ? 'settings' :
-    location.pathname.endsWith('/theme') ? 'theme' :
-      location.pathname.endsWith('/menu') ? 'menu' : 'overview';
+  const activeTab = location.pathname.endsWith('/setup') ? 'setup' :
+    location.pathname.endsWith('/settings') ? 'settings' :
+      location.pathname.endsWith('/theme') ? 'theme' :
+        location.pathname.endsWith('/menu') ? 'menu' : 'overview';
 
   return (
     <div className="space-y-6">
@@ -157,7 +159,8 @@ export default function StoreManager({ user }: StoreManagerProps) {
           <Route index element={<Overview user={user} store={store} />} />
           <Route path="menu" element={<MenuManagement user={user} store={store} />} />
           <Route path="theme" element={<ThemeEditor user={user} restaurant={store} />} />
-          <Route path="settings" element={<RestaurantSettings user={user} restaurant={store} />} />
+          <Route path="settings" element={<RestaurantSettings user={user} restaurant={store} section="store-info" />} />
+          <Route path="setup" element={<RestaurantSettings user={user} restaurant={store} section="customize" />} />
         </Routes>
       </div>
     </div>

@@ -53,201 +53,179 @@ export default function TemplateMinimal() {
         </motion.div>
       )}
 
-      {/* Header - Minimal */}
-      <div className="border-b border-slate-200 pb-8 pt-8 px-6 sm:px-8 lg:px-12">
+      {/* Header - Minimal High Contrast */}
+      <div className="border-b border-slate-100 bg-white">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="max-w-7xl mx-auto"
+          className="max-w-2xl mx-auto px-6 py-10"
         >
-          <div className="space-y-6">
-            {/* Logo + Name */}
-            <div className="flex items-start gap-6">
-              {store?.logoUrl && (
-                <img
-                  src={store.logoUrl}
-                  alt="Logo"
-                  className="h-20 w-20 rounded-lg object-cover"
-                  referrerPolicy="no-referrer"
-                />
-              )}
-              <div className="flex-1">
-                <h1 className="text-4xl font-black text-gray-900 tracking-tight">
-                  {store?.name || 'Store'}
-                </h1>
-                <p className="text-sm text-slate-600 font-medium mt-2 max-w-md leading-relaxed">
+          <div className="flex flex-col items-center text-center gap-6">
+            {store?.logoUrl && (
+              <motion.img
+                src={store.logoUrl}
+                alt="Logo"
+                className="h-24 w-24 rounded-2xl object-cover shadow-sm ring-1 ring-slate-200"
+                referrerPolicy="no-referrer"
+                initial={{ scale: 0.9 }}
+                animate={{ scale: 1 }}
+              />
+            )}
+            <div className="space-y-4">
+              <h1 className="text-4xl font-black text-gray-900 tracking-tighter uppercase">
+                {store?.name || 'Store'}
+              </h1>
+              {store?.bio && (
+                <p className="text-sm text-slate-500 font-medium max-w-sm leading-relaxed mx-auto">
                   {store?.bio}
                 </p>
-                {(store?.address || store?.phone) && (
-                  <div className="flex flex-wrap gap-6 text-sm text-slate-700 mt-4 font-medium">
-                    {store?.address && <span>📍 {store.address}</span>}
-                    {store?.phone && <span>☎️ {store.phone}</span>}
-                  </div>
-                )}
-                <PrivatePreviewInlineNotice className="border-slate-300 bg-slate-100 text-slate-700" />
-              </div>
+              )}
+              {(store?.address || store?.phone) && (
+                <div className="flex flex-col gap-2 text-[11px] text-slate-400 font-black uppercase tracking-widest mt-4">
+                  {store?.address && <span className="flex items-center justify-center gap-2">📍 {store.address}</span>}
+                  {store?.phone && <span className="flex items-center justify-center gap-2">☎️ {store.phone}</span>}
+                </div>
+              )}
+              <PrivatePreviewInlineNotice className="border-slate-200 bg-slate-50 text-slate-600 mx-auto" />
             </div>
           </div>
         </motion.div>
       </div>
 
-      {/* Main Content - Two Column Layout */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Sidebar - Categories */}
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.2 }}
-          className="hidden lg:flex flex-col w-52 border-r border-slate-200 py-8 px-6 bg-slate-50 overflow-y-auto"
-        >
-          <p className="text-xs font-black uppercase tracking-[0.1em] text-slate-700 mb-6">
-            {t('menuUi.categoriesLabel')}
-          </p>
-          <div className="space-y-2">
-            {categories.map((cat) => (
-              <motion.button
-                key={cat.id}
-                onClick={() => setActiveCategory(cat.id)}
-                className={`w-full text-left px-4 py-3 rounded-lg font-bold text-sm transition-all ${activeCategory === cat.id
-                  ? 'bg-indigo-600 text-white shadow-lg'
-                  : 'text-slate-700 hover:bg-slate-200'
-                  }`}
-                whileHover={{ scale: 1.02, paddingLeft: 20 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                {cat.name}
-              </motion.button>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Products - Main Area */}
-        <div className="flex-1 overflow-y-auto">
-          {/* Mobile Category Pills */}
-          <div className="lg:hidden sticky top-0 bg-white border-b border-slate-200 px-6 py-4 z-10">
-            <p className="text-xs font-black uppercase tracking-[0.1em] text-slate-700 mb-3">
-              {t('menuUi.categoriesLabel')}
-            </p>
-            <div className="flex gap-2 overflow-x-auto pb-2 flex-nowrap">
-              {categories.map((cat) => (
-                <motion.button
+      {/* Categories Toolbar - Sticky Minimal */}
+      <div className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-slate-100">
+        <div className="max-w-2xl mx-auto px-6">
+          <div className="flex items-center overflow-x-auto no-scrollbar gap-8 py-4 relative">
+            {categories.map((cat) => {
+              const isActive = activeCategory === cat.id;
+              return (
+                <button
                   key={cat.id}
                   onClick={() => setActiveCategory(cat.id)}
-                  className={`px-4 py-2 rounded-full font-bold text-sm whitespace-nowrap transition-all flex-shrink-0 min-w-max ${activeCategory === cat.id
-                    ? 'bg-indigo-600 text-white shadow-lg'
-                    : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                  className={`relative py-2 font-black text-xs uppercase tracking-[0.2em] transition-colors flex-shrink-0 whitespace-nowrap ${isActive ? 'text-indigo-600' : 'text-slate-400 hover:text-slate-900'
                     }`}
-                  whileTap={{ scale: 0.95 }}
                 >
-                  {cat.name}
-                </motion.button>
-              ))}
-            </div>
-          </div>
-
-          {/* Products */}
-          <div className="px-6 sm:px-8 lg:px-12 py-8 max-w-4xl mx-auto">
-            {filteredProducts.length > 0 ? (
-              <motion.div
-                className="space-y-4"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.3 }}
-              >
-                {filteredProducts.map((product, idx) => (
-                  <motion.div
-                    key={product.id}
-                    className="group cursor-pointer"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.05 }}
-                    onClick={() => selectProduct(product)}
-                  >
+                  <span className="relative z-10">{cat.name}</span>
+                  {isActive && (
                     <motion.div
-                      onClick={() => selectProduct(product)}
-                      className="flex gap-6 p-6 rounded-lg border border-slate-200 hover:border-indigo-300 hover:shadow-lg transition-all bg-white"
-                      whileHover={{ y: -2 }}
-                    >
-                      {/* Image */}
-                      {product.imageUrl && (
-                        <div className="w-32 h-32 rounded-lg overflow-hidden flex-shrink-0 bg-slate-100">
-                          <img
-                            src={product.imageUrl}
-                            alt={product.name}
-                            className="w-full h-full object-contain object-center group-hover:scale-110 transition-transform duration-500"
-                            referrerPolicy="no-referrer"
-                          />
-                        </div>
-                      )}
-
-                      {/* Content */}
-                      <div className="flex-1 flex flex-col justify-between">
-                        {/* Name & Description */}
-                        <div>
-                          <h3 className="text-lg font-black text-gray-900">
-                            {product.name}
-                          </h3>
-                          {product.shortDescription || product.description ? (
-                            <p className="text-sm text-slate-600 font-medium mt-2 line-clamp-2">
-                              {product.shortDescription?.trim() || product.description?.trim()}
-                            </p>
-                          ) : null}
-
-                          {/* Hashtags */}
-                          {product.hashtags && product.hashtags.length > 0 && (
-                            <div className="flex flex-wrap gap-2 mt-3">
-                              {product.hashtags.slice(0, 4).map((tag: string, ix: number) => (
-                                <span key={ix} className="text-xs text-indigo-600 font-bold">
-                                  {tag}
-                                </span>
-                              ))}
-                            </div>
-                          )}
-
-                          {/* Variants */}
-                          {product.variants && product.variants.length > 0 && (
-                            <div className="flex flex-wrap gap-2 mt-3">
-                              {product.variants.slice(0, 3).map((variant, vi) => (
-                                <span key={vi} className="text-xs font-bold bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full border border-indigo-200 max-w-full break-words">
-                                  {variant.name} <span className="text-indigo-600">{`${((variant.price || 0) - (product.price || 0)) >= 0 ? '+' : ''}${formatCurrency((variant.price || 0) - (product.price || 0))}`}</span>
-                                </span>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Footer - Price + ChevronRight */}
-                        <div className="flex items-center justify-between mt-4">
-                          <div className="text-2xl font-black text-indigo-600">
-                            {getProductDisplayPrice(product)}
-                          </div>
-                          <ChevronRight size={24} className="text-slate-400 group-hover:text-indigo-600 transition-colors" />
-                        </div>
-                      </div>
-                    </motion.div>
-                  </motion.div>
-                ))}
-              </motion.div>
-            ) : (
-              <motion.div
-                className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-12 text-center"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-              >
-                <p className="text-slate-600 font-bold text-lg">
-                  {t('menuUi.noProductsTitle')}
-                </p>
-                <p className="text-slate-500 text-sm mt-2">
-                  {t('menuUi.noProductsDescription')}
-                </p>
-              </motion.div>
-            )}
+                      layoutId="minimalUnderline"
+                      className="absolute bottom-0 left-0 right-0 h-1 bg-indigo-600 rounded-full"
+                      transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+                    />
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
 
+      {/* Main Content Area */}
+      <div className="flex-1">
+        <div className="px-6 py-10 max-w-2xl mx-auto">
+
+          {filteredProducts.length > 0 ? (
+            <motion.div
+              className="space-y-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              {filteredProducts.map((product, idx) => (
+                <motion.div
+                  key={product.id}
+                  className="group cursor-pointer"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.05 }}
+                  onClick={() => selectProduct(product)}
+                >
+                  <motion.div
+                    onClick={() => selectProduct(product)}
+                    className="flex flex-col gap-6 p-6 rounded-lg border border-slate-200 hover:border-indigo-300 hover:shadow-lg transition-all bg-white"
+                    whileHover={{ y: -2 }}
+                  >
+                    {/* Image */}
+                    {product.imageUrl && (
+                      <div className="w-full h-50 rounded-lg overflow-hidden flex-shrink-0 bg-slate-100">
+                        <img
+                          src={product.imageUrl}
+                          alt={product.name}
+                          className="w-full h-full object-contain object-center group-hover:scale-110 transition-transform duration-500"
+                          referrerPolicy="no-referrer"
+                        />
+                      </div>
+                    )}
+
+                    {/* Content */}
+                    <div className="flex-1 flex flex-col justify-between">
+                      {/* Name & Description */}
+                      <div>
+                        <h3 className="text-lg font-black text-gray-900">
+                          {product.name}
+                        </h3>
+                        {product.shortDescription || product.description ? (
+                          <p className="text-sm text-slate-600 font-medium mt-2 line-clamp-2">
+                            {product.shortDescription?.trim() || product.description?.trim()}
+                          </p>
+                        ) : null}
+
+                        {/* Hashtags */}
+                        {product.hashtags && product.hashtags.length > 0 && (
+                          <div className="flex flex-wrap gap-2 mt-3">
+                            {product.hashtags.slice(0, 4).map((tag: string, ix: number) => (
+                              <span key={ix} className="text-xs text-indigo-600 font-bold">
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Variants */}
+                        {product.variants && product.variants.length > 0 && (
+                          <div className="flex flex-wrap gap-2 mt-3">
+                            {product.variants.slice(0, 3).map((variant, vi) => (
+                              <span key={vi} className="text-xs font-bold bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full border border-indigo-200 max-w-full break-words">
+                                {variant.name} <span className="text-[11px] text-indigo-600">{`${((variant.price || 0) - (product.price || 0)) >= 0 ? '+' : ''}${formatCurrency((variant.price || 0) - (product.price || 0))}`}</span>
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Footer - Price + ChevronRight */}
+                      <div className="flex items-center justify-between mt-4">
+                        <div className="text-x font-black text-indigo-600">
+                          {getProductDisplayPrice(product)}
+                        </div>
+                        <ChevronRight size={24} className="text-slate-400 group-hover:text-indigo-600 transition-colors" />
+                      </div>
+                    </div>
+                  </motion.div>
+                </motion.div>
+              ))}
+            </motion.div>
+          ) : (
+            <motion.div
+              className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-12 text-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
+              <p className="text-slate-600 font-bold text-lg">
+                {t('menuUi.noProductsTitle')}
+              </p>
+              <p className="text-slate-500 text-sm mt-2">
+                {t('menuUi.noProductsDescription')}
+              </p>
+            </motion.div>
+          )}
+        </div>
+      </div>
+
       {/* Product Detail Modal - Desktop: Center | Mobile: Bottom Sheet */}
+
+
       <AnimatePresence>
         {selectedProduct && (
           <>
@@ -291,13 +269,6 @@ export default function TemplateMinimal() {
                   : 'max-w-md max-h-[90vh] overflow-y-auto rounded-2xl'
                   }`}
               >
-                {/* Drag Handle Bar - Mobile Only */}
-                {isMobile && (
-                  <div className="sticky top-0 flex justify-center pt-3 pb-2 bg-white rounded-t-3xl">
-                    <div className="w-12 h-1 rounded-full bg-slate-300" />
-                  </div>
-                )}
-
                 {/* Image */}
                 {selectedProduct.imageUrl && (
                   <div className="relative h-64 overflow-hidden bg-slate-100">
