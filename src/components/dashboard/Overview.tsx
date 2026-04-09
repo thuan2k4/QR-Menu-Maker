@@ -13,7 +13,7 @@ interface OverviewProps {
 }
 
 export default function Overview({ user, store }: OverviewProps) {
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
   const [stats, setStats] = useState({ categories: 0, products: 0 });
   const [timeRange, setTimeRange] = useState<7 | 30>(7);
   const [analyticsStats, setAnalyticsStats] = useState({
@@ -94,7 +94,11 @@ export default function Overview({ user, store }: OverviewProps) {
     );
   }
 
-  const menuUrl = `${window.location.origin}/m/${store.slug}`;
+  const menuUrl = (() => {
+    const url = new URL(`${window.location.origin}/m/${store.slug}`);
+    url.searchParams.set('lang', lang);
+    return url.toString();
+  })();
 
   const downloadQR = () => {
     const svg = document.getElementById('qr-code-svg');
@@ -172,7 +176,7 @@ export default function Overview({ user, store }: OverviewProps) {
               } : undefined}
             />
           </div>
-          <p className="text-sm text-gray-400 mb-8 break-all max-w-xs">{menuUrl}</p>
+          <p className="text-sm text-gray-400 mb-8 break-all">{menuUrl}</p>
           <div className="flex gap-4 w-full">
             <button
               onClick={downloadQR}

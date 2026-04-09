@@ -208,7 +208,15 @@ export function MenuProvider({ slug, children }: MenuProviderProps) {
     }
   }, [categories, activeCategory]);
 
-  const selectedTemplate = useMemo(() => getMenuTemplateById(store?.templateId), [store?.templateId]);
+  const selectedTemplate = useMemo(() => {
+    const params = new URLSearchParams(window.location.search);
+    const templateOverride = params.get('template');
+    if (templateOverride) {
+      const found = getMenuTemplateById(templateOverride);
+      if (found.id === templateOverride) return found;
+    }
+    return getMenuTemplateById(store?.templateId);
+  }, [store?.templateId]);
   const primaryColor = store?.primaryColor || store?.themeColor || selectedTemplate.primaryColor;
   const secondaryColor = store?.secondaryColor || selectedTemplate.secondaryColor;
   const currency = (store?.currency === 'EUR' || store?.currency === 'USD' || store?.currency === 'VND')

@@ -12,6 +12,12 @@ function resolveInitialLanguage(): LanguageCode {
     return 'vi';
   }
 
+  const searchParams = new URLSearchParams(window.location.search);
+  const langParam = searchParams.get('lang');
+  if (isLanguageCode(langParam)) {
+    return langParam;
+  }
+
   const saved = window.localStorage.getItem(STORAGE_KEY);
   if (isLanguageCode(saved)) {
     return saved;

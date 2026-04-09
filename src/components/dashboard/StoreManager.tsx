@@ -25,7 +25,7 @@ interface StoreManagerProps {
 }
 
 export default function StoreManager({ user }: StoreManagerProps) {
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const [store, setStore] = useState<Store | null>(null);
   const [loading, setLoading] = useState(true);
@@ -95,7 +95,16 @@ export default function StoreManager({ user }: StoreManagerProps) {
             <h2 className="text-2xl font-bold text-gray-900">{store.name}</h2>
             <div className="flex items-center gap-2 text-sm text-gray-400">
               <span>/m/{store.slug}</span>
-              <a href={`/m/${store.slug}`} target="_blank" rel="noopener noreferrer" className="text-orange-500 hover:underline flex items-center gap-1 focus-visible:ring-2 focus-visible:ring-orange-300 rounded-md">
+              <a
+                href={(() => {
+                  const url = new URL(`${window.location.origin}/m/${store.slug}`);
+                  url.searchParams.set('lang', lang);
+                  return url.toString();
+                })()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-orange-500 hover:underline flex items-center gap-1 focus-visible:ring-2 focus-visible:ring-orange-300 rounded-md"
+              >
                 {t('storeManager.viewMenu')} <ExternalLink size={12} />
               </a>
             </div>
