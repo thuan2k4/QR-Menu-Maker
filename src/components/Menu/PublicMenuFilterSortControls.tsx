@@ -73,7 +73,7 @@ export default function PublicMenuFilterSortControls({
 
   return (
     <div
-      className={`pointer-events-none fixed inset-x-0 bottom-6 z-30 flex flex-col-reverse items-end px-6 transition-transform duration-500 will-change-transform ${isVisible || isOpen ? 'translate-y-0' : 'translate-y-32'
+      className={`pointer-events-none fixed inset-x-0 bottom-6 z-[35] flex flex-col-reverse items-end px-6 transition-transform duration-500 will-change-transform ${isVisible || isOpen ? 'translate-y-0' : 'translate-y-32'
         }`}
     >
       <div className="pointer-events-auto w-full sm:w-auto sm:max-w-md">
@@ -82,7 +82,7 @@ export default function PublicMenuFilterSortControls({
           onClick={() => setIsOpen((prev) => !prev)}
           disabled={disabled}
           title={disabled ? resolvedDisabledReason : undefined}
-          className={`ml-auto flex min-h-[48px] items-center gap-2 rounded-full border px-5 py-2.5 text-sm font-bold shadow-2xl backdrop-blur-xl focus-visible:ring-2 focus-visible:ring-orange-300 transition-all active:scale-95 ${disabled
+          className={`ml-auto relative flex min-h-[48px] items-center gap-2 rounded-full border px-5 py-2.5 text-sm font-bold shadow-2xl backdrop-blur-xl focus-visible:ring-2 focus-visible:ring-orange-300 transition-all active:scale-95 ${disabled
             ? 'cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400 shadow-none'
             : 'border-slate-300 bg-white/95 text-slate-800'
             }`}
