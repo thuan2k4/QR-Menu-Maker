@@ -22,6 +22,7 @@ function getLoginErrorMessage(error: unknown, t: TranslationFn): string {
       return t('login.error.unsupportedEnvironment');
     case 'auth/popup-blocked':
       return t('login.error.popupBlocked');
+    case 'auth/user-cancelled':
     case 'auth/popup-closed-by-user':
       return t('login.error.popupClosed');
     case 'auth/network-request-failed':
@@ -140,6 +141,16 @@ export default function Login() {
       goToDashboard();
     } catch (err) {
       console.error('Google login failed:', err);
+
+      // Check for user cancellation (popup closed or explicit cancel)
+      const isCancellation = err instanceof FirebaseError && 
+        (err.code === 'auth/user-cancelled' || err.code === 'auth/popup-closed-by-user');
+
+      if (isCancellation) {
+        console.log('[Google Login] User cancelled login process');
+        setLoading(false);
+        return;
+      }
 
       if (err instanceof FirebaseError && (err.code === 'auth/popup-blocked' || err.code === 'auth/operation-not-supported-in-this-environment' || err.code === 'auth/network-request-failed')) {
         try {
